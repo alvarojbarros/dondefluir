@@ -1,0 +1,13 @@
+{% extends "recordtable.html" %}
+{% block title %}
+<h2>Profesionales</h2>
+{% endblock %}
+{% block button_new %}
+{% endblock %}
+{% block fields_view %}
+{% for record in myFunction(function='getProfessional',params={'favorite': var['favorite']}) %}
+  <li data-search-term="{{record.id}} {{record.Name}}" class="list-group-item"><a href="#"  onClick="showProffesional('{{record.id}}','{{current_user.id}}')">{{record.id}} - {{record.Name}}</a></li>
+{% endfor %}
+{% endblock %}
+
+

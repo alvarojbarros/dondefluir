@@ -1,0 +1,13 @@
+{% extends "recordtable.html" %}
+{% block title %}
+<h2>Clientes</h2>
+{% endblock %}
+
+{% block fields_view %}
+{% for record in myFunction(function='getCustomer',params={'favorite': var['favorite']}) %}
+    <li data-search-term="{{record.Name}}" class="list-group-item">
+    <a href="#" onClick="getRecordForm('{{var['Table']}}','customerform.html',id='{{record.id}}',
+    'createRecordForm(\'{{record.id}}\',\'{{var['Table']}}\',\'1\',\'recordFields\')')"
+    >{{record.Name}}</a></li>
+{% endfor %}
+{% endblock %}

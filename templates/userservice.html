@@ -1,0 +1,14 @@
+{% extends "recordtable.html" %}
+{% block title %}
+<h2>Servicios por Profesional</h2>
+{% endblock %}
+{% block fields_view %}
+{% for record in myFunction(function='getUserService') %}
+    <li data-search-term="{{record.UserName}} {{record.ServiceName}}" class="list-group-item">
+    <a href="#" onClick="getRecordForm('{{var['Table']}}','recordform.html',id='{{record.id}}',
+    'createRecordForm(\'{{record.id}}\',\'{{var['Table']}}\',\'1\',\'recordFields\')')"
+    >{{record.UserName}} - {{record.ServiceName}}</a></li>
+{% endfor %}
+{% endblock %}
+
+

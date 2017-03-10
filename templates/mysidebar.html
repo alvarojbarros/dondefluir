@@ -1,0 +1,48 @@
+<div class="navbar-default sidebar" role="navigation">
+  <div class="sidebar-nav navbar-collapse slimscrollsidebar">
+     <ul class="nav" id="side-menu">
+        <li class="sidebar-search hidden-sm hidden-md hidden-lg">
+           <!-- Search input-group this is only view in mobile -->
+           <!--div class="input-group custom-search-form">
+              <input type="text" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+              <button class="btn btn-default" type="button"> <i class="fa fa-search"></i> </button>
+              </span>
+           </div-->
+           <!-- / Search input-group this is only view in mobile-->
+        </li>
+        <!-- User profile-->
+        <li class="user-pro">
+           <a href="#" class="waves-effect"><img src="{{image_url}}" alt="user-img"  class="img-circle"> <span class="hide-menu">{{current_user.Name}}<span class="fa arrow"></span></span></a>
+           <ul class="nav nav-second-level">
+              <li><a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}','createRecordForm(\'{{current_user.id}}\',\'User\',\'1\',\'recordFields\')')"><i class="ti-user"></i> My Profile</a></li>
+              {% if myFunction(function='isUserAdmin',params={}) %}
+              <li><a href="javascript:void(0)" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}','createRecordForm(\'{{current_user.CompanyId}}\',\'Company\',\'1\',\'recordFields\')')"><i class="ti-user"></i>Empresa</a></li>
+              {% endif %}
+              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html'})"><i class="ti-user"></i>Change Password</a></li>
+              <!--li><a href="javascript:void(0)"><i class="ti-wallet"></i> My Balance</a></li-->
+              <!--li><a href="javascript:void(0)"><i class="ti-email"></i> Inbox</a></li-->
+              <li><a href="javascript:void(0)" ><i class="ti-settings"></i> Account Setting</a></li>
+              <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
+           </ul>
+        </li>
+        <!-- User profile-->
+        <li>
+           <a href="#" onClick="getTemplate('container-fluid',{'Template':'dashboard.html'})" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
+        </li>
+        <!--li> <a href="javascript:void(0);" class="waves-effect"><i class="icon-envelope p-r-10"></i> <span class="hide-menu"> Mailbox <span class="fa arrow"></span><span class="label label-rouded label-danger pull-right">6</span></span></a>
+              <ul class="nav nav-second-level">
+                  <li> <a href="inbox.html">Inbox</a></li>
+                  <li> <a href="inbox-detail.html">Inbox detail</a></li>
+                  <li> <a href="compose.html">Compose mail</a></li>
+              </ul>
+
+          </li-->
+          {% for module in getModules() %}
+            <li> <a href="#" onClick="getTemplateModule('container-fluid',{{module['Vars']}} )"class="waves-effect"><i data-icon="F" class="fa {{module['Image']}} fa-fw">
+              </i><span class="hide-menu">{{ module['Name'] }}<span class="fa arrow"></span></span></a>
+            </li>
+          {% endfor %}
+     </ul>
+  </div>
+</div>

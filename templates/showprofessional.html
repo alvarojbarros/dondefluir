@@ -1,0 +1,149 @@
+<div class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+        <h4 class="page-title"><label id="prof_Name"> --- </label></h4>
+        <input type="hidden" id="id" value="">
+        <input type="hidden" id="record_id" value="">
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+        <ol class="breadcrumb">
+            <li><a href="#" id="company_name"> --- </a></li>
+            <li class="active" id="prof_Name2"> --- </li>
+        </ol>
+    </div>
+</div>
+<!-- /.row -->
+<!-- .row -->
+<div class="row">
+    <div class="col-md-3 col-xs-12">
+        <div class="white-box">
+            {% set image_url = getImageURL('User',var['profId'],'ImageProfile') %}
+            <div class="user-bg"> <img width="100%" alt="user" src="{{image_url}}"> </div>
+            <div class="user-btm-box">
+                <!-- .row -->
+                <div class="row text-center m-t-10">
+                    <div class="col-md-12 b-r"><strong>Nombre</strong>
+                        <p id="prof_Name3"> ---- </p>
+                    </div>
+                    <div class="col-md-12"><strong>Especialidad</strong>
+                        <p id="user_title"> --- </p>
+                    </div>
+                    <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20" type="button" id="favorite" onclick="setFavorite(this)">
+                      <span class="btn-label">
+                        <i class="fa fa-heart">
+                        </i>
+                      </span>Agregar a favoritos
+                    </button>
+                </div>
+                <!-- /.row -->
+                <hr>
+               <!-- .row -->
+                <div class="row text-center m-t-10">
+                    <div class="col-md-12"><strong>Perfil profesional</strong>
+                        <p id="record_comment"> -- </p>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <hr>
+                <!-- .row -->
+                <div class="row text-center m-t-10">
+                    <div class="col-md-12 b-r"><strong>E-mail</strong>
+                        <p id="record_email"> --- </p>
+                    </div>
+                    <div class="col-md-12"><strong>Teléfono</strong>
+                        <p id="record_phone">  --- </p>
+                    </div>
+                    <div class="col-md-12"><strong>Dirección</strong>
+                        <p id="record_address">  --- </p>
+                        <p id="record_city">  --- </p>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 col-xs-12">
+        <div class="white-box">
+            <!-- .tabs -->
+            <ul class="nav nav-tabs tabs customtab">
+                <li class="active tab">
+                    <a href="#citas" data-toggle="tab"> <span><i class="fa fa-calendar"></i></span> <span class="hidden-xs">Reservar cita</span> </a>
+                </li>
+                <li class="tab">
+                    <a href="#cursos" data-toggle="tab"> <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver cursos</span> </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <!-- .tabs 1 -->
+                <div class="tab-pane active" id="citas">
+                  <h3 class="box-title">Reservar cita</h3>
+                  <div class="list-group">
+                    {% set CalendarFee = myFunction(function='getCalendarDates',params={'profId': var['profId']}) %}
+                    {% for d in getSorted(CalendarFee) %}
+                    <a href="javascript:void(0)" class="list-group-item active">{{CalendarFee[d][0]['FechaStr']}}</a>
+                      {% for k in CalendarFee[d] %}
+                        <a href="#" class="list-group-item" onclick="createActivity('{{d}}','{{k['StartTime']}}','{{k['EndTime']}}','{{var['profId']}}','{{k['Date']}}','{{current_user.id}}')">{{getStrfTime(k['StartTime'],'%H:%M')}} a {{getStrfTime(k['EndTime'],'%H:%M')}}</a>
+                      {% endfor %}
+                    {% endfor %}
+
+                  </div>
+                </div>
+                <!-- .tabs 2 -->
+                <div class="tab-pane" id="cursos">
+                  {% set Events = myFunction(function='showProffesionalEvents',params={'profId': var['profId']}) %}
+                  {% for e in getSorted(Events) %}
+
+
+                    {% set image_curso = getImageURL('Activity',e,'Image') %}
+                    <h3 class="box-title">{{Events[e][0]['Comment']}}</h3>
+                    <img class="img-responsive m-b-20" src="{{image_curso}}" alt="Panadería Artesanal">
+                    <div class="row">
+                          {% for k in Events[e] %}
+                          <div class="col-md-3 col-xs-12 b-r"> <strong>Fecha</strong>
+                              <br>
+                              <p class="text-muted">{{k['TransDate']}}</p>
+                              <strong>Horario</strong>
+                              <br>
+                              <p class="text-muted">De {{k['StartTime']}} a {{k['EndTime']}}</p>
+                          </div>
+                          {% endfor %}
+                          <div class="col-md-3 col-xs-12 b-r">
+                              <strong>Valor</strong>
+                              <br>
+                              <p class="text-muted">${{Events[e][0]['Price']}}</p>
+                          </div>
+                          <!--div class="col-md-3 col-xs-12 b-r"> <strong>Horario</strong>
+                              <br>
+                              <p class="text-muted">De 2:00 pm a 6:00 pm</p>
+                              <strong>Valor</strong>
+                              <br>
+                              <p class="text-muted">$350.000</p>
+                          </div>
+                          <div class="col-md-3 col-xs-12 b-r"> <strong>Dirección</strong>
+                              <br>
+                              <p class="text-muted">Calle 55 #40-44 segundo piso</p>
+                              <strong>Ciudad</strong>
+                              <br>
+                              <p class="text-muted">Medellín</p>
+                          </div-->
+                          <div class="col-md-3 col-xs-12"> <strong>Cupo máximo</strong>
+                            <br>
+                            <p class="text-muted">{{Events[e][0]['MaxPersons']}} asistentes<br>Quedan 7 cupos disponibles</p>
+                            <div class="progress progress-lg">
+                              <div class="progress-bar progress-bar-primary" style="width: 75%;" role="progressbar">75%</div>
+                            </div>
+                          </div>
+                      </div> <!-- row -->
+                      <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20" type="button" id="{{e}}" onclick="setCustomerToEvent('{{e}}')">{{Events[e][0]['Status']}}</button>
+                      <p class="m-t-30"><strong>Descripción</strong></p>
+                      <p>{{Events[e][0]['Description']}}</p>
+                      <!--p class="m-t-30">Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.</p-->
+                      <hr/>
+                  {% endfor %}
+                </div> <!-- cursos -->
+            </div> <!-- tab-content -->
+        </div>
+    </div>
+  </div>
+    </div>
+</div>
+<!-- /.row -->

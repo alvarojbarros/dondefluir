@@ -1,0 +1,12 @@
+{% extends "recordtable.html" %}
+{% block fields_view %}
+{% for record in getRecordList(var['Table']) %}
+  <li data-search-term="{{record.Comment}} {{record.id}}" class="list-group-item">
+  <a href="#" onClick="getRecordForm('{{var['Table']}}','recordform.html',id='{{record.id}}',
+  'createRecordForm(\'{{record.id}}\',\'{{var['Table']}}\',\'1\',\'recordFields\')')"
+  >{{record.Comment}} {{getStrfTime(record.TransDate,'%d/%m/%Y')}}
+  de {{getStrfTime(record.StartTime,'%H:%M')}} a {{getStrfTime(record.EndTime,'%H:%M')}}</a></li>
+{% endfor %}
+{% endblock %}
+
+

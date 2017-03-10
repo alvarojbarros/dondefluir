@@ -1,0 +1,51 @@
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
+from tools.dbconnect import engine
+from tools.Record import Record
+from sqlalchemy.ext.declarative import declarative_base
+from Tools import *
+from flask_login import current_user
+
+Base = declarative_base()
+
+class Company(Base,Record):
+    __tablename__ = 'company'
+    id = Column(Integer, primary_key=True)
+    Active = Column(Integer)
+    Name = Column(String(40))
+    Phone = Column(String(40))
+    Email = Column(String(40))
+    WebSite = Column(String(40))
+    Comment = Column(String(100))
+    City = Column(String(100))
+    Address = Column(String(100))
+
+    @classmethod
+    def fieldsDefinition(cls):
+        res = Record.fieldsDefinition()
+        res['id'] = {'Type': 'text', 'Hidde':True, 'Label': 'Codigo','Input':'integer','Readonly':1}
+        res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
+        res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
+        res['Phone'] = {'Type': 'text', 'Label': 'Telefono', 'Input': 'text'}
+        res['Email'] = {'Type': 'text', 'Label': 'Email', 'Input': 'text'}
+        res['WebSite'] = {'Type': 'text', 'Label': 'Web Site', 'Input': 'text'}
+        res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input': 'text'}
+        res['Address'] = {'Type': 'text', 'Label': 'Direccion', 'Input': 'text'}
+        res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
+        return res
+
+    @classmethod
+    def htmlView(cls):
+        Tabs = {}
+        Tabs[0] = {"Name":"", "Fields": [(0,["Active"]),(1,["Name"]),(2,["Address","City"]),(3,["Phone"]),(4,["Email"]),(5,["WebSite"]),(6,["Comment"])]}
+        return Tabs
+
+    def check(self):
+        if not self.Name: return Error("Debe Completar el Nombre")
+        return True
+
+    @classmethod
+    def canUserDelete(self):
+        if current_user.UserType == 0:
+            return True
+
+Base.metadata.create_all(engine)

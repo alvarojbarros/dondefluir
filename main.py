@@ -271,3 +271,12 @@ def getCalendarData():
         list.append({'title': record.Comment,'start':st,'end':st,'onclick':onclick,'id':id,'backgroundColor':BGColor, \
             'textColor':textColor})
     return list
+
+@blue_dondefluir.route('/data')
+def return_data():
+    res = getCalendarData()
+    if res: return jsonify(res)
+    start_date = request.args.get('start', '')
+    end_date = request.args.get('end', '')
+    with open("events.json", "r") as input_data:
+        return input_data.read()

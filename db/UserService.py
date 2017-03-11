@@ -1,10 +1,10 @@
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, Index
-from dbconnect import engine
+from tools.dbconnect import engine
 from flask_login import current_user
-from Service import Service
-from Company import Company
-from User import User
-from Record import Record
+from dondefluir.db.Service import Service
+from dondefluir.db.Company import Company
+from dondefluir.db.User import User
+from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()

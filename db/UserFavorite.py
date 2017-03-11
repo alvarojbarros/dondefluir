@@ -1,9 +1,9 @@
 from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey, Index
-from dbconnect import engine
-from User import User
-from Company import Company
-import DBTools
-from Record import Record
+from tools.dbconnect import engine
+from dondefluir.db.User import User
+from dondefluir.db.Company import Company
+import tools.DBTools
+from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()

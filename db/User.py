@@ -194,7 +194,7 @@ class User(Base,Record,UserMixin):
             return 2 #nunca
 
     def getFavorite(self):
-        from UserFavorite import UserFavorite
+        from dondefluir.db.UserFavorite import UserFavorite
         session = Session()
         record = session.query(UserFavorite).filter_by(UserId=current_user.id,FavoriteId=self.id).first()
         if record and record.Checked:

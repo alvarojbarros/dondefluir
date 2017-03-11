@@ -50,7 +50,7 @@ def getProfessional(*args):
     if not favorite:
         records = session.query(User).filter_by(FindMe=True)
     else:
-        from UserFavorite import UserFavorite
+        from dondefluir.db.UserFavorite import UserFavorite
         records = session.query(User).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .with_entities(User.id,User.Name)
@@ -60,7 +60,7 @@ def getProfessional(*args):
 
 def getUserNote(*args):
     custId = args[0]['custId']
-    from UserNote import UserNote
+    from dondefluir.db.UserNote import UserNote
     records = UserNote.getRecordList(UserNote,custId)
     return records
 
@@ -71,7 +71,7 @@ def getCustomer(*args):
     if not favorite:
         records = session.query(User).filter_by(UserType=3)
     else:
-        from UserFavorite import UserFavorite
+        from dondefluir.db.UserFavorite import UserFavorite
         records = session.query(User).filter_by(UserType=3).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .with_entities(User.id,User.Name)
@@ -163,7 +163,7 @@ def getCalendarDates(*args):
 
 @blue_dondefluir.route('/_set_favorite')
 def set_favorite():
-    from UserFavorite import UserFavorite
+    from dondefluir.db.UserFavorite import UserFavorite
     favId = request.args.get('favId')
 
     session = Session()
@@ -188,8 +188,8 @@ def set_favorite():
 
 def getUserService(params):
     session = Session()
-    from UserService import UserService
-    from Service import Service
+    from dondefluir.db.UserService import UserService
+    from dondefluir.db.Service import Service
     records = session.query(UserService)\
         .join(User,User.id==UserService.UserId)\
         .join(Service,Service.id==UserService.ServiceId)\

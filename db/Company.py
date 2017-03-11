@@ -2,7 +2,7 @@ from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
 from tools.dbconnect import engine
 from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
-from Tools import *
+from tools.Tools import *
 from flask_login import current_user
 
 Base = declarative_base()

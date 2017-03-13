@@ -70,16 +70,16 @@
         <li class="dropdown">
            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> <img src="{{image_url}}" alt="user-img" width="36" class="img-circle"><b class="hidden-xs">{{current_user.Name}}</b> </a>
            <ul class="dropdown-menu dropdown-user animated flipInY">
-              <li><a href="#" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}','createRecordForm(\'{{current_user.id}}\',\'User\',\'1\',\'recordFields\')')"><i class="ti-user"></i>My Profile</a></li>
+              <li><a href="#" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}','createRecordForm(\'{{current_user.id}}\',\'User\',\'1\',\'recordFields\')')"><i class="ti-user"></i>Perfil</a></li>
               {% if myFunction(function='isUserAdmin',params={}) %}
               <li><a href="#" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}','createRecordForm(\'{{current_user.CompanyId}}\',\'Company\',\'1\',\'recordFields\')')"><i class="ti-user"></i>Empresa</a></li>
               {% endif %}
-              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html'})"><i class="ti-user"></i>Change Password</a></li>
+              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html'})"><i class="ti-user"></i>Modificar Password</a></li>
 
               <!--li><a href="#"><i class="ti-wallet"></i> My Balance</a></li-->
               <!--li><a href="#"><i class="ti-email"></i> Inbox</a></li-->
               <li role="separator" class="divider"></li>
-              <li><a href="#" ><i class="ti-settings"></i> Account Setting</a></li>
+              <li><a href="#" ><i class="ti-settings"></i> Opciones de usuario</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
            </ul>

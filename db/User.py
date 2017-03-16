@@ -14,7 +14,7 @@ Base = declarative_base()
 
 class User(Base,Record,UserMixin):
     __tablename__ = 'user'
-    id = Column(String(20), primary_key=True)
+    id = Column(String(50), primary_key=True)
     Password = Column(String(20))
     Active = Column(Integer)
     UserType = Column(Integer)
@@ -28,7 +28,6 @@ class User(Base,Record,UserMixin):
     MaxTime = Column(Integer)
     ShowDays = Column(Integer)
     Phone = Column(String(40))
-    Email = Column(String(40))
     Comment = Column(MediumText())
     City = Column(String(100))
     Address = Column(String(100))
@@ -49,7 +48,7 @@ class User(Base,Record,UserMixin):
     @classmethod
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
-        res['id'] = {'Type': 'text', 'Label': 'Codigo','Input':'text','Readonly':1}
+        res['id'] = {'Type': 'text', 'Label': 'Email','Input':'text','Readonly':1}
         res['Password'] = {'Type': 'text', 'Label': 'Password','Input':'password'}
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['UserType'] = {'Type': 'integer', 'Label': 'Tipo de Usuario', 'Input': 'combo', \
@@ -65,7 +64,6 @@ class User(Base,Record,UserMixin):
         res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2]}
         res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2]}
         res['Phone'] = {'Type': 'text', 'Label': 'Telefono', 'Input': 'text'}
-        res['Email'] = {'Type': 'text', 'Label': 'Email', 'Input': 'text'}
         res['Comment'] = {'Type': 'text', 'Label': 'Descripcion','Input':'textarea','rows':'4','Level':[0,1,2]}
         res['Address'] = {'Type': 'text', 'Label': 'Direccion', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
@@ -86,7 +84,7 @@ class User(Base,Record,UserMixin):
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Informacion del Usuario", "Fields": [(0,["Name","Phone"]),(2,["Email"]),(3,["Address","City"]) \
+        Tabs[0] = {"Name":"Informacion del Usuario", "Fields": [(0,["Name","Phone"]),(2,["Code"]),(3,["Address","City"]) \
             ,(6,["Comment"]),(7,["Title","ImageProfile"])]}
         Tabs[1] = {"Name":"Configuracion del Usuario", "Fields": [(0,["id","Password"]),(2,["UserType","Active"]) \
             ,(4,["CompanyId","EditSchedule"]),(6,["FindMe"]),(7,["Favorite"])]}
@@ -118,17 +116,20 @@ class User(Base,Record,UserMixin):
                 return user
 
     @classmethod
-    def addNewUser(cls,username,password):
+    def addNewUser(cls,username,password,name):
         from sqlalchemy.orm import sessionmaker
         session = Session()
         new_user = User(username,password,0,None)
         new_user.syncVersion = 0
         new_user.UserType = 3
+        new_user.Name = name
         session.add(new_user)
         try:
             session.commit()
-        except:
+        except Exception as e:
             session.rollback()
+            session.close()
+            return Error(str(e))
         user = session.query(User).filter_by(id=username).first()
         session.close()
         if user:

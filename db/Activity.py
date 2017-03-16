@@ -141,7 +141,7 @@ class Activity(Base,Record):
     def afterCommitUpdate(self):
         if current_user.id!=self.ProfId:
             user = User.getRecordById(self.ProfId)
-            if user and user.NtfActivityNew and user.Email:
+            if user and user.NtfActivityNew:
                 msj = "\n"
                 msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
                 msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
@@ -151,34 +151,31 @@ class Activity(Base,Record):
                     if customer:
                         if customer.Name:
                             msj += "Cliente: %s\n" % customer.Name
-                        else:
-                            msj += "Cliente: %s\n" % customer.id
                         if customer.Phone:
                             msj += "Telefono: %s\n" % customer.Phone
-                        if customer.Email:
-                            msj += "Email: %s\n" % customer.Email
+                        msj += "Email: %s\n" % customer.id
                 msj += "\n"
-                return mail.sendMail(user.Email,'Tiene una nueva Actividad',msj)
+                return mail.sendMail(user.id,'Tiene una nueva Actividad',msj)
         if not self.Type and self.current_user.id==self.CustId:
-            if current_user.NtfActivityNew and current_user.Email:
+            if current_user.NtfActivityNew:
                 if self.ProfId:
                     prof = User.getRecordById(self.ProfId)
                     if prof:
-                        self.sendCustomerMailNewActivity(prof,user.Email)
+                        self.sendCustomerMailNewActivity(prof,user.id)
         if self.Type and self.ProfId:
             prof = User.getRecordById(self.ProfId)
             if prof:
                 for row in self.Users:
                     customer = User.getRecordById(row.CustId)
-                    if customer and customer.NtfActivityNew and customer.Email:
-                        self.sendCustomerMailNewActivity(prof,customer.Email)
+                    if customer and customer.NtfActivityNew:
+                        self.sendCustomerMailNewActivity(prof,customer.id)
 
 
     def afterCommitInsert(self):
         return True
         if current_user.id!=self.ProfId:
             user = User.getRecordById(self.ProfId)
-            if user and user.NtfActivityNew and user.Email:
+            if user and user.NtfActivityNew:
                 msj = "\n"
                 msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
                 msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
@@ -188,27 +185,24 @@ class Activity(Base,Record):
                     if customer:
                         if customer.Name:
                             msj += "Cliente: %s\n" % customer.Name
-                        else:
-                            msj += "Cliente: %s\n" % customer.id
                         if customer.Phone:
                             msj += "Telefono: %s\n" % customer.Phone
-                        if customer.Email:
-                            msj += "Email: %s\n" % customer.Email
+                        msj += "Email: %s\n" % customer.id
                 msj += "\n"
-                return mail.sendMail(user.Email,'Tiene una nueva Actividad',msj)
+                return mail.sendMail(user.id,'Tiene una nueva Actividad',msj)
         if not self.Type and self.current_user.id==self.CustId:
-            if current_user.NtfActivityNew and current_user.Email:
+            if current_user.NtfActivityNew:
                 if self.ProfId:
                     prof = User.getRecordById(self.ProfId)
                     if prof:
-                        self.sendCustomerMailUpdateActivity(prof,user.Email)
+                        self.sendCustomerMailUpdateActivity(prof,user.id)
         ''' if self.Type and self.ProfId:
             prof = User.getRecordById(self.ProfId)
             if prof:
                 for row in self.Users:
                     customer = User.getRecordById(row.CustId)
-                    if customer and customer.NtfActivityNew and customer.Email:
-                        self.sendCustomerMailNewActivity(prof,customer.Email) '''
+                    if customer and customer.NtfActivityNew:
+                        self.sendCustomerMailNewActivity(prof,customer.id) '''
 
     def sendCustomerMailUpdateActivity(self,prof,CustEmail):
         self.sendCustomerMailActivity(CustEmail,'Actividad Modificada',msj)

@@ -15,11 +15,11 @@
         <li class="user-pro">
            <a href="#" class="waves-effect"><img src="{{image_url}}" alt="user-img"  class="img-circle"> <span class="hide-menu">{{current_user.Name}}<span class="fa arrow"></span></span></a>
            <ul class="nav nav-second-level">
-              <li><a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}','createRecordForm(\'{{current_user.id}}\',\'User\',\'1\',\'recordFields\')')"><i class="ti-user"></i> Perfil</a></li>
+              <li><a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}','createRecordForm(\'{{current_user.id}}\',\'User\',\'1\',\'recordFields\')',runFunction='OpenCloseMenu()')"><i class="ti-user"></i> Perfil</a></li>
               {% if myFunction(function='isUserAdmin',params={}) %}
-              <li><a href="javascript:void(0)" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}','createRecordForm(\'{{current_user.CompanyId}}\',\'Company\',\'1\',\'recordFields\')')"><i class="ti-user"></i>Empresa</a></li>
+              <li><a href="javascript:void(0)" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}','createRecordForm(\'{{current_user.CompanyId}}\',\'Company\',\'1\',\'recordFields\')',runFunction='OpenCloseMenu()')"><i class="ti-user"></i>Empresa</a></li>
               {% endif %}
-              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html'})"><i class="ti-user"></i>Modificar Password</a></li>
+              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html','runFunction':'OpenCloseMenu()'})"><i class="ti-user"></i>Modificar Password</a></li>
               <!--li><a href="javascript:void(0)"><i class="ti-wallet"></i> My Balance</a></li-->
               <!--li><a href="javascript:void(0)"><i class="ti-email"></i> Inbox</a></li-->
               <li><a href="javascript:void(0)" ><i class="ti-settings"></i> Opciones de usuario</a></li>

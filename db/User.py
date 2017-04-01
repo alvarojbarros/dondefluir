@@ -84,7 +84,7 @@ class User(Base,Record,UserMixin):
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Informacion del Usuario", "Fields": [(0,["Name","Phone"]),(2,["Code"]),(3,["Address","City"]) \
+        Tabs[0] = {"Name":"Informacion del Usuario", "Fields": [(0,["Name","Phone"]),(3,["Address","City"]) \
             ,(6,["Comment"]),(7,["Title","ImageProfile"])]}
         Tabs[1] = {"Name":"Configuracion del Usuario", "Fields": [(0,["id","Password"]),(2,["UserType","Active"]) \
             ,(4,["CompanyId","EditSchedule"]),(6,["FindMe"]),(7,["Favorite"])]}
@@ -199,8 +199,8 @@ class User(Base,Record,UserMixin):
         session = Session()
         record = session.query(UserFavorite).filter_by(UserId=current_user.id,FavoriteId=self.id).first()
         if record and record.Checked:
-            return True
-        return False
+            return 1
+        return 0
 
     def getField(self,fieldname):
         if getattr(self,fieldname): return getattr(self,fieldname)

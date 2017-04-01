@@ -253,8 +253,7 @@ def getCalendarData():
     for record in records:
         st = "%sT%s" %(record.TransDate.strftime('%Y-%m-%d'),record.StartTime.strftime('%H:%M:%S'))
         et = "%sT%s" %(record.TransDate.strftime('%Y-%m-%d'),record.EndTime.strftime('%H:%M:%S'))
-        onclick = ''' getRecordForm('Activity','recordform.html',id='%i',''' % record.id \
-               + '''"createRecordForm('%i','Activity','1','recordFields')")''' % record.id
+        onclick = ''' getRecordForm('Activity','recordform.html',id='%i')''' % record.id
         id = 'activity_%i' % record.id
         #tooltip = "%s\n" % record.Comment
         #tooltip += "Fecha: %s\n" % record.TransDate.strftime('%Y-%m-%d')

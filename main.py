@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from flask import render_template, request,jsonify
 from flask_login import login_required, current_user
 from tools.dbconnect import Session
@@ -6,8 +9,8 @@ from flask import Blueprint
 from tools.Tools import *
 from dondefluir.db.User import User
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
-status = ['Tomar este curso','Anular Inscripcion']
-WeekName = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo']
+status = ['Tomar este curso','Anular Inscripción']
+WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
 

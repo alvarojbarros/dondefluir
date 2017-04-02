@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
 from tools.dbconnect import engine
 from tools.Record import Record
@@ -22,21 +25,21 @@ class Company(Base,Record):
     @classmethod
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
-        res['id'] = {'Type': 'text', 'Hidde':True, 'Label': 'Codigo','Input':'integer','Readonly':1}
+        res['id'] = {'Type': 'text', 'Hidde':True, 'Label': 'Código','Input':'integer','Readonly':1}
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
-        res['Phone'] = {'Type': 'text', 'Label': 'Telefono', 'Input': 'text'}
+        res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
         res['Email'] = {'Type': 'text', 'Label': 'Email', 'Input': 'text'}
         res['WebSite'] = {'Type': 'text', 'Label': 'Web Site', 'Input': 'text'}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input': 'text'}
-        res['Address'] = {'Type': 'text', 'Label': 'Direccion', 'Input': 'text'}
+        res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"", "Fields": [(0,["Active"]),(1,["Name"]),(2,["Address","City"]),(3,["Phone"]),(4,["Email"]),(5,["WebSite"]),(6,["Comment"])]}
+        Tabs[0] = {"Name":"", "Fields": [[0,["Active"]],[1,["Name"]],[2,["Address","City"]],[3,["Phone"]],[4,["Email"]],[5,["WebSite"]],[6,["Comment"]]]}
         return Tabs
 
     def check(self):

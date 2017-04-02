@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Date, Time, Float
 from tools.dbconnect import engine,MediumText,Session
 from tools.Record import Record,DetailRecord
@@ -43,22 +46,22 @@ class Activity(Base,Record):
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comment', 'Input':'text'}
         res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso'},'Level':[0,1,2]}
-        res['Users'] = {'Type':[],'Label':'Usuarios','Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2]}
+        res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2]}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3]}
         res['Image'] = {'Type': 'text', 'Label': 'Imagen', 'Input': 'fileinput','Level':[0,1,2]}
         res['MaxPersons'] = {'Type': 'integer', 'Label': 'Cupos', 'Input': 'integer','Level':[0,1,2]}
         res['Price'] = {'Type': 'float', 'Label': 'Valor', 'Input': 'number','Level':[0,1,2]}
-        res['Description'] = {'Type': 'text', 'Label': 'Descripcion','Input':'textarea','rows':'4','Level':[0,1,2]}
+        res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
         res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'Solicitada',1: 'Confirmada',2:'Cancelada'},'Level':[0,1,2]}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Informacion", "Fields": [(0,["CompanyId","ProfId"]),(2,["CustId","ServiceId","Status"]),(4,["Comment","Type"])]}
-        Tabs[1] = {"Name":"Horarios","Fields": [(0,["Schedules"])]}
-        Tabs[2] = {"Name":"Curso","Fields": [(0,["MaxPersons","Price","Image"]),(1,["Description"])]}
-        Tabs[3] = {"Name":"Clientes","Fields": [(0,["Users"])]}
+        Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
+        Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
+        Tabs[2] = {"Name":"Curso","Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
+        Tabs[3] = {"Name":"Clientes","Fields": [[0,["Users"]]]}
         return Tabs
 
 
@@ -212,7 +215,7 @@ class Activity(Base,Record):
 
     def sendCustomerMailActivity(self,prof,CustEmail,Subject):
         msj = "\n"
-        msj += "Descripcion: %s\n" % self.Comment
+        msj += "Descripción: %s\n" % self.Comment
         msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
         msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
         if prof.Name:
@@ -224,7 +227,7 @@ class Activity(Base,Record):
         email = prof.getField('Email')
         if email: msj += "Email: %s\n" % email
         adddress = prof.getField('Address')
-        if address: msj += "Direccion: %s\n" % address
+        if address: msj += "Dirección: %s\n" % address
         city = prof.getField('City')
         if city: msj += "Ciudad: %s\n" % city
         msj += "\n"

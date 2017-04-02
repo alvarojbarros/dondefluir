@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
 from tools.dbconnect import engine,MediumText,Session
 from dondefluir.db.Record import Record

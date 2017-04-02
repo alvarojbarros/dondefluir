@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from flask_login import UserMixin
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime
 from tools.dbconnect import engine,MediumText,Session
@@ -56,16 +59,16 @@ class User(Base,Record,UserMixin):
             'ValuesLevel':{0:[0,1,2,3],1:[1,2,3],2:[3],3:[]}}
         res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0],'LinkTo':{'Table':'Company','Show':['Name']}}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
-        res['Title'] = {'Type': 'text', 'Label': 'Profesion', 'Input': 'text','Level':[0,1,2]}
+        res['Title'] = {'Type': 'text', 'Label': 'Profesión', 'Input': 'text','Level':[0,1,2]}
         res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2]}
         res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2]}
-        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Minimo', 'Input': 'integer','Level':[0,1,2]}
-        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Maximo', 'Input': 'integer','Level':[0,1,2]}
+        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2]}
+        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2]}
         res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2]}
         res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2]}
-        res['Phone'] = {'Type': 'text', 'Label': 'Telefono', 'Input': 'text'}
-        res['Comment'] = {'Type': 'text', 'Label': 'Descripcion','Input':'textarea','rows':'4','Level':[0,1,2]}
-        res['Address'] = {'Type': 'text', 'Label': 'Direccion', 'Input': 'text'}
+        res['Phone'] = {'Type': 'text', 'Label': 'Teláfono', 'Input': 'text'}
+        res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
+        res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
         res['EditSchedule'] = {'Type': 'integer', 'Label': 'Editar Agenda', 'Input': 'combo', \
             'Values': {0: 'SI',1: 'NO'},'Level':[0,1]}
@@ -77,20 +80,20 @@ class User(Base,Record,UserMixin):
         res['NtfActivityCancel'] = {'Type': 'integer', 'Label': 'Actividad Cancelada', 'Input': 'checkbox'}
         res['NtfActivityChange'] = {'Type': 'integer', 'Label': 'Actividad Modificada', 'Input': 'checkbox'}
         res['NtfActivityReminder'] = {'Type': 'integer', 'Label': 'Recordatorio de Actividad ', 'Input': 'checkbox'}
-        res['NtfReminderDays'] = {'Type': 'integer', 'Label': 'Dias de Antelacion para Recordatorio', 'Input': 'integer'}
-        res['NtfReminderHours'] = {'Type': 'integer', 'Label': 'Horas de Antelacion para Recordatorio', 'Input': 'integer'}
+        res['NtfReminderDays'] = {'Type': 'integer', 'Label': 'Días de Antelación para Recordatorio', 'Input': 'integer'}
+        res['NtfReminderHours'] = {'Type': 'integer', 'Label': 'Horas de Antelación para Recordatorio', 'Input': 'integer'}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Informacion del Usuario", "Fields": [(0,["Name","Phone"]),(3,["Address","City"]) \
-            ,(6,["Comment"]),(7,["Title","ImageProfile"])]}
-        Tabs[1] = {"Name":"Configuracion del Usuario", "Fields": [(0,["id","Password"]),(2,["UserType","Active"]) \
-            ,(4,["CompanyId","EditSchedule"]),(6,["FindMe"]),(7,["Favorite"])]}
-        Tabs[2] = {"Name":"Agenda","Fields": [(0,["ShowFromDays","ShowDays"]),(1,["FixedSchedule"]),(2,["MaxTime","MinTime"]),(3,["Schedules"])]}
-        Tabs[3] = {"Name":"Notificaciones", "Fields": [(0,["NtfActivityNew","NtfActivityCancel"]) \
-            ,(2,["NtfActivityChange","NtfActivityReminder"]),(4,["NtfReminderDays","NtfReminderHours"])]}
+        Tabs[0] = {"Name":"Información del Usuario", "Fields": [[0,["Name","Phone"]],[3,["Address","City"]] \
+            ,[6,["Comment"]],[7,["Title","ImageProfile"]]]}
+        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType","Active"]] \
+            ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
+        Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]}
+        Tabs[3] = {"Name":"Notificaciones", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
+            ,[2,["NtfActivityChange","NtfActivityReminder"]],[4,["NtfReminderDays","NtfReminderHours"]]]}
         return Tabs
 
     def filterFields(self,fields):
@@ -149,7 +152,7 @@ class User(Base,Record,UserMixin):
         self.EditSchedule = EditSchedule
 
     def check(self):
-        if hasattr(self,"_new") and not self.id: return Error("Completar Codigo")
+        if hasattr(self,"_new") and not self.id: return Error("Completar Código")
         if self.UserType==3:
             self.CompanyId = None
         if current_user.UserType in (1,2) and self.UserType in (1,2,3):

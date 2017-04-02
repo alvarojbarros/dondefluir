@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, Index
 from tools.dbconnect import engine
 from flask_login import current_user
@@ -19,8 +22,8 @@ class UserService(Base,Record):
     @classmethod
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
-        res['id'] = {'Type': 'text', 'Label':'Codigo','Hidde': True,'Readonly':1}
-        res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Hidde': True}
+        res['id'] = {'Type': 'text','Hidde': True,'Readonly':1}
+        res['CompanyId'] = {'Type': 'integer','Hidde': True}
         res['UserId'] = {'Type': 'text', 'Label': 'Usuario', 'Input': 'combo','Level':[0,1],'LinkTo':{'Table':'User','Show':['Name']}}
         res['ServiceId'] = {'Type': 'integer', 'Label': 'Servicio', 'Input': 'combo','Level':[0,1],'LinkTo':{'Table':'Service','Show':['Name']}}
         return res

@@ -683,10 +683,10 @@ label {
 .form-horizontal .form-group {
   margin-left: -7.5px;
   margin-right: -7.5px;
-  margin-bottom: 25px;
+  /*margin-bottom: 25px;*/
 }
 .form-group {
-  margin-bottom: 25px;
+  margin-bottom: 0;
 }
 .select2-container-multi .select2-choices {
   border: 1px solid #e4e7ea;
@@ -3686,6 +3686,8 @@ table.focus-on tbody tr.focused td {
 .form-material .form-control.focus,
 .form-material .form-control:focus {
   background-image: linear-gradient(#9675ce, #9675ce), linear-gradient(rgba(120, 130, 140, 0.13), rgba(120, 130, 140, 0.13));
+  background-color: #F7F7F7;
+  padding: 0 5px;  
   border: 0 none;
   border-radius: 0;
   box-shadow: none;
@@ -4494,6 +4496,10 @@ ul#themecolors li:first-child {
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
   transition: all 0.3s;
+}
+/* Button */
+.btn{
+  padding: 4px 10px;
 }
 /* Button 1b */
 .btn-1b:after {

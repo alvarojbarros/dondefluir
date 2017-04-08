@@ -66,7 +66,7 @@ class User(Base,Record,UserMixin):
         res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2]}
         res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2]}
         res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2]}
-        res['Phone'] = {'Type': 'text', 'Label': 'Teláfono', 'Input': 'text'}
+        res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
         res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
         res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}

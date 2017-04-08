@@ -27,7 +27,7 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-magic'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':''}
+    Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':'fa-heart'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o'}
     addElementToList(Tables,Table,UserType)
@@ -35,11 +35,11 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Servicios','Level':[0,1],'Template':'service.html','Vars':{'Table':'Service','Functions':functions},'Image':'fa-coffee'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html','Vars':{'Table':'UserService','Functions':functions},'Image':''}
+    Table = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html','Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':''}
+    Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Calendario','Level':[0,1,2],'Template':'calendar.html','Vars':{},'Image':''}
+    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{},'Image':'ti-calendar p-r-10'}
     addElementToList(Tables,Table,UserType)
     return Tables
 

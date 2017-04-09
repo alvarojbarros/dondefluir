@@ -21,7 +21,7 @@ def addElementToList(Tables,Table,UserType):
 def getModules(UserType):
     Tables = {}
     functions = "runSearchBoxOnKey()"
-    Table = {'Name':'Usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions},'Image':'fa-users'}
+    Table = {'Name':'Usuários','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions},'Image':'fa-users'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions},'Image':'fa-fort-awesome'}
     addElementToList(Tables,Table,UserType)

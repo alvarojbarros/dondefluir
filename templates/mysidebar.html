@@ -1,3 +1,4 @@
+
 <div class="navbar-default sidebar" role="navigation">
   <div class="sidebar-nav navbar-collapse slimscrollsidebar">
      <ul class="nav" id="side-menu">
@@ -38,11 +39,13 @@
               </ul>
 
           </li-->
-          {% for module in getModules() %}
-            <li> <a href="#" onClick="getTemplateModule('container-fluid',{{module['Vars']}} )"class="waves-effect"><i data-icon="F" class="fa {{module['Image']}} fa-fw">
-              </i><span class="hide-menu">{{ module['Name'] }}<span class="fa arrow"></span></span></a>
-            </li>
-          {% endfor %}
+          <li v-for="module in values">
+            <a href="#"  :onClick="'getTemplateModule(\'container-fluid\','+ module.Vars + ')'"
+            class="waves-effect"><i data-icon="F" :class="'fa ' + module.Image + ' fa-fw'">
+            </i><span class="hide-menu">{%raw%}{{ module.Name }}{%endraw%}<span class="fa arrow"></span></span></a>
+          </li>
      </ul>
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/vuemodules.js') }}"></script>

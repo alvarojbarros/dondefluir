@@ -27,7 +27,12 @@
 <title>Donde Fluir • Plataforma para la gestión de los sueños, el tiempo, el espacio y la energía</title>
 {% endblock %}
 
-{% block script_imports %}
+{% block script_imports1 %}
+<script src="{{ url_for('blue_dondefluir.static', filename='js/myfunctions.js') }}"></script>
+{% endblock %}
+
+
+{% block script_imports2 %}
 
 <script src="{{ url_for('blue_dondefluir.static', filename='js/custom.min.js') }}"></script>
 <!-- Menu Plugin JavaScript -->

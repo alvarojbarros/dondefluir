@@ -1,6 +1,6 @@
 <h2>{{profId}}</h2>
 
-{% set Events = myFunction(function='showProffesionalEvents',params={'profId': var['profId']}) %}
+{% set Events = myFunction(function='showProfessionalEvents',params={'profId': var['profId']}) %}
 {% for e in getSorted(Events) %}
   <li><span>{{Events[e][0][0]}}</span> <a href="#" onClick="setCustomerToEvent('{{e}}')" id="{{e}}">{{Events[e][0][4]}}</a> </li>
   <ul>

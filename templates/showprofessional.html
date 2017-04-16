@@ -1,19 +1,21 @@
-<div class="row bg-title">
+<script src="{{ url_for('blue_dondefluir.static', filename='js/vueprofessional.js') }}"></script>
+
+<div class="row bg-title" id="vue_title">
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
-        <h4 class="page-title"><label id="prof_Name"> --- </label></h4>
+        <h4 class="page-title"><label id="prof_Name"> {%raw%}{{Title}}{%endraw%} </label></h4>
         <input type="hidden" id="id" value="">
         <input type="hidden" id="record_id" value="">
     </div>
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
         <ol class="breadcrumb">
             <li><a href="#" id="company_name"> --- </a></li>
-            <li class="active" id="prof_Name2"> --- </li>
+            <li class="active" id="prof_Name2"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
     </div>
 </div>
 <!-- /.row -->
 <!-- .row -->
-<div class="row">
+<div class="row" id="recordFields">
     <div class="col-md-3 col-xs-12">
         <div class="white-box">
             {% set image_url = getImageURL('User',var['profId'],'ImageProfile') %}
@@ -22,16 +24,16 @@
                 <!-- .row -->
                 <div class="row text-center m-t-10">
                     <div class="col-md-12 b-r"><strong>Nombre</strong>
-                        <p id="prof_Name3"> ---- </p>
+                        <p id="prof_Name3"> {%raw%}{{values.Name}}{%endraw%} </p>
                     </div>
                     <div class="col-md-12"><strong>Especialidad</strong>
-                        <p id="user_title"> --- </p>
+                        <p id="user_title"> {%raw%}{{values.Title}}{%endraw%} </p>
                     </div>
                     <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20" type="button" id="favorite" onclick="setFavorite(this)">
                       <span class="btn-label">
                         <i class="fa fa-heart">
                         </i>
-                      </span>Agregar a favoritos
+                      </span>{%raw%}{{values.favorite}}{%endraw%}
                     </button>
                 </div>
                 <!-- /.row -->
@@ -39,7 +41,7 @@
                <!-- .row -->
                 <div class="row text-center m-t-10">
                     <div class="col-md-12"><strong>Perfil profesional</strong>
-                        <p id="record_comment"> -- </p>
+                        <p id="record_comment"> {%raw%}{{values.Comment}}{%endraw%} </p>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -47,14 +49,14 @@
                 <!-- .row -->
                 <div class="row text-center m-t-10">
                     <div class="col-md-12 b-r"><strong>E-mail</strong>
-                        <p id="record_email"> --- </p>
+                        <p id="record_email"> {%raw%}{{values.id}}{%endraw%} </p>
                     </div>
                     <div class="col-md-12"><strong>Teléfono</strong>
-                        <p id="record_phone">  --- </p>
+                        <p id="record_phone">  {%raw%}{{values.Phone}}{%endraw%} </p>
                     </div>
                     <div class="col-md-12"><strong>Dirección</strong>
-                        <p id="record_address">  --- </p>
-                        <p id="record_city">  --- </p>
+                        <p id="record_address">{%raw%}{{values.Address}}{%endraw%}</p>
+                        <p id="record_city">{%raw%}{{values.City}}{%endraw%}</p>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -89,7 +91,7 @@
                 </div>
                 <!-- .tabs 2 -->
                 <div class="tab-pane" id="cursos">
-                  {% set Events = myFunction(function='showProffesionalEvents',params={'profId': var['profId']}) %}
+                  {% set Events = myFunction(function='showProfessionalEvents',params={'profId': var['profId']}) %}
                   {% for e in getSorted(Events) %}
 
 

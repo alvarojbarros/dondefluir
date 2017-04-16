@@ -1,11 +1,16 @@
 {% extends "recordtable.html" %}
 {% block fields_view %}
-{% for record in getRecordList(var['Table']) %}
-  <li data-search-term="{{record.Comment}} {{record.id}}" class="list-group-item">
-  <a href="#" onClick="getRecordForm('{{var['Table']}}','recordform.html',id='{{record.id}}')"
-  >{{record.Comment}} {{getStrfTime(record.TransDate,'%d/%m/%Y')}}
-  de {{getStrfTime(record.StartTime,'%H:%M')}} a {{getStrfTime(record.EndTime,'%H:%M')}}</a></li>
-{% endfor %}
+
+  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
+  <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+  {%raw%}{{record.Comment}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} {%endraw%}
+  </a></li>
+
 {% endblock %}
 
 
+{% block button_script %}
+<script type=text/javascript>
+  getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id');
+</script>
+{% endblock %}

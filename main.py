@@ -7,6 +7,7 @@ from tools.dbconnect import Session
 from sqlalchemy.orm import sessionmaker
 from flask import Blueprint
 from tools.Tools import *
+from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
 status = ['Tomar este curso','Anular Inscripción']
@@ -25,9 +26,9 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions},'Image':'fa-fort-awesome'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-magic'}
+    Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':'fa-heart'}
+    Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o'}
     addElementToList(Tables,Table,UserType)
@@ -47,8 +48,7 @@ def getMyFunction(function,params):
     res = eval('%s(%s)' % (function,str(params)))
     return res
 
-def getProfessional(*args):
-    favorite = args[0]['favorite']
+def getProfessional(favorite):
     session = Session()
     if not favorite:
         records = session.query(User).filter_by(FindMe=True)
@@ -162,6 +162,7 @@ def getCalendarDates(*args):
                     startTime = addMinutesToTime(startTime,user.MinTime)
         dates = newArray
     session.close()
+    print(dates)
     return dates
 
 @blue_dondefluir.route('/_set_favorite')
@@ -201,7 +202,7 @@ def getUserService(params):
     session.close()
     return records
 
-def showProffesionalEvents(*args):
+def showProfessionalEvents(*args):
     profId = args[0]['profId']
     session = Session()
     records = session.query(Activity).filter_by(ProfId=profId) \
@@ -222,6 +223,14 @@ def showProffesionalEvents(*args):
             , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons \
             , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st })
     return res
+
+@blue_dondefluir.route('/_get_professional_list')
+def get_professional_list():
+    favorite = request.args.get('Favorite')=='true'
+    records = getProfessional(favorite)
+    res = fillRecordList(records,['Name','id'])
+    return jsonify(result=res)
+
 
 @blue_dondefluir.route('/_set_cust_to_event')
 def set_cust_to_event():

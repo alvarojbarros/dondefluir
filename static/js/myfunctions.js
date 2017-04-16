@@ -1,15 +1,30 @@
 
-function showProffesional(id,current_user_id){
+function showProfessional(id,Name,current_user_id){
+	console.log(current_user_id)
 	vars = {Template: 'showprofessional.html',profId: id}
 	getTemplate('container-fluid',vars,function (){
 		setProffesional(id,current_user_id);
 	})
 }
 
+
+function getProfessionalList(favorite,current_user_id){
+
+	console.log(current_user_id)
+	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'Favorite': favorite },function(data) {
+		Vue.set(vue_recordlist,'values', data.result);
+		Vue.set(vue_recordlist,'user_id', current_user_id);
+	});
+}
+
+
 function setProffesional(id,current_user_id){
-	getRecordBy('User',{id:id,NotFilterFields:true},function(record){
-		prof_Name = document.getElementById('prof_Name');
-		prof_Name.innerHTML = record.Name;
+	console.log(current_user_id)
+	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
+		Vue.set(vue_title,'Title', data.record.Name);
+		Vue.set(vue_record,'values', data.record);
+		/*prof_Name = document.getElementById('prof_Name');
+		prof_Name.innerHTML = data.record.Name;
 		prof_Name2 = document.getElementById('prof_Name2');
 		prof_Name2.innerHTML = record.Name;
 		prof_id = document.getElementById('id');
@@ -28,22 +43,21 @@ function setProffesional(id,current_user_id){
 		record_city = document.getElementById('record_city');
 		record_city.innerHTML = record.City
 		record_comment = document.getElementById('record_comment');
-		record_comment.innerHTML = record.Comment
+		record_comment.innerHTML = record.Comment */
 
-		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: record.id},function(recordFav){
-			favorite = document.getElementById('favorite');
+		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
 			if (recordFav && recordFav.Checked){
-				favorite.innerHTML = 'Eliminar de Favoritos';
+				Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
 			}
 		});
-		getRecordBy('Company',{id: record.CompanyId},function(company){
+		/*getRecordBy('Company',{id: data.record.CompanyId},function(company){
 			company_name = document.getElementById('company_name');
 			company_name.innerHTML = company.Name
-			if (!record.Email){record_email.innerHTML = company.Email;}
-			if (!record.Phone){record_phone.innerHTML = company.Phone;}
-			if (!record.Address){record_address.innerHTML = company.Address;}
-			if (!record.City){record_city.innerHTML = company.City;}
-		});
+			if (!data.record.Email){record_email.innerHTML = company.Email;}
+			if (!data.record.Phone){record_phone.innerHTML = company.Phone;}
+			if (!data.record.Address){record_address.innerHTML = company.Address;}
+			if (!data.record.City){record_city.innerHTML = company.City;}
+		});*/
 	});
 }
 
@@ -71,6 +85,7 @@ function showNotes(){
 }
 
 function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
+	console.log(1);
 	var p1 = document.getElementById('ProfId');
 	p1.value = ProfId;
 	var p2 = document.getElementById('StartTime');
@@ -92,9 +107,15 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	vars = {Template: 'recordform.html',Table:'Activity'}
 	getTemplate('container-fluid',vars,function(){
-		createRecordForm(null,'Activity',null,'recordFields',function(){
+		getRecord('Activity',{},function (data){
+			Vue.set(vue_record,'values', data);
+			vue_title.recordName = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
-		});
+		})
+
+		/*createRecordForm(null,'Activity',null,'recordFields',function(){
+			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
+		});*/
 	})
 }
 
@@ -114,9 +135,9 @@ function setCustomerToEvent(id){
 function newUserNote(custId){
 	vars = {Template: 'recordform.html',Table:'UserNote'}
 	getTemplate('container-fluid',vars,function(){
-		createRecordForm(null,'UserNote',null,'recordFields',function(){
+		/*createRecordForm(null,'UserNote',null,'recordFields',function(){
 			var userId = document.getElementById('UserId');
 			userId.value = custId;
-		});
+		});*/
 	})
 }

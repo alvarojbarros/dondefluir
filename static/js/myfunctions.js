@@ -1,6 +1,5 @@
 
 function showProfessional(id,Name,current_user_id){
-	console.log(current_user_id)
 	vars = {Template: 'showprofessional.html',profId: id}
 	getTemplate('container-fluid',vars,function (){
 		setProffesional(id,current_user_id);
@@ -10,7 +9,6 @@ function showProfessional(id,Name,current_user_id){
 
 function getProfessionalList(favorite,current_user_id){
 
-	console.log(current_user_id)
 	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'Favorite': favorite },function(data) {
 		Vue.set(vue_recordlist,'values', data.result);
 		Vue.set(vue_recordlist,'user_id', current_user_id);
@@ -19,7 +17,6 @@ function getProfessionalList(favorite,current_user_id){
 
 
 function setProffesional(id,current_user_id){
-	console.log(current_user_id)
 	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
 		Vue.set(vue_title,'Title', data.record.Name);
 		Vue.set(vue_record,'values', data.record);
@@ -50,14 +47,13 @@ function setProffesional(id,current_user_id){
 				Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
 			}
 		});
-		/*getRecordBy('Company',{id: data.record.CompanyId},function(company){
-			company_name = document.getElementById('company_name');
-			company_name.innerHTML = company.Name
-			if (!data.record.Email){record_email.innerHTML = company.Email;}
+		getRecordBy('Company',{id: data.record.CompanyId},function(company){
+			Vue.set(vue_title,'companyName', company.record.Name);
+			/*if (!data.record.Email){record_email.innerHTML = company.Email;}
 			if (!data.record.Phone){record_phone.innerHTML = company.Phone;}
 			if (!data.record.Address){record_address.innerHTML = company.Address;}
-			if (!data.record.City){record_city.innerHTML = company.City;}
-		});*/
+			if (!data.record.City){record_city.innerHTML = company.City;} */
+		});
 	});
 }
 
@@ -85,21 +81,24 @@ function showNotes(){
 }
 
 function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
-	console.log(1);
-	var p1 = document.getElementById('ProfId');
-	p1.value = ProfId;
+	console.log(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
+	Vue.set(vue_record.values.record,'ProfId', ProfId);
+	Vue.set(vue_record.values.record,'CustId', CustId);
+	//Vue.set(vue_record.values.record,'CompanyId', CompanyId);
+	vue_record.values.record.CompanyId = CompanyId
+	vue_record.values.record.Schedules.push({'StartTime': StartTime,'TransDate': TransDate, 'EndTime': EndTime})
+	//Vue.set(vue_record.values.record.Schedules[0],'Schedules', {'StartTime': StartTime});
+	//Vue.set(vue_record.values.record,'StartTime', StartTime);
+	/*
 	var p2 = document.getElementById('StartTime');
 	p2.value = StartTime;
 	var p3 = document.getElementById('EndTime');
 	p3.value = EndTime;
 	var p4 = document.getElementById('TransDate');
 	p4.value = TransDate;
-	var p5 = document.getElementById('CompanyId');
-	p5.value = CompanyId;
-	var p6 = document.getElementById('CustId');
-	p6.value = CustId;
 	var p7 = document.getElementById('Schedules');
 	p7.setAttribute("has_rows",true);
+	*/
 
 }
 
@@ -112,10 +111,6 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 			vue_title.recordName = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
-
-		/*createRecordForm(null,'Activity',null,'recordFields',function(){
-			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
-		});*/
 	})
 }
 

@@ -60,8 +60,8 @@ class Activity(Base,Record):
         Tabs = {}
         Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
-        Tabs[2] = {"Name":"Curso","Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
-        Tabs[3] = {"Name":"Clientes","Fields": [[0,["Users"]]]}
+        Tabs[2] = {"Name":"Curso",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
+        Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]]}
         return Tabs
 
 
@@ -130,6 +130,16 @@ class Activity(Base,Record):
 
     @classmethod
     def canUserCreate(self):
+        if current_user.UserType in (0,1,2):
+            return True
+
+    @classmethod
+    def canUserAddRow(self):
+        if current_user.UserType in (0,1,2):
+            return True
+
+    @classmethod
+    def canUserDeleteRow(self):
         if current_user.UserType in (0,1,2):
             return True
 

@@ -8,7 +8,7 @@
     </div>
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
         <ol class="breadcrumb">
-            <li><a href="#" id="company_name"> --- </a></li>
+            <li><a href="#" id="company_name"> {%raw%}{{companyName}}{%endraw%} </a></li>
             <li class="active" id="prof_Name2"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
     </div>
@@ -33,7 +33,7 @@
                       <span class="btn-label">
                         <i class="fa fa-heart">
                         </i>
-                      </span>{%raw%}{{values.favorite}}{%endraw%}
+                      </span>{%raw%}{{favorite}}{%endraw%}
                     </button>
                 </div>
                 <!-- /.row -->
@@ -83,7 +83,7 @@
                     {% for d in getSorted(CalendarFee) %}
                     <a href="javascript:void(0)" class="list-group-item active">{{CalendarFee[d][0]['FechaStr']}}</a>
                       {% for k in CalendarFee[d] %}
-                        <a href="#" class="list-group-item" onclick="createActivity('{{d}}','{{k['StartTime']}}','{{k['EndTime']}}','{{var['profId']}}','{{k['Date']}}','{{current_user.id}}')">{{getStrfTime(k['StartTime'],'%H:%M')}} a {{getStrfTime(k['EndTime'],'%H:%M')}}</a>
+                        <a href="#" class="list-group-item" onclick="createActivity('{{d}}','{{k['StartTime']}}','{{k['EndTime']}}','{{var['profId']}}','{{k['CompanyId']}}','{{current_user.id}}')">{{getStrfTime(k['StartTime'],'%H:%M')}} a {{getStrfTime(k['EndTime'],'%H:%M')}}</a>
                       {% endfor %}
                     {% endfor %}
 

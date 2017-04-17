@@ -32,7 +32,7 @@ class Service(Base,Record):
 
     @classmethod
     def getRecordList(cls,TableClass):
-        if current_user.UserType==1:
+        if current_user.UserType in (1,2,3):
             session = Session()
             records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)
             session.close()

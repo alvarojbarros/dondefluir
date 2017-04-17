@@ -162,7 +162,6 @@ def getCalendarDates(*args):
                     startTime = addMinutesToTime(startTime,user.MinTime)
         dates = newArray
     session.close()
-    print(dates)
     return dates
 
 @blue_dondefluir.route('/_set_favorite')

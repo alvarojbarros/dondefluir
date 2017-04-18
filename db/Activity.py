@@ -9,6 +9,7 @@ from tools.Tools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Service import Service
+from dondefluir.db.UserService import UserService
 from flask_login import current_user
 from sqlalchemy.orm import relationship
 
@@ -40,7 +41,7 @@ class Activity(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name'],'Method':'getCustomer'}}
+        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name'],'Method':'getCustomer','Params':"{'favorite':False}"}}
         res['ProfId'] = {'Type': 'text', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
@@ -118,10 +119,13 @@ class Activity(Base,Record):
         return 0 # siempre
 
     def defaults(self):
-        self.ProfId = current_user.id
+        #self.ProfId = current_user.id
+        self.Status = 0
         self.CompanyId = current_user.CompanyId
 
     def check(self):
+        if not self.ServiceId:
+            return Error("Debe Elegir un Servicio")
         if not len(self.Schedules):
             return Error("Debe ingresar horarios")
         if self.Type==1 and not self.Comment:
@@ -246,6 +250,24 @@ class Activity(Base,Record):
 
     def afterCommitUpdate(self):
         pass
+
+    def getLinkToFromRecord(self,TableClass):
+        if TableClass==Service:
+            session = Session()
+            if self.ProfId:
+                records = session.query(UserService)\
+                    .filter_by(UserId=self.ProfId)\
+                    .join(Service,UserService.ServiceId==Service.id)\
+                    .with_entities(Service.id,Service.Name)
+            else:
+                records = session.query(UserService).join(Service,UserService.ServiceId==Service.id)\
+                    .filter_by(CompanyId=self.CompanyId)\
+                    .with_entities(Service.id,Service.Name)
+
+            session.close()
+            return records
+        else:
+            return TableClass.getRecordList(TableClass)
 
 
 class ActivityUsers(Base,DetailRecord):

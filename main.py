@@ -98,10 +98,10 @@ def getBreakCalendarDates(act,dates):
                     schedule.insert(j+2,dic)
                     del schedule[j]
                     return dates
-                if (act.StartTime>schedule[j]['StartTime'] and act.StartTime<schedule[j]['StartTime'] and act.EndTime>=schedule[j]['EndTime']):
+                if (act.StartTime>schedule[j]['StartTime'] and act.StartTime<schedule[j]['EndTime'] and act.EndTime>=schedule[j]['EndTime']):
                     schedule[j]['EndTime'] = act.StartTime
                     return dates
-                if (act.StartTime<=schedule[j]['StartTime'] and act.EndTime<schedule[j]['EndTime'] and act.EndTime>schedule[j]['EndTime']):
+                if (act.StartTime<=schedule[j]['StartTime'] and act.EndTime<schedule[j]['EndTime'] and act.EndTime>schedule[j]['StartTime']):
                     schedule[j]['StartTime'] = act.EndTime
                     return dates
     return dates
@@ -112,12 +112,6 @@ def getCalendarDates(*args):
     user = session.query(User).filter_by(id=profId).first()
     if not user:
         return []
-    activities = session.query(Activity) \
-        .filter(Activity.ProfId==profId) \
-        .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
-        .with_entities(ActivitySchedules.TransDate,ActivitySchedules.StartTime,ActivitySchedules.EndTime)
-
-    dates = {}
 
     ShowFromDays = 0
     if user.ShowFromDays: ShowFromDays = user.ShowFromDays
@@ -125,6 +119,14 @@ def getCalendarDates(*args):
     ShowDays = user.ShowDays
     if not ShowDays: ShowDays = 15
     td = addDays(d,ShowDays)
+
+    activities = session.query(Activity) \
+        .filter(Activity.ProfId==profId) \
+        .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
+        .filter(ActivitySchedules.TransDate>=d,ActivitySchedules.TransDate<=td) \
+        .with_entities(ActivitySchedules.TransDate,ActivitySchedules.StartTime,ActivitySchedules.EndTime)
+    dates = {}
+
     while d<td:
         weekday = d.weekday()
         for row in user.Schedules:

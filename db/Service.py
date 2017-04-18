@@ -32,9 +32,13 @@ class Service(Base,Record):
 
     @classmethod
     def getRecordList(cls,TableClass):
-        if current_user.UserType in (1,2,3):
+        if current_user.UserType==(1,2):
             session = Session()
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)
+            records = session.query(TableClass).filter_by(CompanyId=current_user.CompanyId)
+            session.close()
+        elif current_user.UserType==1:
+            session = Session()
+            records = session.query(TableClass).filter_by(CompanyId=current_user.CompanyId)
             session.close()
         else:
             records = Record.getRecordList(TableClass)

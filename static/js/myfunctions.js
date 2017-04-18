@@ -81,24 +81,11 @@ function showNotes(){
 }
 
 function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
-	console.log(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 	Vue.set(vue_record.values.record,'ProfId', ProfId);
 	Vue.set(vue_record.values.record,'CustId', CustId);
-	//Vue.set(vue_record.values.record,'CompanyId', CompanyId);
 	vue_record.values.record.CompanyId = CompanyId
 	vue_record.values.record.Schedules.push({'StartTime': StartTime,'TransDate': TransDate, 'EndTime': EndTime})
-	//Vue.set(vue_record.values.record.Schedules[0],'Schedules', {'StartTime': StartTime});
-	//Vue.set(vue_record.values.record,'StartTime', StartTime);
-	/*
-	var p2 = document.getElementById('StartTime');
-	p2.value = StartTime;
-	var p3 = document.getElementById('EndTime');
-	p3.value = EndTime;
-	var p4 = document.getElementById('TransDate');
-	p4.value = TransDate;
-	var p7 = document.getElementById('Schedules');
-	p7.setAttribute("has_rows",true);
-	*/
+	updateLinkTo()
 
 }
 
@@ -107,6 +94,7 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	vars = {Template: 'recordform.html',Table:'Activity'}
 	getTemplate('container-fluid',vars,function(){
 		getRecord('Activity',{},function (data){
+			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
 			vue_title.recordName = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);

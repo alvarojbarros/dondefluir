@@ -39,8 +39,8 @@
               </ul>
 
           </li-->
-          <li v-for="module in values">
-            <a href="#"  :onClick="'getTemplateModule(\'container-fluid\','+ module.Vars + ')'"
+          <li v-for="(module,index) in values">
+            <a href="#"  :onClick="'getTemplateModule(\'container-fluid\','+ index + ')'"
             class="waves-effect"><i data-icon="F" :class="'fa ' + module.Image + ' fa-fw'">
             </i><span class="hide-menu">{%raw%}{{ module.Name }}{%endraw%}<span class="fa arrow"></span></span></a>
           </li>

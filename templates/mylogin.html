@@ -37,6 +37,8 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
       <![endif]-->
+
+      <script src="https://unpkg.com/vue"></script>
    </head>
 <body>
 <!-- Preloader -->
@@ -103,6 +105,8 @@ function show_signIn(id) {
             <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Ingresar</button>
           </div>
         </div>
+
+
         <!--div class="row">
           <div class="col-xs-12 p-b-20 col-sm-12 col-md-12 m-t-10 text-center">
             <div class="social"><a href="javascript:void(0)" class="btn  btn-facebook" data-toggle="tooltip"  title="Login with Facebook"> <i aria-hidden="true" class="fa fa-facebook"></i> </a> <a href="javascript:void(0)" class="btn btn-googleplus" data-toggle="tooltip"  title="Login with Google"> <i aria-hidden="true" class="fa fa-google-plus"></i> </a> </div>
@@ -195,6 +199,11 @@ function show_signIn(id) {
         </div>
       </div>
     </div>
+    <div id="messages">
+      {% if error_msg %}
+        <p class="alert alert-danger" >{{error_msg}}</p>
+      {% endif %}
+    </div>
   </div>
 </section>
         <script type="text/javascript">
@@ -203,6 +212,7 @@ function show_signIn(id) {
         </script>
 
 
+        <script src="{{ url_for('static', filename='js/vuemessages.js') }}"></script>
         <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
         <!-- jQuery -->
         <script src="{{ url_for('static', filename='js/functions.js') }}"></script>

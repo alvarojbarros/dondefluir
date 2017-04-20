@@ -1,3 +1,4 @@
+<script src="{{ url_for('blue_dondefluir.static', filename='js/vueschedule.js') }}"></script>
 <script src="{{ url_for('blue_dondefluir.static', filename='js/vueprofessional.js') }}"></script>
 <script src="{{ url_for('static', filename='js/vuetitle.js') }}"></script>
 
@@ -16,8 +17,8 @@
 </div>
 <!-- /.row -->
 <!-- .row -->
-<div class="row" id="recordFields">
-    <div class="col-md-3 col-xs-12">
+<div class="row" >
+    <div class="col-md-3 col-xs-12" id="recordFields">
         <div class="white-box">
             {% set image_url = getImageURL('User',var['profId'],'ImageProfile') %}
             <div class="user-bg"> <img width="100%" alt="user" src="{{image_url}}"> </div>
@@ -79,15 +80,13 @@
                 <!-- .tabs 1 -->
                 <div class="tab-pane active" id="citas">
                   <h3 class="box-title">Reservar cita</h3>
-                  <div class="list-group">
-                    {% set CalendarFee = myFunction(function='getCalendarDates',params={'profId': var['profId']}) %}
-                    {% for d in getSorted(CalendarFee) %}
-                    <a href="javascript:void(0)" class="list-group-item active">{{CalendarFee[d][0]['FechaStr']}}</a>
-                      {% for k in CalendarFee[d] %}
-                        <a href="#" class="list-group-item" onclick="createActivity('{{d}}','{{k['StartTime']}}','{{k['EndTime']}}','{{var['profId']}}','{{k['CompanyId']}}','{{current_user.id}}')">{{getStrfTime(k['StartTime'],'%H:%M')}} a {{getStrfTime(k['EndTime'],'%H:%M')}}</a>
-                      {% endfor %}
-                    {% endfor %}
-
+                  <div class="list-group" id="vue_schedule">
+                    <div v-for="d in values">
+                      <a href="javascript:void(0)" class="list-group-item active">{%raw%}{{d[0]['FechaStr']}}{%endraw%}</a>
+                      <a v-for="value in d" href="#" class="list-group-item"
+                        :onclick="'createActivity(\''+value['Date']+'\',\''+value['StartTime']+'\',\''+value['EndTime']+'\',\''+profId+'\',\''+value['CompanyId']+'\',\''+current_user_id+'\')'">
+                        {%raw%}{{value['StartTime']}} a {{value['EndTime']}}{%endraw%}</a>
+                    </div>
                   </div>
                 </div>
                 <!-- .tabs 2 -->
@@ -114,20 +113,6 @@
                               <br>
                               <p class="text-muted">${{Events[e][0]['Price']}}</p>
                           </div>
-                          <!--div class="col-md-3 col-xs-12 b-r"> <strong>Horario</strong>
-                              <br>
-                              <p class="text-muted">De 2:00 pm a 6:00 pm</p>
-                              <strong>Valor</strong>
-                              <br>
-                              <p class="text-muted">$350.000</p>
-                          </div>
-                          <div class="col-md-3 col-xs-12 b-r"> <strong>Dirección</strong>
-                              <br>
-                              <p class="text-muted">Calle 55 #40-44 segundo piso</p>
-                              <strong>Ciudad</strong>
-                              <br>
-                              <p class="text-muted">Medellín</p>
-                          </div-->
                           <div class="col-md-3 col-xs-12"> <strong>Cupo máximo</strong>
                             <br>
                             <p class="text-muted">{{Events[e][0]['MaxPersons']}} asistentes<br>Quedan 7 cupos disponibles</p>

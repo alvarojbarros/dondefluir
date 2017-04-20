@@ -106,8 +106,23 @@ def getBreakCalendarDates(act,dates):
                     return dates
     return dates
 
-def getCalendarDates(*args):
-    profId = args[0]['profId']
+
+@blue_dondefluir.route('/_get_calendar_dates')
+def get_calendar_dates():
+    profId = request.args.get('id')
+    res = getCalendarDates(profId)
+    for d in res:
+        list = res[d]
+        for dic in list:
+            for i in dic:
+                if i in ('StartTime','EndTime'):
+                    dic[i] = dic[i].strftime("%H:%M")
+                elif i == 'Date' and isinstance(dic[i],datetime):
+                    dic[i] = dic[i].strftime("%d/%m/%Y")
+    return jsonify(result=res)
+
+
+def getCalendarDates(profId):
     session = Session()
     user = session.query(User).filter_by(id=profId).first()
     if not user:
@@ -140,9 +155,10 @@ def getCalendarDates(*args):
             if (weekday==6 and row.d7): found = True
             if found:
                 datestr = WeekName[weekday] + " " + d.strftime("%d/%m/%Y")
-                if d not in dates:
-                    dates[d] = []
-                dates[d].append({'FechaStr':datestr,'StartTime':row.StartTime,'EndTime':row.EndTime,'CompanyId':user.CompanyId,'Date':d})
+                datekey = d.strftime("%Y-%m-%d")
+                if datekey not in dates:
+                    dates[datekey] = []
+                dates[datekey].append({'FechaStr':datestr,'StartTime':row.StartTime,'EndTime':row.EndTime,'CompanyId':user.CompanyId,'Date':d})
         d = addDays(d,1)
 
     for activity in activities:

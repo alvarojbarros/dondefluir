@@ -20,27 +20,12 @@ function setProffesional(id,current_user_id){
 	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
 		Vue.set(vue_title,'Title', data.record.Name);
 		Vue.set(vue_record,'values', data.record);
-		/*prof_Name = document.getElementById('prof_Name');
-		prof_Name.innerHTML = data.record.Name;
-		prof_Name2 = document.getElementById('prof_Name2');
-		prof_Name2.innerHTML = record.Name;
-		prof_id = document.getElementById('id');
-		prof_id.value = record.id;
-		prof_Name3 = document.getElementById('prof_Name3');
-		prof_Name3.innerHTML = record.Name;
-		user_title = document.getElementById('user_title');
-		user_title.innerHTML = record.Title;
 
-		record_email = document.getElementById('record_email');
-		record_email.innerHTML = record.Email
-		record_phone = document.getElementById('record_phone');
-		record_phone.innerHTML = record.Phone
-		record_address = document.getElementById('record_address');
-		record_address.innerHTML = record.Address
-		record_city = document.getElementById('record_city');
-		record_city.innerHTML = record.City
-		record_comment = document.getElementById('record_comment');
-		record_comment.innerHTML = record.Comment */
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_dates', {'id':id},function(data) {
+			Vue.set(vue_schedule,'values',data.result)
+			Vue.set(vue_schedule,'profId',id)
+			Vue.set(vue_schedule,'current_user_id',current_user_id)
+		});
 
 		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
 			if (recordFav && recordFav.Checked){

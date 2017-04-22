@@ -6,7 +6,7 @@
 {% endblock %}
 {% block fields_view %}
   <li v-for="record in values"  :data-search-term="record.Name" class="list-group-item">
-  <a href="#"  :onClick="'showProfessional(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">{%raw%}{{record.id}} - {{record.Name}}{%endraw%}</a></li>
+  <a href="#"  :onClick="'showProfessional(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">{%raw%}{{record.CompanyName}} - {{record.Name}}{%endraw%}</a></li>
 {% endblock %}
 
 

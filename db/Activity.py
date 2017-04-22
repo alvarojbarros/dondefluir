@@ -19,10 +19,10 @@ class Activity(Base,Record):
 
     __tablename__ = 'activity'
     id = Column(Integer, primary_key=True)
-    CustId = Column(String(20), ForeignKey(User.id))
+    CustId = Column(String(20), ForeignKey(User.id), nullable=True)
     ProfId = Column(String(20), ForeignKey(User.id), nullable=False)
     CompanyId = Column(Integer, ForeignKey(Company.id))
-    ServiceId = Column(Integer, ForeignKey(Service.id))
+    ServiceId = Column(Integer, ForeignKey(Service.id), nullable=True)
     Type = Column(Integer)
     Comment = Column(String(100))
     Image = Column(String(100))
@@ -45,7 +45,7 @@ class Activity(Base,Record):
         res['ProfId'] = {'Type': 'text', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
-        res['Comment'] = {'Type': 'text', 'Label': 'Comment', 'Input':'text'}
+        res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
         res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso'},'Level':[0,1,2]}
         res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2]}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3]}
@@ -124,8 +124,8 @@ class Activity(Base,Record):
         self.CompanyId = current_user.CompanyId
 
     def check(self):
-        if not self.ServiceId:
-            return Error("Debe Elegir un Servicio")
+        #if not self.ServiceId:
+        #    return Error("Debe Elegir un Servicio")
         if not len(self.Schedules):
             return Error("Debe ingresar horarios")
         if self.Type==1 and not self.Comment:
@@ -269,6 +269,10 @@ class Activity(Base,Record):
         else:
             return TableClass.getRecordList(TableClass)
 
+    @classmethod
+    def getRecordTitle(self):
+        return ['ProfId','CustId','ServiceId']
+
 
 class ActivityUsers(Base,DetailRecord):
     __tablename__ = 'activityusers'
@@ -304,6 +308,7 @@ class ActivitySchedules(Base,DetailRecord):
         res['StartTime'] = {'Type': 'time','Label': 'Desde','Input':'time'}
         res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time'}
         res['__order__'] = cls.fieldsOrder()
+        res['__lenght__'] = "3"
         return res
 
     @classmethod

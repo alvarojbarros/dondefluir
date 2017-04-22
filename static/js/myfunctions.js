@@ -28,7 +28,7 @@ function setProffesional(id,current_user_id){
 		});
 
 		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
-			if (recordFav && recordFav.Checked){
+			if (recordFav && recordFav.record && recordFav.record.Checked){
 				Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
 			}
 		});
@@ -43,15 +43,16 @@ function setProffesional(id,current_user_id){
 }
 
 function setFavorite(element){
-  favId = document.getElementById('id');
-  $.getJSON($SCRIPT_ROOT + '/_set_favorite',{favId: favId.value}, function(data) {
+  favId = vue_record.values.id
+  $.getJSON($SCRIPT_ROOT + '/_set_favorite',{favId: favId}, function(data) {
       if (data.result['res']==true){
+		  console.log(data.result)
 		  favorite = document.getElementById('favorite');
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
-		 	  	favorite.innerHTML = 'Eliminar de Favoritos';
+		 	  	  Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
 		  	  }else{
-		 	  	favorite.innerHTML = 'Agregar de Favoritos';
+		 	  	  Vue.set(vue_record,'favorite', 'Agregar de Favoritos');
 			  }
 		  }
 	  }
@@ -69,6 +70,7 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	Vue.set(vue_record.values.record,'ProfId', ProfId);
 	Vue.set(vue_record.values.record,'CustId', CustId);
 	vue_record.values.record.CompanyId = CompanyId
+	vue_record.values.record.Status = 0
 	vue_record.values.record.Schedules.push({'StartTime': StartTime,'TransDate': TransDate, 'EndTime': EndTime})
 	updateLinkTo()
 
@@ -81,7 +83,7 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 		getRecord('Activity',{},function (data){
 			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
-			vue_title.recordName = 'Nuevo Actividad'
+			vue_title.Title = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
 	})

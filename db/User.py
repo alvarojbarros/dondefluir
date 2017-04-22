@@ -212,6 +212,10 @@ class User(Base,Record,UserMixin):
             if company and getattr(company,fieldname):
                 return getattr(company,fieldname)
 
+    @classmethod
+    def getRecordTitle(self):
+        return ['Name']
+
 
 class UserSchedule(Base,DetailRecord):
     __tablename__ = 'userschedule'

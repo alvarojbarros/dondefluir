@@ -44,4 +44,8 @@ class Service(Base,Record):
             records = Record.getRecordList(TableClass)
         return records
 
+    @classmethod
+    def getRecordTitle(self):
+        return ['Name']
+
 Base.metadata.create_all(engine)

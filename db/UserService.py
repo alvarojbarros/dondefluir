@@ -45,6 +45,11 @@ class UserService(Base,Record):
             records = Record.getRecordList(TableClass)
         return records
 
+    @classmethod
+    def getRecordTitle(self):
+        return ['UserId','ServiceId']
+
+
 Index('UserService', UserService.UserId, UserService.ServiceId, unique=True)
 
 Base.metadata.create_all(engine)

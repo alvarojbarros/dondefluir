@@ -51,4 +51,8 @@ class Company(Base,Record):
         if current_user.UserType == 0:
             return True
 
+    @classmethod
+    def getRecordTitle(self):
+        return ['Name']
+
 Base.metadata.create_all(engine)

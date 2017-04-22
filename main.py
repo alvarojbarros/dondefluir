@@ -9,6 +9,7 @@ from flask import Blueprint
 from tools.Tools import *
 from tools.DBTools import *
 from dondefluir.db.User import User
+from dondefluir.db.Company import Company
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
 status = ['Tomar este curso','Anular Inscripción']
 WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
@@ -51,12 +52,15 @@ def getMyFunction(function,params):
 def getProfessional(favorite):
     session = Session()
     if not favorite:
-        records = session.query(User).filter_by(FindMe=True)
+        records = session.query(User).filter_by(FindMe=True)\
+            .join(Company,User.CompanyId==Company.id)\
+            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"))
     else:
         from dondefluir.db.UserFavorite import UserFavorite
         records = session.query(User).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
-            .with_entities(User.id,User.Name)
+            .join(Company,User.CompanyId==Company.id)\
+            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"))
     session.close()
     return records
 
@@ -191,6 +195,7 @@ def set_favorite():
     session.expire_on_commit = False
     record = session.query(UserFavorite).filter_by(UserId=current_user.id,FavoriteId=favId).first()
     if not record:
+        print((current_user.id,favId,current_user.CompanyId))
         record = UserFavorite()
         record.UserId = current_user.id
         record.FavoriteId = favId
@@ -245,7 +250,8 @@ def showProfessionalEvents(*args):
 def get_professional_list():
     favorite = request.args.get('Favorite')=='true'
     records = getProfessional(favorite)
-    res = fillRecordList(records,['Name','id'])
+    print(records)
+    res = fillRecordList(records,['Name','id','CompanyName'])
     return jsonify(result=res)
 
 

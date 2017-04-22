@@ -11,7 +11,7 @@ from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
-status = ['Tomar este curso','Anular Inscripción']
+StatusList = ['Tomar este curso','Anular Inscripción']
 WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
@@ -110,6 +110,12 @@ def getBreakCalendarDates(act,dates):
                     return dates
     return dates
 
+@blue_dondefluir.route('/_get_calendar_events')
+def get_calendar_events():
+    profId = request.args.get('id')
+    res = showProfessionalEvents({'profId':profId})
+    return jsonify(result=res)
+
 
 @blue_dondefluir.route('/_get_calendar_dates')
 def get_calendar_dates():
@@ -195,7 +201,6 @@ def set_favorite():
     session.expire_on_commit = False
     record = session.query(UserFavorite).filter_by(UserId=current_user.id,FavoriteId=favId).first()
     if not record:
-        print((current_user.id,favId,current_user.CompanyId))
         record = UserFavorite()
         record.UserId = current_user.id
         record.FavoriteId = favId
@@ -235,22 +240,26 @@ def showProfessionalEvents(*args):
         ,ActivitySchedules.EndTime,Activity.id,ActivityUsers.CustId,Activity.MaxPersons,Activity.Price,Activity.Description)
     res = {}
     for r in records:
+
+        cnt = session.query(Activity).filter_by(id=r.id)\
+            .join(ActivityUsers,Activity.id==ActivityUsers.activity_id)\
+            .count()
+
         if r.id not in res:
             res[r.id] = []
-        st = status[0]
+        st = StatusList[0]
         if r.CustId==current_user.id:
-            st = status[1]
+            st = StatusList[1]
         TransDate = WeekName[r.TransDate.weekday()] + " " + r.TransDate.strftime("%d/%m/%Y")
         res[r.id].append({'Comment': r.Comment,'TransDate': TransDate, 'StartTime': r.StartTime.strftime("%H:%M") \
             , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons \
-            , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st })
+            , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st, 'Persons': cnt })
     return res
 
 @blue_dondefluir.route('/_get_professional_list')
 def get_professional_list():
     favorite = request.args.get('Favorite')=='true'
     records = getProfessional(favorite)
-    print(records)
     res = fillRecordList(records,['Name','id','CompanyName'])
     return jsonify(result=res)
 
@@ -276,7 +285,7 @@ def set_cust_to_event():
             record.Users.append(row)
         res = record.save(session)
         if res:
-            return jsonify(result={'res':True,'label':status[st]})
+            return jsonify(result={'res':True,'label':StatusList[st],'st': st})
         else:
             return jsonify(result={'res':False,'Error':str(res)})
     return jsonify(result={'res':False,'Error':'Registro Inexistente'})

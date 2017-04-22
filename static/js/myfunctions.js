@@ -27,6 +27,10 @@ function setProffesional(id,current_user_id){
 			Vue.set(vue_schedule,'current_user_id',current_user_id)
 		});
 
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'id':id},function(data) {
+			Vue.set(vue_schedule,'events',data.result)
+		});
+
 		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
 			if (recordFav && recordFav.record && recordFav.record.Checked){
 				Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
@@ -46,7 +50,6 @@ function setFavorite(element){
   favId = vue_record.values.id
   $.getJSON($SCRIPT_ROOT + '/_set_favorite',{favId: favId}, function(data) {
       if (data.result['res']==true){
-		  console.log(data.result)
 		  favorite = document.getElementById('favorite');
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
@@ -94,7 +97,13 @@ function setCustomerToEvent(id){
       	res = data.result['res'];
       	if (res){
 			e = document.getElementById(id);
-			e.innerHTML = data.result.label;
+			//e.innerHTML = data.result.label;
+			vue_schedule.events[id][0].Status = data.result.label;
+			if (data.result.st==1){
+				vue_schedule.events[id][0].Persons += 1;
+			}else{
+				vue_schedule.events[id][0].Persons += -1;
+			}
 	  	}else{
 			alert(data.result['Error']);
 		};

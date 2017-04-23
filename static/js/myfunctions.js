@@ -112,12 +112,14 @@ function setCustomerToEvent(id){
 }
 
 function newUserNote(custId){
-	vars = {Template: 'recordform.html',Table:'UserNote'}
+	vars = {Template: 'recordform.html',Table:'UserNote',RecordId:''}
 	getTemplate('container-fluid',vars,function(){
-		/*createRecordForm(null,'UserNote',null,'recordFields',function(){
-			var userId = document.getElementById('UserId');
-			userId.value = custId;
-		});*/
+		getRecord('UserNote',{},function (data){
+			Vue.set(vue_record,'values', data);
+			Vue.set(vue_record,'table', 'UserNote');
+			vue_record.values.record.UserId = custId;
+			vue_title.Title = 'Ingresar Nota'
+		})
 	})
 }
 

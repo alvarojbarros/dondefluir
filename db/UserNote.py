@@ -3,7 +3,7 @@
 
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
 from tools.dbconnect import engine,MediumText,Session
-from dondefluir.db.Record import Record
+from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
 from tools.Tools import *
 from dondefluir.db.User import User

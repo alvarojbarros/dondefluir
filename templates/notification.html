@@ -1,0 +1,20 @@
+{% extends "recordtable.html" %}
+{% block fields_view %}
+
+  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
+  <b v-if="record.Status==0">
+    <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
+    {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></b>
+  <p v-if="record.Status==1">
+    <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'" >
+    {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></p>
+  </li>
+
+{% endblock %}
+
+
+{% block button_script %}
+<script type=text/javascript>
+  getRecordList('Notification','Status,Comment,TransDate,id');
+</script>
+{% endblock %}

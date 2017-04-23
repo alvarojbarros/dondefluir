@@ -24,29 +24,30 @@
      </ul>
      <!-- This is the message dropdown -->
      <ul class="nav navbar-top-links navbar-right pull-right">
-        <!--li class="dropdown">
+        <li class="dropdown" id="notifications-menu">
            <a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#">
               <i class="icon-envelope"></i>
               <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
            </a>
            <ul class="dropdown-menu mailbox animated bounceInDown">
               <li>
-                 <div class="drop-title">You have 4 new messages</div>
+                 <div class="drop-title">{%raw%}{{news}}{%endraw%}</div>
               </li>
-              <li>
+              <li v-for="value in values">
                  <div class="message-center">
                     <a href="#">
                        <div class="mail-contnet">
-                          <h5>System Message</h5>
-                          <span class="mail-desc">Just see the my admin!</span> <span class="time">31.01.2017 / 9:30 AM</span>
+                          <h5>Mensaje del Sistema</h5>
+                          <span class="mail-desc">{%raw%}{{value.Comment}}{%endraw%}</span> <span class="time">{%raw%}{{value.TransDate}}{%endraw%}</span>
                        </div>
                     </a>
                  </div>
               </li>
-              <li> <a class="text-center" href="javascript:void(0);"> <strong>See all notifications</strong> <i class="fa fa-angle-right"></i> </a></li>
+
+              <li> <a class="text-center" href="javascript:void(0);" onclick="getTemplateNotification()"> <strong>Ver todas las Notificaciones</strong> <i class="fa fa-angle-right"></i> </a></li>
            </ul>
         </li>
-        <li class="dropdown">
+        <!--li class="dropdown">
            <a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#">
               <i class="icon-note"></i>
               <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
@@ -94,3 +95,5 @@
   <!-- /.navbar-top-links -->
   <!-- /.navbar-static-side -->
 </nav>
+
+<script src="{{ url_for('blue_dondefluir.static', filename='js/vuenotifications.js') }}"></script>

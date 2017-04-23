@@ -10,6 +10,7 @@ from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Service import Service
 from dondefluir.db.UserService import UserService
+from dondefluir.db.Notification import Notification
 from flask_login import current_user
 from sqlalchemy.orm import relationship
 
@@ -156,7 +157,8 @@ class Activity(Base,Record):
         return res '''
 
     def afterCommitUpdate(self):
-        if current_user.id!=self.ProfId:
+        True
+        '''if current_user.id!=self.ProfId:
             user = User.getRecordById(self.ProfId)
             if user and user.NtfActivityNew:
                 msj = "\n"
@@ -185,12 +187,48 @@ class Activity(Base,Record):
                 for row in self.Users:
                     customer = User.getRecordById(row.CustId)
                     if customer and customer.NtfActivityNew:
-                        self.sendCustomerMailNewActivity(prof,customer.id)
+                        self.sendCustomerMailNewActivity(prof,customer.id) '''
 
 
-    def afterCommitInsert(self):
+    def setNotification(self,comment,user_id):
+        ntf = Notification()
+        ntf.defaults()
+        ntf.UserId = user_id
+        ntf.Comment = "%s: %s" %(comment,self.Comment)
+        ntf.Action = ""
+        session = Session()
+        res = ntf.save(session)
+        if not res: return res
         return True
-        if current_user.id!=self.ProfId:
+
+    def afterUpdate(self):
+        if self.ProfId and current_user.id!=self.ProfId:
+            if len(self.Users)==len(self.OldFields['Users']):
+                res = self.setNotification("Actvididad Modificada",self.ProfId)
+                if not res: return res
+            else:
+                res = self.setNotification("Actvididad Modificada. Nuevos Clientes",self.ProfId)
+                if not res: return res
+        if self.CustId and current_user.id!=self.CustId:
+            res = self.setNotification("Actvididad Modificada",self.CustId)
+            if not res: return res
+        if len(self.Users)==len(self.OldFields['Users']):
+            for row in self.Users:
+                if row.CustId:
+                    res = self.setNotification("Actvididad Modificada",row.CustId)
+                    if not res: return res
+        return True
+
+    def afterInsert(self):
+        if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actvididad",self.ProfId)
+        if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actvididad",self.CustId)
+        for row in self.Users:
+            if row.CustId: self.setNotification("Nueva Actvididad",row.CustId)
+        return True
+        #user = User.getRecordById(self.ProfId)
+        #if user and user.NtfActivityNew:
+
+        '''if current_user.id!=self.ProfId:
             user = User.getRecordById(self.ProfId)
             if user and user.NtfActivityNew:
                 msj = "\n"
@@ -212,7 +250,7 @@ class Activity(Base,Record):
                 if self.ProfId:
                     prof = User.getRecordById(self.ProfId)
                     if prof:
-                        self.sendCustomerMailUpdateActivity(prof,user.id)
+                        self.sendCustomerMailUpdateActivity(prof,user.id)'''
         ''' if self.Type and self.ProfId:
             prof = User.getRecordById(self.ProfId)
             if prof:
@@ -247,9 +285,6 @@ class Activity(Base,Record):
         msj += "\n"
         return mail.sendMail(CustEmail,Subject,msj)
 
-
-    def afterCommitUpdate(self):
-        pass
 
     def getLinkToFromRecord(self,TableClass):
         if TableClass==Service:

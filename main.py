@@ -10,6 +10,7 @@ from tools.Tools import *
 from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
+from dondefluir.db.Notification import Notification
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
 StatusList = ['Tomar este curso','Anular Inscripción']
 WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
@@ -42,6 +43,8 @@ def getModules(UserType):
     Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{},'Image':'ti-calendar p-r-10'}
+    addElementToList(Tables,Table,UserType)
+    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':''}
     addElementToList(Tables,Table,UserType)
     return Tables
 
@@ -323,3 +326,33 @@ def return_data():
     end_date = request.args.get('end', '')
     with open("events.json", "r") as input_data:
         return input_data.read()
+
+@blue_dondefluir.route('/_set_notification_read')
+def set_notification_read():
+    nftId = request.args.get('id')
+    session = Session()
+    session.expire_on_commit = False
+    record = session.query(Notification).filter_by(id=nftId).first()
+    if record:
+        record.Status = 1
+        res = record.save(session)
+        if res:
+            return jsonify(result={'res':True})
+        else:
+            return jsonify(result={'res':False,'Error':str(res)})
+    return jsonify(result={'res':False,'Error':'Registro Inexistente'})
+
+@blue_dondefluir.route('/_get_notifications')
+def get_notifications():
+    session = Session()
+    session.expire_on_commit = False
+    record = session.query(Notification).filter_by(UserId=current_user.id,Status=0).order_by(Notification.TransDate.desc())
+    cnt = record.count()
+    l = []
+    k = 0
+    for r in record:
+        k += 1
+        l.append({'Comment':r.Comment,'TransDate':r.TransDate})
+        if k>=4:
+            break
+    return jsonify(result={'cnt':cnt,'values':l})

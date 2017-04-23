@@ -120,3 +120,32 @@ function newUserNote(custId){
 		});*/
 	})
 }
+
+function setNotificationRead(id){
+    $.getJSON($SCRIPT_ROOT + '/_set_notification_read',{id: id}, function(data) {
+    });
+}
+
+
+function getTemplateNotification(){
+	vars = {'Name':'Notificaciones','Table':'Notification','Template':'notification.html'}
+	getTemplate('container-fluid',vars,function(){
+		vue_title.Title = vars.Name;
+	});
+}
+
+function getNotifications(){
+    $.getJSON($SCRIPT_ROOT + '/_get_notifications',{}, function(data) {
+    	Vue.set(vue_notifications,'values',data.result.values)
+    	Vue.set(vue_notifications,'cnt',data.result.cnt)
+    	if (data.result.cnt>0){
+	    	Vue.set(vue_notifications,'news',data.result.cnt + ' notificaciones nuevas')
+		}else{
+	    	Vue.set(vue_notifications,'news','No hay nuevas notificaciones')
+		}
+    });
+}
+
+function getMyFunctionReady(){
+	getNotifications();
+}

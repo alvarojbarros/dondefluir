@@ -105,20 +105,20 @@
                             <br>
                             <p class="text-muted">De {%raw%}{{k['StartTime']}}{%endraw%} a {%raw%}{{k['EndTime']}}{%endraw%}</p>
                         </div>
-                        <div class="col-md-3 col-xs-12 b-r">
-                            <strong>Valor</strong>
-                            <br>
-                            <p class="text-muted">$ {%raw%}{{event[0]['Price']}}{%endraw%}</p>
-                        </div>
-                        <div class="col-md-3 col-xs-12"> <strong>Cupo máximo</strong>
+                      <div class="col-md-3 col-xs-12 b-r">
+                          <strong>Valor</strong>
                           <br>
-                          <p class="text-muted">{%raw%}{{event[0]['MaxPersons']}}{%endraw%} asistentes<br>Quedan {%raw%}{{event[0]['MaxPersons'] - event[0]['Persons']}}{%endraw%} cupos disponibles</p>
-                          <div class="progress progress-lg">
-                            <div class="progress-bar progress-bar-primary"
-                              :style="'width: '+100*event[0]['Persons']/event[0]['MaxPersons']+'%;'" role="progressbar">
-                              {%raw%}{{100*event[0]['Persons']/event[0]['MaxPersons']}}{%endraw%}%</div>
-                          </div>
+                          <p class="text-muted">$ {%raw%}{{event[0]['Price']}}{%endraw%}</p>
+                      </div>
+                      <div class="col-md-3 col-xs-12"> <strong>Cupo máximo</strong>
+                        <br>
+                        <p class="text-muted">{%raw%}{{event[0]['MaxPersons']}}{%endraw%} asistentes<br>Quedan {%raw%}{{event[0]['MaxPersons'] - event[0]['Persons']}}{%endraw%} cupos disponibles</p>
+                        <div class="progress progress-lg">
+                          <div class="progress-bar progress-bar-primary"
+                            :style="'width: '+100*event[0]['Persons']/event[0]['MaxPersons']+'%;'" role="progressbar">
+                            {%raw%}{{100*event[0]['Persons']/event[0]['MaxPersons']}}{%endraw%}%</div>
                         </div>
+                      </div>
 
                     </div> <!-- row -->
 

@@ -96,6 +96,12 @@ h5 {
   font-size: 14px;
 }
 
+.schedulerows{
+  border: 1px solid #CCC;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
 .dondeFluir{
     font-family: 'Pacifico', cursive;
     color: #723888;
@@ -15731,3 +15737,4 @@ ul.pro-amenities li span i {
     padding: 2px 0 10px 15px;
   }
 }
+

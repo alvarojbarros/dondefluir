@@ -17,7 +17,7 @@
               <button class="btn btn-warning btn-rounded waves-effect waves-light" type="button" onclick="newUserNote('{{var['custId']}}')" >
                 <span class="btn-label">
                   <i class="fa fa-plus"></i>
-                </span>Agregar Nota
+                </span>Agregar nota
               </button>
           </div>
        </div>
@@ -30,8 +30,7 @@
      <div class="white-box">
         <div class="list-group">
           {% for record in myFunction(function='getUserNote',params={'custId': var['custId']}) %}
-            <a href="javascript:void(0)" class="list-group-item active"> {{record.ProfId}} - {{getStrfTime(record.TransDate,'%d/%m/%Y %H:%M')}} </a>
-            <a href="#" class="list-group-item" onclick=""> {{record.Note}} </a>
+            <div class="list-group-item"><b> {{record.ProfId}} - {{getStrfTime(record.TransDate,'%d/%m/%Y %H:%M')}} </b> <br> {{record.Note}} </div>
           {% endfor %}
         </div>
      </div>

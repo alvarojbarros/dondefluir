@@ -40,11 +40,11 @@ class UserNote(Base,Record):
     def getRecordList(cls,TableClass,custId=None):
         session = Session()
         if current_user.UserType==3:
-            records = session.query(cls).filter_by(UserId=current_user.id)
+            records = session.query(cls).filter_by(UserId=current_user.id).order_by(UserNote.TransDate.desc())
         elif current_user.UserType in (0,1):
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId)
+            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId).order_by(UserNote.TransDate.desc())
         elif current_user.UserType==2:
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId,ProfId=current_user.id)
+            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId,ProfId=current_user.id).order_by(UserNote.TransDate.desc())
         session.close()
         return records
 

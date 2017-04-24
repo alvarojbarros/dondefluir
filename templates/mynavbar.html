@@ -4,7 +4,7 @@
      <a class="navbar-toggle hidden-sm hidden-md hidden-lg " href="javascript:void(0)" data-toggle="collapse" data-target=".navbar-collapse"><i class="ti-menu"></i></a>
      <!-- Logo -->
      <div class="top-left-part">
-        <a class="logo" href="#" onClick="getTemplate('container-fluid',{'Template':'dashboard.html'})">
+        <a class="logo" href="#" onClick="showDashboard()">
            <!-- Logo icon image, you can use font-icon also -->
            <b>• <i class="wi wi-moon-full"></i> •</b>
            <!-- Logo text image you can use text also -->
@@ -27,7 +27,7 @@
         <li class="dropdown" id="notifications-menu">
            <a class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#">
               <i class="icon-envelope"></i>
-              <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
+              <div class="notify" v-if="cnt>0"><span class="heartbit"></span><span class="point"></span></div>
            </a>
            <ul class="dropdown-menu mailbox animated bounceInDown">
               <li>
@@ -80,7 +80,7 @@
               <!--li><a href="#"><i class="ti-wallet"></i> My Balance</a></li-->
               <!--li><a href="#"><i class="ti-email"></i> Inbox</a></li-->
               <li role="separator" class="divider"></li>
-              <li><a href="#" ><i class="ti-settings"></i> Opciones de usuario</a></li>
+              <!--li><a href="#" ><i class="ti-settings"></i> Opciones de usuario</a></li-->
               <li role="separator" class="divider"></li>
               <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
            </ul>

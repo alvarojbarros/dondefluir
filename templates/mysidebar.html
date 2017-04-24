@@ -23,13 +23,13 @@
               <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html','runFunction':'OpenCloseMenu()'})"><i class="ti-user"></i>Modificar Password</a></li>
               <!--li><a href="javascript:void(0)"><i class="ti-wallet"></i> My Balance</a></li-->
               <!--li><a href="javascript:void(0)"><i class="ti-email"></i> Inbox</a></li-->
-              <li><a href="javascript:void(0)" ><i class="ti-settings"></i> Opciones de usuario</a></li>
+              <!--li><a href="javascript:void(0)" ><i class="ti-settings"></i> Opciones de usuario</a></li-->
               <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
            </ul>
         </li>
         <!-- User profile-->
         <li>
-           <a href="#" onClick="getTemplate('container-fluid',{'Template':'dashboard.html'})" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
+           <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
         </li>
         <!--li> <a href="javascript:void(0);" class="waves-effect"><i class="icon-envelope p-r-10"></i> <span class="hide-menu"> Mailbox <span class="fa arrow"></span><span class="label label-rouded label-danger pull-right">6</span></span></a>
               <ul class="nav nav-second-level">

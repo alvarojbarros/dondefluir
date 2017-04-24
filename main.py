@@ -42,9 +42,9 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{},'Image':'ti-calendar p-r-10'}
+    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':'fixCalendarStyle()'},'Image':'ti-calendar p-r-10'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':''}
+    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
     addElementToList(Tables,Table,UserType)
     return Tables
 

@@ -93,7 +93,7 @@ class User(Base,Record,UserMixin):
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
         Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]}
         Tabs[3] = {"Name":"Notificaciones", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
-            ,[2,["NtfActivityChange","NtfActivityReminder"]],[4,["NtfReminderDays","NtfReminderHours"]]]}
+            ,[2,["NtfActivityChange","NtfActivityReminder"]]]}
         return Tabs
 
     def filterFields(self,fields):
@@ -245,6 +245,7 @@ class UserSchedule(Base,DetailRecord):
         res['d6'] = {'Type': 'integer', 'Label': 'Sa', 'Input': 'checkbox'}
         res['d7'] = {'Type': 'integer', 'Label': 'Do', 'Input': 'checkbox'}
         res['__order__'] = cls.fieldsOrder()
+        res['__lenght__'] = "1"
         return res
 
     @classmethod

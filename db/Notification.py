@@ -59,5 +59,7 @@ class Notification(Base,Record):
         session.close()
         return records
 
+    def afterSaveJS(self):
+        return 'getNotifications()'
 
 Base.metadata.create_all(engine)

@@ -128,7 +128,7 @@ function show_signIn(id) {
             <input class="form-control" type="text" required="" placeholder="Email" name="username1">
           </div>
         </div>
-        <div class="form-group m-t-40">
+        <div class="form-group">
           <div class="col-xs-12 p-b-20">
             <input class="form-control" type="text" required="" placeholder="Confirmar Email" name="username2">
           </div>
@@ -143,7 +143,7 @@ function show_signIn(id) {
             <input class="form-control" type="password" required="" placeholder="Confirmar Password" name="password2">
           </div>
         </div>
-        <div class="form-group m-t-40">
+        <div class="form-group">
           <div class="col-xs-12 p-b-20">
             <input class="form-control" type="text" required="" placeholder="Nombre" name="name">
           </div>
@@ -198,11 +198,12 @@ function show_signIn(id) {
           </div>
         </div>
       </div>
-    </div>
-    <div id="messages">
-      {% if error_msg %}
-        <p class="alert alert-danger" >{{error_msg}}</p>
-      {% endif %}
+      <div id="messages">
+        {% if error_msg %}
+          <p class="alert alert-danger" >{{error_msg}}</p>
+        {% endif %}
+      </div>
+
     </div>
   </div>
 </section>

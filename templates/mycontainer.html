@@ -9,20 +9,22 @@
       <!-- .breadcrumb -->
       <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
          <ol class="breadcrumb">
-            <li><a href="#">Dashboard</a></li>
+            <li><a href="#" onclick="showDashboard()">Dashboard</a></li>
             <li class="active">P&aacute;gina de Inicio</li>
          </ol>
       </div>
       <!-- /.breadcrumb -->
    </div>
    <!-- .row -->
-   <div class="row">
+   <div class="row" id="dashboard">
       <div class="col-md-12">
          <div class="white-box">
-            <h3 class="box-title">Mensaje de Bienvenida</h3>
+            <h3 class="box-title">{%raw%}{{currentdate}}{%endraw%}</h3>
          </div>
       </div>
     </div>
   {% endblock %}
   <!--div id='calendar_id' class='calendar_id'></div-->
 </div>
+
+<script src="{{ url_for('blue_dondefluir.static', filename='js/vuedashboard.js') }}"></script>

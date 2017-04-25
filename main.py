@@ -352,7 +352,7 @@ def get_notifications():
     k = 0
     for r in record:
         k += 1
-        l.append({'Comment':r.Comment,'TransDate':r.TransDate})
+        l.append({'Comment':r.Comment,'TransDate':r.TransDate,'id':r.id})
         if k>=4:
             break
     return jsonify(result={'cnt':cnt,'values':l})

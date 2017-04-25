@@ -69,7 +69,6 @@ class Activity(Base,Record):
 
     @classmethod
     def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
-        print(dir(Activity))
         if current_user.UserType==3:
             session = Session()
             records = session.query(cls) \

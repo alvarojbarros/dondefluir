@@ -160,6 +160,14 @@ function getMyFunctionReady(){
 	getNotifications();
 }
 
+function updateNotificationsList(){
+	Vue.set(vue_dashboard_ntf,'values',vue_notifications.values)
+	Vue.set(vue_dashboard_ntf,'cnt',vue_notifications.cnt)
+	Vue.set(vue_dashboard_ntf,'news',vue_notifications.news)
+}
+
 function showDashboard(){
-	getTemplate('container-fluid',{'Template':'mycontainer.html'});
+	getTemplate('container-fluid',{'Template':'mycontainer.html'},function(){
+		updateNotificationsList();
+	});
 }

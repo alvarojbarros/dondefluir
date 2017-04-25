@@ -29,9 +29,8 @@
              <div>{%raw%}{{news}}{%endraw%}</div>
           </li>
           <li v-for="record in values" class="list-group-item">
-            <b v-if="record.Status==0">
-              <a href="#" :onClick="'getRecordForm(\'Notification\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
-              {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></b>
+            <a href="#" :onClick="'getRecordForm(\'Notification\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
+            {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a>
           </li>
          </div>
       </div>

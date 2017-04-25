@@ -15655,7 +15655,7 @@ ul.pro-amenities li span i {
   }
   .dropdown .mailbox,
   .dropdown .dropdown-tasks {
-    left: -100px;
+    left: -200px;
   }
   /***** Start Update 1.5 *****/
   .fix-header .navbar-static-top {

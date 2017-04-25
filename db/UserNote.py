@@ -37,7 +37,7 @@ class UserNote(Base,Record):
         return res
 
     @classmethod
-    def getRecordList(cls,TableClass,custId=None):
+    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
         session = Session()
         if current_user.UserType==3:
             records = session.query(cls).filter_by(UserId=current_user.id).order_by(UserNote.TransDate.desc())

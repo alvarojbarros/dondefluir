@@ -53,7 +53,7 @@ class Notification(Base,Record):
         return False '''
 
     @classmethod
-    def getRecordList(cls,TableClass):
+    def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         session = Session()
         records = session.query(cls).filter_by(UserId=current_user.id).order_by(Notification.TransDate.desc())
         session.close()

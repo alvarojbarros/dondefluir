@@ -161,7 +161,7 @@ class User(Base,Record,UserMixin):
         return True
 
     @classmethod
-    def getRecordList(cls,TableClass):
+    def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         if current_user.UserType==1:
             session = Session()
             records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)

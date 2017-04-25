@@ -68,7 +68,8 @@ class Activity(Base,Record):
 
 
     @classmethod
-    def getRecordList(cls,TableClass,custId=None):
+    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
+        print(dir(Activity))
         if current_user.UserType==3:
             session = Session()
             records = session.query(cls) \
@@ -76,6 +77,9 @@ class Activity(Base,Record):
                 .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
                 .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                 ,ActivitySchedules.EndTime,cls.id,cls.Status)
+            if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+            elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+            if limit: records = records.limit(limit)
             session.close()
         elif current_user.UserType in (1,2):
             session = Session()
@@ -85,18 +89,27 @@ class Activity(Base,Record):
                     .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                     ,ActivitySchedules.EndTime,cls.id,cls.Status)\
                     .filter(Activity.CompanyId==current_user.CompanyId)
+                if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+                elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+                if limit: records = records.limit(limit)
             else:
                 records = session.query(cls) \
                     .filter_by(CompanyId=current_user.CompanyId,CustId=custId) \
                     .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
                     .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                     ,ActivitySchedules.EndTime,cls.id)
+                if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+                elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+                if limit: records = records.limit(limit)
             session.close()
         else:
             session = Session()
             records = session.query(cls).join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
                 .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                 ,ActivitySchedules.EndTime,cls.id,cls.Status)
+            if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+            elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+            if limit: records = records.limit(limit)
             session.close()
         return records
 

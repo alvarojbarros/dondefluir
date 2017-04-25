@@ -16,11 +16,33 @@
       <!-- /.breadcrumb -->
    </div>
    <!-- .row -->
-   <div class="row" id="dashboard">
-      <div class="col-md-12">
+   <div class="row" >
+      <div class="col-md-12" id="dashboard">
          <div class="white-box">
             <h3 class="box-title">{%raw%}{{currentdate}}{%endraw%}</h3>
          </div>
+      </div>
+      <div class="col-xs-12 col-md-6" id="notifications">
+        <div class="white-box">
+          <h3 class="box-title">Notificaciones</h3>
+          <li v-if="cnt==0" class="list-group-item">
+             <div>{%raw%}{{news}}{%endraw%}</div>
+          </li>
+          <li v-for="record in values" class="list-group-item">
+            <b v-if="record.Status==0">
+              <a href="#" :onClick="'getRecordForm(\'Notification\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
+              {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></b>
+          </li>
+         </div>
+      </div>
+      <div class="col-xs-12 col-md-6" id="record_list">
+        <div class="white-box">
+          <h3 class="box-title">Actividades</h3>
+          <li v-for="record in values" class="list-group-item">
+          <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+          {%raw%}{{record.Comment}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} {%endraw%}
+          </a></li>
+        </div>
       </div>
     </div>
   {% endblock %}
@@ -28,3 +50,8 @@
 </div>
 
 <script src="{{ url_for('blue_dondefluir.static', filename='js/vuedashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vuerecordlist.js') }}"></script>
+
+<script type=text/javascript>
+  getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id','5','TransDate');
+</script>

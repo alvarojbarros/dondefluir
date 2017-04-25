@@ -143,10 +143,14 @@ function getNotifications(){
 		$.getJSON($SCRIPT_ROOT + '/_get_notifications',{}, function(data) {
 			Vue.set(vue_notifications,'values',data.result.values)
 			Vue.set(vue_notifications,'cnt',data.result.cnt)
+			Vue.set(vue_dashboard_ntf,'values',data.result.values)
+			Vue.set(vue_dashboard_ntf,'cnt',data.result.cnt)
 			if (data.result.cnt>0){
 				Vue.set(vue_notifications,'news',data.result.cnt + ' notificaciones nuevas')
+				Vue.set(vue_dashboard_ntf,'news',data.result.cnt + ' notificaciones nuevas')
 			}else{
 				Vue.set(vue_notifications,'news','No hay nuevas notificaciones')
+				Vue.set(vue_dashboard_ntf,'news','No hay nuevas notificaciones')
 			}
 		});
 	}

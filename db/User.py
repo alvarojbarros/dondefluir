@@ -72,7 +72,8 @@ class User(Base,Record,UserMixin):
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
         res['EditSchedule'] = {'Type': 'integer', 'Label': 'Editar Agenda', 'Input': 'combo', \
             'Values': {0: 'SI',1: 'NO'},'Level':[0,1]}
-        res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'UserSchedule', 'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2]}
+        res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'UserSchedule',\
+            'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2]}
         res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'checkbox','Level':[0,1,2],'Persistent':False, \
             'Method':'getFavorite()','onClick': 'setFavorite(this)' }
         res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
@@ -247,6 +248,13 @@ class UserSchedule(Base,DetailRecord):
         res['__order__'] = cls.fieldsOrder()
         res['__lenght__'] = "1"
         return res
+
+    @classmethod
+    def htmlView(cls):
+        Tabs = {}
+        Tabs['0'] = ['StartTime','EndTime']
+        Tabs['1'] = ['d1','d2','d3','d4','d5','d6','d7']
+        return Tabs
 
     @classmethod
     def fieldsOrder(cls):

@@ -48,8 +48,8 @@ class Activity(Base,Record):
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
         res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso'},'Level':[0,1,2]}
-        res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2]}
-        res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3]}
+        res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2],'htmlView':ActivityUsers.htmlView()}
+        res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3],'htmlView':ActivitySchedules.htmlView()}
         res['Image'] = {'Type': 'text', 'Label': 'Imagen', 'Input': 'fileinput','Level':[0,1,2]}
         res['MaxPersons'] = {'Type': 'integer', 'Label': 'Cupos', 'Input': 'integer','Level':[0,1,2]}
         res['Price'] = {'Type': 'float', 'Label': 'Valor', 'Input': 'number','Level':[0,1,2]}
@@ -339,6 +339,10 @@ class ActivityUsers(Base,DetailRecord):
     def fieldsOrder(cls):
         return ['id','CustId']
 
+    @classmethod
+    def htmlView(cls):
+        return {0: ['id','CustId']}
+
 class ActivitySchedules(Base,DetailRecord):
     __tablename__ = 'activityschedules'
     id = Column(Integer, primary_key=True)
@@ -361,6 +365,11 @@ class ActivitySchedules(Base,DetailRecord):
     @classmethod
     def fieldsOrder(cls):
         return ['id','TransDate','StartTime','EndTime']
+
+    @classmethod
+    def htmlView(cls):
+        return {0: ['id','TransDate','StartTime','EndTime']}
+
 
     @classmethod
     def getUserFieldsReadOnly(cls,fieldname):

@@ -238,25 +238,32 @@ def showProfessionalEvents(*args):
     records = session.query(Activity).filter_by(ProfId=profId) \
         .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
         .filter(ActivitySchedules.TransDate>=today()) \
-        .outerjoin(ActivityUsers,Activity.id==ActivityUsers.activity_id and ActivityUsers.CustId==current_user.id)\
         .with_entities(Activity.Comment,Activity.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-        ,ActivitySchedules.EndTime,Activity.id,ActivityUsers.CustId,Activity.MaxPersons,Activity.Price,Activity.Description)
+        ,ActivitySchedules.EndTime,Activity.id,Activity.MaxPersons,Activity.Price,Activity.Description)
     res = {}
+    k = 0
     for r in records:
 
         cnt = session.query(Activity).filter_by(id=r.id)\
             .join(ActivityUsers,Activity.id==ActivityUsers.activity_id)\
             .count()
-
         if r.id not in res:
             res[r.id] = []
         st = StatusList[0]
-        if r.CustId==current_user.id:
-            st = StatusList[1]
+
+        if k==0:
+            FindCust = session.query(Activity).filter_by(id=r.id)\
+                .join(ActivityUsers,Activity.id==ActivityUsers.activity_id)\
+                .filter(ActivityUsers.CustId==current_user.id)\
+                .count()
+            if FindCust:
+                st = StatusList[1]
+
         TransDate = WeekName[r.TransDate.weekday()] + " " + r.TransDate.strftime("%d/%m/%Y")
         res[r.id].append({'Comment': r.Comment,'TransDate': TransDate, 'StartTime': r.StartTime.strftime("%H:%M") \
             , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons \
             , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st, 'Persons': cnt })
+        k += 1
     return res
 
 @blue_dondefluir.route('/_get_professional_list')

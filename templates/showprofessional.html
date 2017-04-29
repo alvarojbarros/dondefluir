@@ -96,15 +96,13 @@
 
                     <h3 class="box-title">{%raw%}{{event[0]['Comment']}}{%endraw%}</h3>
 
-                    <div class="row" v-for="(k,j) in event">
-
-                        <div class="col-md-3 col-xs-12 b-r"> <strong>Fecha</strong>
-                            <br>
-                            <p class="text-muted">{%raw%}{{k['TransDate']}}{%endraw%}</p>
-                            <strong>Horario</strong>
-                            <br>
-                            <p class="text-muted">De {%raw%}{{k['StartTime']}}{%endraw%} a {%raw%}{{k['EndTime']}}{%endraw%}</p>
+                    <div class="row" >
+                      <div class="col-md-3 col-xs-12 b-r"> <strong>Fechas y Horarios</strong>
+                        <div v-for="(k,j) in event">
+                          <p class="text-muted">{%raw%}{{k['TransDate']}} de {{k['StartTime']}} a {{k['EndTime']}}{%endraw%}</p>
                         </div>
+                      </div>
+
                       <div class="col-md-3 col-xs-12 b-r">
                           <strong>Valor</strong>
                           <br>
@@ -121,6 +119,7 @@
                       </div>
 
                     </div> <!-- row -->
+
 
                     <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20"
                     type="button" :id="e" :onclick="'setCustomerToEvent(\''+e+'\')'">{%raw%}{{event[0]['Status']}}{%endraw%}</button>

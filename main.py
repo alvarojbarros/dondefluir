@@ -12,10 +12,26 @@ from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Notification import Notification
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
-StatusList = ['Tomar este curso','Anular Inscripción']
+
 WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
+
+meses = {
+    1:'Enero',
+    2:'Febrero',
+    3:'Marzo',
+    4:'Abril',
+    5:'Mayo',
+    6:'Junio',
+    7:'Julio',
+    8:'Agosto',
+    9:'Septiembre',
+    10:'Octubre',
+    11:'Noviembre',
+    12:'Diciembre'
+}
+
 
 def addElementToList(Tables,Table,UserType):
     if ('Level' not in Table) or (UserType in Table['Level']):
@@ -42,7 +58,7 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':'fixCalendarStyle()'},'Image':'ti-calendar p-r-10'}
+    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':functions},'Image':'ti-calendar p-r-10'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
     addElementToList(Tables,Table,UserType)
@@ -249,7 +265,7 @@ def showProfessionalEvents(*args):
             .count()
         if r.id not in res:
             res[r.id] = []
-        st = StatusList[0]
+        st = Activity.StatusList[0]
 
         if k==0:
             FindCust = session.query(Activity).filter_by(id=r.id)\
@@ -257,7 +273,7 @@ def showProfessionalEvents(*args):
                 .filter(ActivityUsers.CustId==current_user.id)\
                 .count()
             if FindCust:
-                st = StatusList[1]
+                st = Activity.StatusList[1]
 
         TransDate = WeekName[r.TransDate.weekday()] + " " + r.TransDate.strftime("%d/%m/%Y")
         res[r.id].append({'Comment': r.Comment,'TransDate': TransDate, 'StartTime': r.StartTime.strftime("%H:%M") \
@@ -295,7 +311,7 @@ def set_cust_to_event():
             record.Users.append(row)
         res = record.save(session)
         if res:
-            return jsonify(result={'res':True,'label':StatusList[st],'st': st})
+            return jsonify(result={'res':True,'label':Activity.StatusList[st],'st': st})
         else:
             return jsonify(result={'res':False,'Error':str(res)})
     return jsonify(result={'res':False,'Error':'Registro Inexistente'})
@@ -363,3 +379,15 @@ def get_notifications():
         if k>=4:
             break
     return jsonify(result={'cnt':cnt,'values':l})
+
+
+@blue_dondefluir.route('/_get_current_date')
+def get_current_date():
+    date = today()
+    w = date.weekday()
+    m = date.month
+    Y = date.year
+    d = date.day
+    hoy = 'Hoy es %s %i de %s de %i' %(WeekName[w],d,meses[m],Y)
+    return jsonify(result=hoy)
+

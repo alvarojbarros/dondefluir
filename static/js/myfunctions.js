@@ -171,3 +171,10 @@ function showDashboard(){
 		updateNotificationsList();
 	});
 }
+
+function getCurrentDate(){
+	$.getJSON($SCRIPT_ROOT + '/_get_current_date',{}, function(data) {
+		Vue.set(vue_dashboard_date,'currentdate',data.result);
+	});
+
+}

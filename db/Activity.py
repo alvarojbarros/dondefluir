@@ -34,6 +34,8 @@ class Activity(Base,Record):
     Schedules = relationship('ActivitySchedules', cascade="all, delete-orphan")
     Status = Column(Integer)
 
+    StatusList = ['Tomar este curso','Anular Inscripción']
+
     def __init__(self):
         super(self.__class__,self).__init__()
         #super().__init__()

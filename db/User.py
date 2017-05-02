@@ -236,15 +236,15 @@ class UserSchedule(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['StartTime'] = {'Type': 'time', 'Label': 'Desde','Input':'time'}
-        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time'}
-        res['d1'] = {'Type': 'integer', 'Label': 'Lu', 'Input': 'checkbox'}
-        res['d2'] = {'Type': 'integer', 'Label': 'Ma', 'Input': 'checkbox'}
-        res['d3'] = {'Type': 'integer', 'Label': 'Mi', 'Input': 'checkbox'}
-        res['d4'] = {'Type': 'integer', 'Label': 'Ju', 'Input': 'checkbox'}
-        res['d5'] = {'Type': 'integer', 'Label': 'Vi', 'Input': 'checkbox'}
-        res['d6'] = {'Type': 'integer', 'Label': 'Sa', 'Input': 'checkbox'}
-        res['d7'] = {'Type': 'integer', 'Label': 'Do', 'Input': 'checkbox'}
+        res['StartTime'] = {'Type': 'time', 'Label': 'Desde','Input':'time','Class':'col-xs-6'}
+        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6'}
+        res['d1'] = {'Type': 'integer', 'Label': 'Lu', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d2'] = {'Type': 'integer', 'Label': 'Ma', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d3'] = {'Type': 'integer', 'Label': 'Mi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d4'] = {'Type': 'integer', 'Label': 'Ju', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d5'] = {'Type': 'integer', 'Label': 'Vi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d6'] = {'Type': 'integer', 'Label': 'Sa', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['d7'] = {'Type': 'integer', 'Label': 'Do', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
         res['__order__'] = cls.fieldsOrder()
         res['__lenght__'] = "1"
         return res

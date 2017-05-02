@@ -333,7 +333,7 @@ class ActivityUsers(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
+        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']},'Class':'col-xs-12'}
         res['__order__'] = cls.fieldsOrder()
         return res
 
@@ -357,9 +357,9 @@ class ActivitySchedules(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['TransDate'] = {'Type': 'date', 'Label': 'Fecha','Input':'date'}
-        res['StartTime'] = {'Type': 'time','Label': 'Desde','Input':'time'}
-        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time'}
+        res['TransDate'] = {'Type': 'date', 'Label': 'Fecha','Input':'date','Class':'col-xs-12 col-sm-3'}
+        res['StartTime'] = {'Type': 'time','Label': 'Desde','Input':'time','Class':'col-xs-6 col-sm-3'}
+        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6 col-sm-3'}
         res['__order__'] = cls.fieldsOrder()
         res['__lenght__'] = "3"
         return res

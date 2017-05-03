@@ -36,10 +36,15 @@
       </div>
       <div class="col-xs-12 col-md-6" id="record_list">
         <div class="white-box">
-          <h3 class="box-title">Actividades</h3>
+          <h3 class="box-title">Pr&oacute;ximas Actividades</h3>
           <li v-for="record in values" class="list-group-item">
           <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
-          {%raw%}{{record.Comment}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} {%endraw%}
+            <div v-if="user_type==3">
+              {%raw%}{{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+            </div>
+            <div v-if="user_type!=3">
+              {%raw%}{{record.CustId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+            </div>
           </a></li>
         </div>
       </div>
@@ -52,6 +57,8 @@
 <script src="{{ url_for('static', filename='js/vuerecordlist.js') }}"></script>
 
 <script type=text/javascript>
-  getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id','5','TransDate');
+  getCurrentUser(function(){
+    getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id,Status,ServiceId,CustId,CompanyId,ProfId','5','TransDate');
+  });
   getCurrentDate()
 </script>

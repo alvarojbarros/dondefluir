@@ -12,6 +12,7 @@ function getProfessionalList(favorite,current_user_id){
 	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'Favorite': favorite },function(data) {
 		Vue.set(vue_recordlist,'values', data.result);
 		Vue.set(vue_recordlist,'user_id', current_user_id);
+		Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
 	});
 }
 
@@ -34,6 +35,7 @@ function setProffesional(id,current_user_id){
 		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
 			if (recordFav && recordFav.record && recordFav.record.Checked){
 				Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
+				Vue.set(vue_record,'classname', 'btn btn-danger btn-rounded waves-effect waves-light m-t-20');
 			}
 		});
 		getRecordBy('Company',{id: data.record.CompanyId},function(company){
@@ -54,8 +56,10 @@ function setFavorite(element){
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
 		 	  	  Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
+				  Vue.set(vue_record,'classname', 'btn btn-danger btn-rounded waves-effect waves-light m-t-20');
 		  	  }else{
-		 	  	  Vue.set(vue_record,'favorite', 'Agregar de Favoritos');
+		 	  	  Vue.set(vue_record,'favorite', 'Agregar a Favoritos');
+				  Vue.set(vue_record,'classname', 'btn btn-primary btn-rounded waves-effect waves-light m-t-20');
 			  }
 		  }
 	  }

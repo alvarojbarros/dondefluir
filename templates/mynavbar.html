@@ -68,7 +68,7 @@
            </ul>
         </li-->
         <!-- .user dropdown -->
-        <li class="dropdown">
+        <li class="dropdown" id="user-menu">
            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> <img src="{{image_url}}" alt="user-img" width="36" class="img-circle"><b class="hidden-xs">{{current_user.Name}}</b> </a>
            <ul class="dropdown-menu dropdown-user animated flipInY">
               <li><a href="#" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}')"><i class="ti-user"></i>Perfil</a></li>
@@ -97,3 +97,4 @@
 </nav>
 
 <script src="{{ url_for('blue_dondefluir.static', filename='js/vuenotifications.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vueusermenu.js') }}"></script>

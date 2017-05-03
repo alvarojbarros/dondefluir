@@ -90,7 +90,7 @@ class User(Base,Record,UserMixin):
         Tabs = {}
         Tabs[0] = {"Name":"Información del Usuario", "Fields": [[0,["Name","Phone"]],[3,["Address","City"]] \
             ,[6,["Comment"]],[7,["Title","ImageProfile"]]]}
-        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType","Active"]] \
+        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType"]] \
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
         Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]}
         Tabs[3] = {"Name":"Notificaciones", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
@@ -107,7 +107,7 @@ class User(Base,Record,UserMixin):
                     del fields[fn]
         if (current_user.id==self.id) and (self.EditSchedule):
             del fields['Schedules']
-        if self.id:
+        if self.id and current_user.UserType!=0:
             del fields['Password']
 
     @classmethod
@@ -236,15 +236,15 @@ class UserSchedule(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['StartTime'] = {'Type': 'time', 'Label': 'Desde','Input':'time','Class':'col-xs-6'}
-        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6'}
-        res['d1'] = {'Type': 'integer', 'Label': 'Lu', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d2'] = {'Type': 'integer', 'Label': 'Ma', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d3'] = {'Type': 'integer', 'Label': 'Mi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d4'] = {'Type': 'integer', 'Label': 'Ju', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d5'] = {'Type': 'integer', 'Label': 'Vi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d6'] = {'Type': 'integer', 'Label': 'Sa', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
-        res['d7'] = {'Type': 'integer', 'Label': 'Do', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1'}
+        res['StartTime'] = {'Type': 'time', 'Label': 'Desde','Input':'time','Class':'col-xs-6 p-b-20'}
+        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6 p-b-20'}
+        res['d1'] = {'Type': 'integer', 'Label': 'Lu', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d2'] = {'Type': 'integer', 'Label': 'Ma', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d3'] = {'Type': 'integer', 'Label': 'Mi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d4'] = {'Type': 'integer', 'Label': 'Ju', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d5'] = {'Type': 'integer', 'Label': 'Vi', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d6'] = {'Type': 'integer', 'Label': 'Sa', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
+        res['d7'] = {'Type': 'integer', 'Label': 'Do', 'Input': 'checkbox','Class':'col-xs-3 col-sm-1 p-b-20'}
         res['__order__'] = cls.fieldsOrder()
         res['__lenght__'] = "1"
         return res

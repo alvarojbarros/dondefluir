@@ -32,6 +32,11 @@ meses = {
     12:'Diciembre'
 }
 
+def getActivitiesModuleName():
+    if current_user.UserType==3:
+        return "Agenda"
+    else:
+        return "Actividades"
 
 def addElementToList(Tables,Table,UserType):
     if ('Level' not in Table) or (UserType in Table['Level']):
@@ -56,7 +61,7 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html','Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Actividades','Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
+    Table = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':functions},'Image':'ti-calendar p-r-10'}
     addElementToList(Tables,Table,UserType)

@@ -31,7 +31,7 @@
                     <div class="col-md-12"><strong>Especialidad</strong>
                         <p id="user_title"> {%raw%}{{values.Title}}{%endraw%} </p>
                     </div>
-                    <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20" type="button" id="favorite" onclick="setFavorite(this)">
+                    <button :class="classname" type="button" id="favorite" onclick="setFavorite(this)">
                       <span class="btn-label">
                         <i class="fa fa-heart">
                         </i>
@@ -73,7 +73,7 @@
                     <a href="#citas" data-toggle="tab"> <span><i class="fa fa-calendar"></i></span> <span class="hidden-xs">Reservar cita</span> </a>
                 </li>
                 <li class="tab">
-                    <a href="#cursos" data-toggle="tab"> <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver cursos</span> </a>
+                    <a href="#cursos" data-toggle="tab"> <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver cursos y eventos</span> </a>
                 </li>
             </ul>
             <div class="tab-content" id="vue_schedule">

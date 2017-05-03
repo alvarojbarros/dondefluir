@@ -3,7 +3,12 @@
 
   <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
   <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
-  {%raw%}{{record.Comment}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+    <div v-if="user_type==3">
+      {%raw%}{{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+    </div>
+    <div v-if="user_type!=3">
+      {%raw%}{{record.CustId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+    </div>
    </a></li>
 
 {% endblock %}
@@ -11,6 +16,6 @@
 
 {% block button_script %}
 <script type=text/javascript>
-  getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id,Status','','TransDate');
+  getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id,Status,ServiceId,CustId,CompanyId,ProfId','','TransDate');
 </script>
 {% endblock %}

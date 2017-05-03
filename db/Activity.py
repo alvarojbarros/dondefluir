@@ -12,7 +12,7 @@ from dondefluir.db.Service import Service
 from dondefluir.db.UserService import UserService
 from dondefluir.db.Notification import Notification
 from flask_login import current_user
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship,aliased
 
 Base = declarative_base()
 
@@ -49,7 +49,7 @@ class Activity(Base,Record):
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
-        res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso'},'Level':[0,1,2]}
+        res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'},'Level':[0,1,2]}
         res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2],'htmlView':ActivityUsers.htmlView()}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3],'htmlView':ActivitySchedules.htmlView()}
         res['Image'] = {'Type': 'text', 'Label': 'Imagen', 'Input': 'fileinput','Level':[0,1,2]}
@@ -64,20 +64,28 @@ class Activity(Base,Record):
         Tabs = {}
         Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
-        Tabs[2] = {"Name":"Curso",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
+        Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
         Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]]}
         return Tabs
 
 
     @classmethod
     def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
+        UserProf = aliased(User)
+        UserCust = aliased(User)
         if current_user.UserType==3:
             session = Session()
             records = session.query(cls) \
                 .filter_by(CustId=current_user.id) \
                 .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-                .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-                ,ActivitySchedules.EndTime,cls.id,cls.Status)
+                .filter(ActivitySchedules.TransDate>=today()) \
+                .join(Company,cls.CompanyId==Company.id)\
+                .join(UserProf,cls.ProfId==UserProf.id)\
+                .outerjoin(UserCust,cls.CustId==UserCust.id)\
+                .outerjoin(Service,cls.ServiceId==Service.id)\
+                .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
+                ,Service.Name.label('ServiceId'))
             if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
             elif order_by: records = records.order_by(ActivitySchedules.TransDate)
             if limit: records = records.limit(limit)
@@ -87,8 +95,14 @@ class Activity(Base,Record):
             if not custId:
                 records = session.query(cls) \
                     .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-                    .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-                    ,ActivitySchedules.EndTime,cls.id,cls.Status)\
+                    .filter(ActivitySchedules.TransDate>=today()) \
+                    .join(Company,cls.CompanyId==Company.id)\
+                    .join(UserProf,cls.ProfId==UserProf.id)\
+                    .outerjoin(UserCust,cls.CustId==UserCust.id)\
+                    .outerjoin(Service,cls.ServiceId==Service.id)\
+                    .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                    ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
+                    ,Service.Name.label('ServiceId'))\
                     .filter(Activity.CompanyId==current_user.CompanyId)
                 if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
                 elif order_by: records = records.order_by(ActivitySchedules.TransDate)
@@ -97,8 +111,14 @@ class Activity(Base,Record):
                 records = session.query(cls) \
                     .filter_by(CompanyId=current_user.CompanyId,CustId=custId) \
                     .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-                    .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-                    ,ActivitySchedules.EndTime,cls.id)
+                    .filter(ActivitySchedules.TransDate>=today()) \
+                    .join(Company,cls.CompanyId==Company.id)\
+                    .join(UserProf,cls.ProfId==UserProf.id)\
+                    .outerjoin(UserCust,cls.CustId==UserCust.id)\
+                    .outerjoin(Service,cls.ServiceId==Service.id)\
+                    .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                    ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
+                    ,Service.Name.label('ServiceId'))
                 if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
                 elif order_by: records = records.order_by(ActivitySchedules.TransDate)
                 if limit: records = records.limit(limit)
@@ -106,8 +126,14 @@ class Activity(Base,Record):
         else:
             session = Session()
             records = session.query(cls).join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-                .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-                ,ActivitySchedules.EndTime,cls.id,cls.Status)
+                .filter(ActivitySchedules.TransDate>=today()) \
+                .join(Company,cls.CompanyId==Company.id)\
+                .join(UserProf,cls.ProfId==UserProf.id)\
+                .outerjoin(UserCust,cls.CustId==UserCust.id)\
+                .outerjoin(Service,cls.ServiceId==Service.id)\
+                .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
+                ,Service.Name.label('ServiceId'))
             if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
             elif order_by: records = records.order_by(ActivitySchedules.TransDate)
             if limit: records = records.limit(limit)
@@ -143,8 +169,8 @@ class Activity(Base,Record):
         #    return Error("Debe Elegir un Servicio")
         if not len(self.Schedules):
             return Error("Debe ingresar horarios")
-        if self.Type==1 and not self.Comment:
-            return Error("Debe ingresar Comentario")
+        if self.Type in (1,2) and not self.Comment:
+            return Error("Debe ingresar Nombre del Curso o Evento")
         return True
 
     @classmethod
@@ -161,6 +187,13 @@ class Activity(Base,Record):
     def canUserDeleteRow(self):
         if current_user.UserType in (0,1,2):
             return True
+
+    @classmethod
+    def customGetFieldsDefinition(cls,record,res):
+        if current_user.UserType!=3:
+            res['Comment']['Label'] = 'Nombre de Curso/Evento'
+        return res
+
 
     '''@classmethod
     def getfieldsDefinition(cls,record):
@@ -333,7 +366,7 @@ class ActivityUsers(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']},'Class':'col-xs-12'}
+        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']},'Class':'col-xs-12 p-b-20'}
         res['__order__'] = cls.fieldsOrder()
         return res
 
@@ -357,9 +390,9 @@ class ActivitySchedules(Base,DetailRecord):
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['TransDate'] = {'Type': 'date', 'Label': 'Fecha','Input':'date','Class':'col-xs-12 col-sm-3'}
-        res['StartTime'] = {'Type': 'time','Label': 'Desde','Input':'time','Class':'col-xs-6 col-sm-3'}
-        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6 col-sm-3'}
+        res['TransDate'] = {'Type': 'date', 'Label': 'Fecha','Input':'date','Class':'col-xs-12 col-sm-3 p-b-20'}
+        res['StartTime'] = {'Type': 'time','Label': 'Desde','Input':'time','Class':'col-xs-6 col-sm-3 p-b-20'}
+        res['EndTime'] = {'Type': 'time', 'Label': 'Hasta','Input':'time','Class':'col-xs-6 col-sm-3 p-b-20'}
         res['__order__'] = cls.fieldsOrder()
         res['__lenght__'] = "3"
         return res

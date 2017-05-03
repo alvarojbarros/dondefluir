@@ -5,6 +5,7 @@ var vue_record = new Vue({
   data: {
     values: '',
     favorite: 'Agregar a Favoritos',
+    classname: 'btn btn-primary btn-rounded waves-effect waves-light m-t-20',
   },
 
 })

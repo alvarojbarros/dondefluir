@@ -13,6 +13,7 @@ from dondefluir.db.UserService import UserService
 from dondefluir.db.Notification import Notification
 from flask_login import current_user
 from sqlalchemy.orm import relationship,aliased
+from sqlalchemy import or_
 
 Base = declarative_base()
 
@@ -67,6 +68,27 @@ class Activity(Base,Record):
         Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
         Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]]}
         return Tabs
+
+    @classmethod
+    def getEventList(cls,limit=None,order_by=None,desc=None):
+        UserProf = aliased(User)
+        session = Session()
+        records = session.query(cls) \
+            .filter(or_(cls.Type==1,cls.Type==2)) \
+            .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
+            .filter(ActivitySchedules.TransDate>=today()) \
+            .join(Company,cls.CompanyId==Company.id)\
+            .join(UserProf,cls.ProfId==UserProf.id)\
+            .outerjoin(Service,cls.ServiceId==Service.id)\
+            .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+            ,ActivitySchedules.EndTime,cls.id,cls.Status,Company.Name.label('CompanyId')\
+            ,Service.Name.label('ServiceId'))
+        if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+        elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+        if limit: records = records.limit(limit)
+        session.close()
+        return records
+
 
 
     @classmethod

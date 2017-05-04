@@ -2,10 +2,10 @@
 {% block fields_view %}
 
   <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
-  <b v-if="record.Status==0">
+  <b v-if="record.Status.substring(0, 1)=='N'">
     <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
     {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></b>
-  <p v-if="record.Status==1">
+  <p v-if="record.Status.substring(0, 1)=='L'">
     <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'" >
     {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></p>
   </li>

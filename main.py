@@ -67,6 +67,8 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
     addElementToList(Tables,Table,UserType)
+    Table = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-envelope-o'}
+    addElementToList(Tables,Table,UserType)
     return Tables
 
 def getMyFunction(function,params):
@@ -396,3 +398,14 @@ def get_current_date():
     hoy = 'Hoy es %s %i de %s de %i' %(WeekName[w],d,meses[m],Y)
     return jsonify(result=hoy)
 
+
+@blue_dondefluir.route('/_event_list')
+def event_list():
+    fields = request.args.get('Fields').split(',')
+    order_by = request.args.get('OrderBy',None)
+    desc = request.args.get('Desc',None)
+    limit = request.args.get('Limit',None)
+    records = Activity.getEventList(limit=limit,order_by=order_by,desc=desc)
+    fieldsDef = Activity.fieldsDefinition()
+    res = fillRecordList(records,fields,fieldsDef)
+    return jsonify(result=res)

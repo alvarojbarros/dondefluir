@@ -1,0 +1,69 @@
+<script src="{{ url_for('blue_dondefluir.static', filename='js/vueevent.js') }}"></script>
+
+<div id="event_record">
+
+  <div id="vue_title" class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
+      <h4 class="page-title">
+        <label id="prof_Name"> Alvaro Jose  </label>
+      </h4>
+      <input type="hidden" id="id" value="">
+      <input type="hidden" id="record_id" value="">
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+      <ol class="breadcrumb">
+        <li>
+          <a href="http://localhost:5000/#" onclick="showDashboard()">Dashboard</a>
+        </li>
+        <li id="prof_Name2" class="active"> Alvaro Jose  </li>
+      </ol>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-9 col-xs-12">
+      <div class="white-box">
+        <div id="vue_schedule" class="tab-content">
+          <div id="cursos" class="tab-pane active">
+            <div v-for="(event,e) in events">
+
+              <h3 class="box-title">{%raw%}{{event[0]['Comment']}}{%endraw%}</h3>
+
+              <div class="row" >
+                <div class="col-md-3 col-xs-12 b-r"> <strong>Fechas y Horarios</strong>
+                  <br>
+                  <div v-for="(k,j) in event">
+                    <p class="text-muted">{%raw%}{{k['TransDate']}} de {{k['StartTime']}} a {{k['EndTime']}}{%endraw%}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 col-xs-12 b-r">
+                    <strong>Valor</strong>
+                    <br>
+                    <p class="text-muted">$ {%raw%}{{event[0]['Price']}}{%endraw%}</p>
+                </div>
+                <div class="col-md-3 col-xs-12"> <strong>Cupo máximo</strong>
+                  <br>
+                  <p class="text-muted">{%raw%}{{event[0]['MaxPersons']}}{%endraw%} asistentes<br>Quedan {%raw%}{{event[0]['MaxPersons'] - event[0]['Persons']}}{%endraw%} cupos disponibles</p>
+                  <div class="progress progress-lg">
+                    <div class="progress-bar progress-bar-primary"
+                      :style="'width: '+100*event[0]['Persons']/event[0]['MaxPersons']+'%;'" role="progressbar">
+                      {%raw%}{{100*event[0]['Persons']/event[0]['MaxPersons']}}{%endraw%}%</div>
+                  </div>
+                </div>
+
+              </div> <!-- row -->
+
+
+              <button class="btn btn-primary btn-rounded waves-effect waves-light m-t-20"
+              type="button" :id="e" :onclick="'setCustomerToEvent(\''+e+'\')'">{%raw%}{{event[0]['Status']}}{%endraw%}</button>
+              <p class="m-t-30"><strong>Descripción</strong></p>
+              <p>{%raw%}{{event[0]['Description']}}{%endraw%}</p>
+              <hr/>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

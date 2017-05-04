@@ -12,6 +12,7 @@ from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Notification import Notification
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
+from sqlalchemy import or_
 
 WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
 
@@ -138,8 +139,9 @@ def getBreakCalendarDates(act,dates):
 
 @blue_dondefluir.route('/_get_calendar_events')
 def get_calendar_events():
-    profId = request.args.get('id')
-    res = showProfessionalEvents({'profId':profId})
+    profId = request.args.get('id',None)
+    eventId = request.args.get('eventId',None)
+    res = showProfessionalEvents({'profId':profId,'eventId':eventId})
     return jsonify(result=res)
 
 
@@ -256,13 +258,16 @@ def getUserService(params):
     return records
 
 def showProfessionalEvents(*args):
-    profId = args[0]['profId']
+    profId = args[0].get('profId',None)
+    eventId = args[0].get('eventId',None)
     session = Session()
-    records = session.query(Activity).filter_by(ProfId=profId) \
+    records = session.query(Activity) \
         .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
-        .filter(ActivitySchedules.TransDate>=today()) \
+        .filter(ActivitySchedules.TransDate>=today(),or_(Activity.Type==1,Activity.Type==2)) \
         .with_entities(Activity.Comment,Activity.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
         ,ActivitySchedules.EndTime,Activity.id,Activity.MaxPersons,Activity.Price,Activity.Description)
+    if eventId: records = records.filter(Activity.id==eventId)
+    if profId: records = records.filter(Activity.ProfId==profId)
     res = {}
     k = 0
     for r in records:

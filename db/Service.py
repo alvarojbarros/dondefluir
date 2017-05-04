@@ -13,7 +13,7 @@ Base = declarative_base()
 class Service(Base,Record):
     __tablename__ = 'service'
     id = Column(Integer, primary_key=True)
-    Name = Column(String(40))
+    Name = Column(String(100))
     CompanyId = Column(Integer, ForeignKey(Company.id), nullable=False)
 
     @classmethod

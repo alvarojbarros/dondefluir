@@ -78,6 +78,7 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	Vue.set(vue_record.values.record,'CustId', CustId);
 	vue_record.values.record.CompanyId = CompanyId
 	vue_record.values.record.Status = 0
+	vue_record.values.record.Type = 0
 	vue_record.values.record.Schedules.push({'StartTime': StartTime,'TransDate': TransDate, 'EndTime': EndTime})
 	updateLinkTo()
 
@@ -87,7 +88,7 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	vars = {Template: 'recordform.html',Table:'Activity'}
 	getTemplate('container-fluid',vars,function(){
-		getRecord('Activity',{},function (data){
+		getRecord({TableName:'Activity'},function (data){
 			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
 			vue_title.Title = 'Nuevo Actividad'
@@ -118,7 +119,7 @@ function setCustomerToEvent(id){
 function newUserNote(custId){
 	vars = {Template: 'recordform.html',Table:'UserNote',RecordId:''}
 	getTemplate('container-fluid',vars,function(){
-		getRecord('UserNote',{},function (data){
+		getRecord({TableName:'UserNote'},function (data){
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_record,'table', 'UserNote');
 			vue_record.values.record.UserId = custId;
@@ -191,5 +192,22 @@ function getEventList(fields){
 	Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
 	$.getJSON($SCRIPT_ROOT + '/_event_list', vars ,function(data) {
 		Vue.set(vue_recordlist,'values', data.result);
+	});
+}
+
+
+function showEvent(id){
+
+    var vars = {Template: 'event.html',Table: 'Activity', id: id}
+	getTemplate('container-fluid',vars,function (){
+
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'eventId':id},function(data) {
+			//Vue.set(vue_schedule,'events',data.result)
+			Vue.set(vue_event,'events', data.result);
+		});
+
+		//getRecord({TableName:'Activity',id: id, 'NotFilterFields':true},function (data){
+		//	Vue.set(vue_event,'record', data.record);
+		//})
 	});
 }

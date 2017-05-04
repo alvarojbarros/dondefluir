@@ -212,7 +212,7 @@ class Activity(Base,Record):
 
     @classmethod
     def customGetFieldsDefinition(cls,record,res):
-        if current_user.UserType!=3:
+        if current_user.UserType!=3 and record.Type!=0:
             res['Comment']['Label'] = 'Nombre de Curso/Evento'
         return res
 

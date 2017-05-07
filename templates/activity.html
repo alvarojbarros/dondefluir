@@ -4,7 +4,7 @@
   <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
   <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
     <div v-if="user_type==3">
-      {%raw%}{{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+      {%raw%}{{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} ({{record.Status}}){%endraw%}
     </div>
     <div v-if="user_type!=3">
       {%raw%}{{record.CustId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}

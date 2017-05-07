@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
-from tools.dbconnect import engine,Session
+from tools.dbconnect import engine,Session,MediumText
 from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
 from tools.Tools import *
@@ -20,6 +20,7 @@ class Notification(Base,Record):
     Comment = Column(String(255))
     Action = Column(String(255))
     TransDate = Column(DateTime)
+    Description = Column(MediumText())
 
     def __init__(self):
         super(self.__class__,self).__init__()
@@ -34,7 +35,14 @@ class Notification(Base,Record):
         res['Action'] = {'Type': 'text','Hidde': True}
         res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'No Leída',1: 'Leída'}}
         res['TransDate'] = {'Type': 'datetime','Label':'Fecha', 'Input':'datetime','Readonly':1}
+        res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4'}
         return res
+
+    @classmethod
+    def htmlView(cls):
+        Tabs = {}
+        Tabs[0] = {"Fields": [[0,["Comment"]],[1,["Status"]],[2,["Fecha"]],[3,["Description"]]]}
+        return Tabs
 
     def defaults(self):
         self.TransDate = now()
@@ -47,10 +55,6 @@ class Notification(Base,Record):
     @classmethod
     def canUserDelete(cls):
         return False
-
-    '''@classmethod
-    def canUserEdit(cls,recordId):
-        return False '''
 
     @classmethod
     def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):

@@ -55,25 +55,26 @@ class User(Base,Record,UserMixin):
         res['Password'] = {'Type': 'text', 'Label': 'Password','Input':'password'}
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['UserType'] = {'Type': 'integer', 'Label': 'Tipo de Usuario', 'Input': 'combo', \
-            'Values': {0: 'Super',1: 'Administrador',2: 'Profesional',3: 'Cliente'},'Level':[0,1],\
+            'Values': {0: 'Super',1: 'Administrador',2: 'Profesional',3: 'Cliente'},'Level':[0,1,2],\
             'ValuesLevel':{0:[0,1,2,3],1:[1,2,3],2:[3],3:[]}}
-        res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0],'LinkTo':{'Table':'Company','Show':['Name']}}
+        res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0]\
+            ,'LinkTo':{'Table':'Company','Show':['Name']},'ShowIf':['UserType',["0","1","2"]]}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
         res['Title'] = {'Type': 'text', 'Label': 'Profesión', 'Input': 'text','Level':[0,1,2]}
-        res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2]}
-        res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2]}
-        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2]}
-        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2]}
-        res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2]}
-        res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2]}
+        res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
         res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
-        res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
+        res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
         res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
         res['EditSchedule'] = {'Type': 'integer', 'Label': 'Editar Agenda', 'Input': 'combo', \
-            'Values': {0: 'SI',1: 'NO'},'Level':[0,1]}
+            'Values': {0: 'SI',1: 'NO'},'Level':[0,1],'ShowIf':['UserType',["0","1","2"]]}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'UserSchedule',\
-            'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2]}
+            'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
         res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'checkbox','Level':[0,1,2],'Persistent':False, \
             'Method':'getFavorite()','onClick': 'setFavorite(this)' }
         res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
@@ -92,7 +93,8 @@ class User(Base,Record,UserMixin):
             ,[6,["Comment"]],[7,["Title","ImageProfile"]]]}
         Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType"]] \
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
-        Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]}
+        Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]\
+            ,'ShowIf':['UserType',["0","1","2"]]}
         Tabs[3] = {"Name":"Notificaciones", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
             ,[2,["NtfActivityChange","NtfActivityReminder"]]]}
         return Tabs
@@ -169,7 +171,7 @@ class User(Base,Record,UserMixin):
             session.close()
         elif current_user.UserType==2:
             session = Session()
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserType=3)
+            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)
             session.close()
         else:
             records = Record.getRecordList(TableClass)
@@ -177,7 +179,7 @@ class User(Base,Record,UserMixin):
 
     @classmethod
     def canUserCreate(self):
-        if current_user.UserType in (0,1):
+        if current_user.UserType in (0,1,2):
             return True
 
     @classmethod
@@ -186,9 +188,14 @@ class User(Base,Record,UserMixin):
             return True
 
     @classmethod
-    def canUserEdit(self,recordId):
-        if current_user.UserType in (0,1) or current_user.id==recordId:
+    def canUserEdit(self,record):
+        if current_user.id==record.id:
             return True
+        elif record.UserType==None:
+            return True
+        elif current_user.UserType<record.UserType:
+            return True
+        return False
 
     @classmethod
     def getUserFieldsReadOnly(cls,record,fieldname):
@@ -196,7 +203,10 @@ class User(Base,Record,UserMixin):
             if record and record.UserType==3:
                 return 1 #solo insertar nuevos
         if current_user.UserType==2:
-            return 2 #nunca
+            if record and record.UserType in (0,1,2):
+                return 2 #nunca
+            if record and record.UserType==3:
+                return 1 #solo insertar nuevos
 
     def getFavorite(self):
         from dondefluir.db.UserFavorite import UserFavorite

@@ -30,7 +30,7 @@
      <div class="white-box">
         <div class="list-group">
           {% for record in myFunction(function='getUserNote',params={'custId': var['custId']}) %}
-            <div class="list-group-item"><b> {{record.ProfId}} - {{getStrfTime(record.TransDate,'%d/%m/%Y %H:%M')}} </b> <br> {{record.Note}} </div>
+            <div class="list-group-item"><b> {{record.Name}} - {{getStrfTime(record.TransDate,'%d/%m/%Y %H:%M')}} </b> <br> {{record.Note}} </div>
           {% endfor %}
         </div>
      </div>

@@ -45,7 +45,8 @@ class Activity(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name'],'Method':'getCustomer','Params':"{'favorite':False}"}}
+        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
+            ,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"]]}
         res['ProfId'] = {'Type': 'text', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
@@ -65,8 +66,8 @@ class Activity(Base,Record):
         Tabs = {}
         Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
-        Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]]}
-        Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]]}
+        Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]],'ShowIf':['Type',["1","2"]]}
+        Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]],'ShowIf':['Type',["1","2"]]}
         return Tabs
 
     @classmethod
@@ -170,9 +171,9 @@ class Activity(Base,Record):
             elif fieldname in ['CompanyId']:
                 return 2 # nunca
         if current_user.UserType == 2:
-            if fieldname in ['Type']:
+            if fieldname in ['CustId','Type']:
                 return 1 #solo insertar nuevos
-            elif fieldname in ('CustId','ProfId','CompanyId'):
+            elif fieldname in ('ProfId','CompanyId'):
                 return 2 # nunca
         if current_user.UserType == 3:
             if fieldname in ['Comment']:
@@ -182,7 +183,8 @@ class Activity(Base,Record):
         return 0 # siempre
 
     def defaults(self):
-        #self.ProfId = current_user.id
+        if current_user.UserType in (0,1,2):
+            self.ProfId = current_user.id
         self.Status = 0
         self.CompanyId = current_user.CompanyId
 

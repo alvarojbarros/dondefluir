@@ -91,6 +91,8 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 		getRecord({TableName:'Activity'},function (data){
 			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
+			Vue.set(vue_buttons,'canEdit', data.canEdit);
+			Vue.set(vue_buttons,'canDelete', data.canDelete);
 			vue_title.Title = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
@@ -122,6 +124,8 @@ function newUserNote(custId){
 		getRecord({TableName:'UserNote'},function (data){
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_record,'table', 'UserNote');
+			Vue.set(vue_buttons,'canEdit', data.canEdit);
+			Vue.set(vue_buttons,'canDelete', data.canDelete);
 			vue_record.values.record.UserId = custId;
 			vue_title.Title = 'Ingresar Nota'
 		})

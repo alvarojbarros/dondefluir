@@ -35,7 +35,7 @@ meses = {
 
 def getActivitiesModuleName():
     if current_user.UserType==3:
-        return "Agenda"
+        return "Mi Agenda"
     else:
         return "Actividades"
 
@@ -50,9 +50,11 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions},'Image':'fa-fort-awesome'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic'}
+    Table = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
+    addElementToList(Tables,Table,UserType)
+    Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic'}
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o'}
     addElementToList(Tables,Table,UserType)
@@ -62,13 +64,11 @@ def getModules(UserType):
     addElementToList(Tables,Table,UserType)
     Table = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html','Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
-    addElementToList(Tables,Table,UserType)
     Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':functions},'Image':'ti-calendar p-r-10'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
+    Table = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-star'}
     addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-envelope-o'}
+    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
     addElementToList(Tables,Table,UserType)
     return Tables
 

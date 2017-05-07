@@ -40,11 +40,20 @@ class UserNote(Base,Record):
     def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
         session = Session()
         if current_user.UserType==3:
-            records = session.query(cls).filter_by(UserId=current_user.id).order_by(UserNote.TransDate.desc())
+            records = session.query(cls).filter_by(UserId=current_user.id)\
+                .join(User,User.id==cls.ProfId)\
+                .with_entities(User.Name,cls.TransDate,cls.Note)\
+                .order_by(UserNote.TransDate.desc())
         elif current_user.UserType in (0,1):
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId).order_by(UserNote.TransDate.desc())
+            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId)\
+                .join(User,User.id==cls.ProfId)\
+                .with_entities(User.Name,cls.TransDate,cls.Note)\
+                .order_by(UserNote.TransDate.desc())
         elif current_user.UserType==2:
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId,ProfId=current_user.id).order_by(UserNote.TransDate.desc())
+            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId,UserId=custId,ProfId=current_user.id)\
+                .join(User,User.id==cls.ProfId)\
+                .with_entities(User.Name,cls.TransDate,cls.Note)\
+                .order_by(UserNote.TransDate.desc())
         session.close()
         return records
 

@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from flask_login import UserMixin
@@ -42,6 +41,8 @@ class User(Base,Record,UserMixin):
     NtfReminderDays = Column(Integer)
     NtfReminderHours = Column(Integer)
     ShowFromDays = Column(Integer)
+    NtfActivityConfirm = Column(Integer)
+    NtfActivityNewCust = Column(Integer)
 
     Schedules = relationship('UserSchedule', cascade="all, delete-orphan")
 
@@ -55,26 +56,26 @@ class User(Base,Record,UserMixin):
         res['Password'] = {'Type': 'text', 'Label': 'Password','Input':'password'}
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['UserType'] = {'Type': 'integer', 'Label': 'Tipo de Usuario', 'Input': 'combo', \
-            'Values': {0: 'Super',1: 'Administrador',2: 'Profesional',3: 'Cliente'},'Level':[0,1,2],\
+            'Values': {0: 'Super',1: 'Administrador',2: 'Profesional',3: 'Cliente'},\
             'ValuesLevel':{0:[0,1,2,3],1:[1,2,3],2:[3],3:[]}}
         res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0]\
-            ,'LinkTo':{'Table':'Company','Show':['Name']},'ShowIf':['UserType',["0","1","2"]]}
+            ,'LinkTo':{'Table':'Company','Show':['Name']},'ShowIf':['UserType',["0","1","2"],-1]}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
         res['Title'] = {'Type': 'text', 'Label': 'Profesión', 'Input': 'text','Level':[0,1,2]}
-        res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
-        res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
-        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
-        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
-        res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
-        res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta (Cantidad de días)', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde (Cantidad de días)', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
-        res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+        res['Comment'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
         res['EditSchedule'] = {'Type': 'integer', 'Label': 'Editar Agenda', 'Input': 'combo', \
-            'Values': {0: 'SI',1: 'NO'},'Level':[0,1],'ShowIf':['UserType',["0","1","2"]]}
+            'Values': {0: 'SI',1: 'NO'},'Level':[0,1],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'UserSchedule',\
-            'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2],'ShowIf':['UserType',["0","1","2"]]}
+            'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'checkbox','Level':[0,1,2],'Persistent':False, \
             'Method':'getFavorite()','onClick': 'setFavorite(this)' }
         res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
@@ -84,6 +85,8 @@ class User(Base,Record,UserMixin):
         res['NtfActivityReminder'] = {'Type': 'integer', 'Label': 'Recordatorio de Actividad ', 'Input': 'checkbox'}
         res['NtfReminderDays'] = {'Type': 'integer', 'Label': 'Días de Antelación para Recordatorio', 'Input': 'integer'}
         res['NtfReminderHours'] = {'Type': 'integer', 'Label': 'Horas de Antelación para Recordatorio', 'Input': 'integer'}
+        res['NtfActivityConfirm'] = {'Type': 'integer', 'Label': 'Actividad Confirmada', 'Input': 'checkbox'}
+        res['NtfActivityNewCust'] = {'Type': 'integer', 'Label': 'Nuevos Clientes', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         return res
 
     @classmethod
@@ -94,9 +97,9 @@ class User(Base,Record,UserMixin):
         Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType"]] \
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
         Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]\
-            ,'ShowIf':['UserType',["0","1","2"]]}
-        Tabs[3] = {"Name":"Notificaciones", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
-            ,[2,["NtfActivityChange","NtfActivityReminder"]]]}
+            ,'ShowIf':['UserType',["0","1","2"],-1]}
+        Tabs[3] = {"Name":"Notificaciones por correo", "Fields": [[0,["NtfActivityNew","NtfActivityCancel"]] \
+            ,[2,["NtfActivityConfirm","NtfActivityNewCust"]],[2,["NtfActivityChange"]]]}
         return Tabs
 
     def filterFields(self,fields):
@@ -132,6 +135,8 @@ class User(Base,Record,UserMixin):
         session.add(new_user)
         try:
             session.commit()
+            from tools.MailTools import sendNewUserMail
+            sendNewUserMail(username,name,password)
         except Exception as e:
             session.rollback()
             session.close()
@@ -195,10 +200,12 @@ class User(Base,Record,UserMixin):
             return True
         elif current_user.UserType<record.UserType:
             return True
-        return False
+            return False
 
     @classmethod
     def getUserFieldsReadOnly(cls,record,fieldname):
+        if record and record.id==current_user.id:
+            return
         if current_user.UserType==1:
             if record and record.UserType==3:
                 return 1 #solo insertar nuevos
@@ -207,6 +214,12 @@ class User(Base,Record,UserMixin):
                 return 2 #nunca
             if record and record.UserType==3:
                 return 1 #solo insertar nuevos
+
+    @classmethod
+    def customGetFieldsDefinition(cls,record,res):
+        if record and record.id==current_user.id:
+            res['UserType']['Hidde'] = True
+        return res
 
     def getFavorite(self):
         from dondefluir.db.UserFavorite import UserFavorite

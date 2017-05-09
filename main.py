@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 from flask import render_template, request,jsonify
 from flask_login import login_required, current_user
@@ -14,24 +13,7 @@ from dondefluir.db.Notification import Notification
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
 from sqlalchemy import or_
 
-WeekName = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
-
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
-
-meses = {
-    1:'Enero',
-    2:'Febrero',
-    3:'Marzo',
-    4:'Abril',
-    5:'Mayo',
-    6:'Junio',
-    7:'Julio',
-    8:'Agosto',
-    9:'Septiembre',
-    10:'Octubre',
-    11:'Noviembre',
-    12:'Diciembre'
-}
 
 def getActivitiesModuleName():
     if current_user.UserType==3:

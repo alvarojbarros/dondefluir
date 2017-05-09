@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Date, Time, Float
@@ -14,6 +13,7 @@ from dondefluir.db.Notification import Notification
 from flask_login import current_user
 from sqlalchemy.orm import relationship,aliased
 from sqlalchemy import or_
+from dondefluir.MailTools import sendMailNewActivity,sendMailUpdateActivity,sendMailConfirmActivity,sendMailCancelActivity,sendMailNewCustActivity
 
 Base = declarative_base()
 
@@ -37,6 +37,13 @@ class Activity(Base,Record):
 
     StatusList = ['Tomar este curso','Anular Inscripción']
 
+    ACTIVITY_NEW = 0
+    ACTIVITY_UPDATE = 1
+    ACTIVITY_CANCEL = 2
+    ACTIVITY_CONFIRM = 3
+    ACTIVITY_NEW_CUST = 4
+    ACTIVITY_NEAR = 5
+
     def __init__(self):
         super(self.__class__,self).__init__()
         #super().__init__()
@@ -46,12 +53,14 @@ class Activity(Base,Record):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
         res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
-            ,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"]]}
+            ,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
         res['ProfId'] = {'Type': 'text', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
-        res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'},'Level':[0,1,2]}
+        res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'}}
+        if current_user.UserType==3:
+            res['Type']['Hidde'] = True
         res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2],'htmlView':ActivityUsers.htmlView()}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'ActivitySchedules', 'fieldsDefinition': ActivitySchedules.fieldsDefinition(),'Level':[0,1,2,3],'htmlView':ActivitySchedules.htmlView()}
         res['Image'] = {'Type': 'text', 'Label': 'Imagen', 'Input': 'fileinput','Level':[0,1,2]}
@@ -66,8 +75,8 @@ class Activity(Base,Record):
         Tabs = {}
         Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
-        Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]],'ShowIf':['Type',["1","2"]]}
-        Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]],'ShowIf':['Type',["1","2"]]}
+        Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]],'ShowIf':['Type',["1","2"],-1]}
+        Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]],'ShowIf':['Type',["1","2"],-1]}
         return Tabs
 
     @classmethod
@@ -203,6 +212,11 @@ class Activity(Base,Record):
             return True
 
     @classmethod
+    def canUserDelete(self):
+        if current_user.UserType in (0,1,2):
+            return True
+
+    @classmethod
     def canUserAddRow(self):
         if current_user.UserType in (0,1,2):
             return True
@@ -261,7 +275,7 @@ class Activity(Base,Record):
                         self.sendCustomerMailNewActivity(prof,customer.id) '''
 
 
-    def setNotification(self,comment,user_id):
+    def setNotification(self,comment,user_id,type):
         ntf = Notification()
         ntf.defaults()
         ntf.UserId = user_id
@@ -272,90 +286,90 @@ class Activity(Base,Record):
         if not res: return res
         return True
 
+    def setNotificationActivityUpdate(self,UserId):
+        res = True
+        if self.OldFields['Status']==self.Status:
+            res = self.setNotification("Actvididad Modificada",UserId,self.ACTIVITY_UPDATE)
+        elif self.Status==1:
+            res = self.setNotification("Actvididad Confirmada",UserId,self.ACTIVITY_CONFIRM)
+        elif self.Status==2:
+            res = self.setNotification("Actvididad Cancelada",UserId,self.ACTIVITY_CANCEL)
+        return res
+
+
+    def setMailActivity(self,user_id,type):
+        user = User.getRecordById(user_id)
+        if user:
+            if type==self.ACTIVITY_UPDATE and user.NtfActivityChange:
+                res = sendMailUpdateActivity(user,self)
+            elif type==self.ACTIVITY_NEW and user.NtfActivityNew:
+                res = sendMailNewActivity(user,self)
+            elif type==self.ACTIVITY_CANCEL and user.NtfActivityCancel:
+                res = sendMailCancelActivity(user,self)
+            elif type==self.ACTIVITY_CONFIRM and user.NtfActivityConfirm:
+                res = sendMailConfirmActivity(user,self)
+            elif type==self.ACTIVITY_NEW_CUST and user.NtfActivityNewCust:
+                res = sendMailNewCustActivity(user,self)
+        return True
+
+    def setMailActivityUpdate(self,UserId):
+        res = True
+        if self.OldFields['Status']==self.Status:
+            res = self.setMailActivity(UserId,self.ACTIVITY_UPDATE)
+        elif self.Status==1:
+            res = self.setMailActivity(UserId,self.ACTIVITY_CONFIRM)
+        elif self.Status==2:
+            res = self.setMailActivity(UserId,self.ACTIVITY_CANCEL)
+        return res
+
+
     def afterUpdate(self):
         if self.ProfId and current_user.id!=self.ProfId:
             if len(self.Users)==len(self.OldFields['Users']):
-                res = self.setNotification("Actvididad Modificada",self.ProfId)
+                res = self.setNotificationActivityUpdate(self.ProfId)
                 if not res: return res
             else:
-                res = self.setNotification("Actvididad Modificada. Nuevos Clientes",self.ProfId)
+                res = self.setNotification("Actvididad Modificada. Nuevos Clientes",self.ProfId,self.ACTIVITY_NEW_CUST)
                 if not res: return res
         if self.CustId and current_user.id!=self.CustId:
-            res = self.setNotification("Actvididad Modificada",self.CustId)
+            res = self.setNotificationActivityUpdate(self.CustId)
             if not res: return res
         if len(self.Users)==len(self.OldFields['Users']):
             for row in self.Users:
                 if row.CustId:
-                    res = self.setNotification("Actvididad Modificada",row.CustId)
+                    res = self.setNotificationActivityUpdate(row.CustId)
                     if not res: return res
+
+        if self.ProfId:
+            if len(self.Users)==len(self.OldFields['Users']):
+                res = self.setMailActivityUpdate(self.ProfId)
+                if not res: return res
+            else:
+                res = self.setMailActivity(self.ProfId,self.ACTIVITY_NEW_CUST)
+                if not res: return res
+        if self.CustId:
+            res = self.setMailActivityUpdate(self.CustId)
+            if not res: return res
+        if len(self.Users)==len(self.OldFields['Users']):
+            for row in self.Users:
+                if row.CustId:
+                    res = self.setMailActivityUpdate(row.CustId)
+                    if not res: return res
+
         return True
 
     def afterInsert(self):
-        if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actvididad",self.ProfId)
-        if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actvididad",self.CustId)
+        if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actvididad",self.ProfId,self.ACTIVITY_NEW)
+        if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actvididad",self.CustId,self.ACTIVITY_NEW)
         for row in self.Users:
-            if row.CustId: self.setNotification("Nueva Actvididad",row.CustId)
+            if row.CustId: self.setNotification("Nueva Actvididad",row.CustId,self.ACTIVITY_NEW)
+
+        if self.ProfId: self.setMailActivity(self.ProfId,self.ACTIVITY_NEW)
+        if self.CustId: self.setMailActivity(self.CustId,self.ACTIVITY_NEW)
+        for row in self.Users:
+            if row.CustId: self.setMailActivity(row.CustId,self.ACTIVITY_NEW)
+
         return True
-        #user = User.getRecordById(self.ProfId)
-        #if user and user.NtfActivityNew:
-
-        '''if current_user.id!=self.ProfId:
-            user = User.getRecordById(self.ProfId)
-            if user and user.NtfActivityNew:
-                msj = "\n"
-                msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
-                msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
-                msj += "\n"
-                if self.CustId:
-                    customer = User.getRecordById(self.CustId)
-                    if customer:
-                        if customer.Name:
-                            msj += "Cliente: %s\n" % customer.Name
-                        if customer.Phone:
-                            msj += "Telefono: %s\n" % customer.Phone
-                        msj += "Email: %s\n" % customer.id
-                msj += "\n"
-                return mail.sendMail(user.id,'Tiene una nueva Actividad',msj)
-        if not self.Type and self.current_user.id==self.CustId:
-            if current_user.NtfActivityNew:
-                if self.ProfId:
-                    prof = User.getRecordById(self.ProfId)
-                    if prof:
-                        self.sendCustomerMailUpdateActivity(prof,user.id)'''
-        ''' if self.Type and self.ProfId:
-            prof = User.getRecordById(self.ProfId)
-            if prof:
-                for row in self.Users:
-                    customer = User.getRecordById(row.CustId)
-                    if customer and customer.NtfActivityNew:
-                        self.sendCustomerMailNewActivity(prof,customer.id) '''
-
-    def sendCustomerMailUpdateActivity(self,prof,CustEmail):
-        self.sendCustomerMailActivity(CustEmail,'Actividad Modificada',msj)
-
-    def sendCustomerMailNewActivity(self,prof,CustEmail):
-        self.sendCustomerMailActivity(CustEmail,'Tiene una nueva Actividad',msj)
-
-    def sendCustomerMailActivity(self,prof,CustEmail,Subject):
-        msj = "\n"
-        msj += "Descripción: %s\n" % self.Comment
-        msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
-        msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
-        if prof.Name:
-            msj += "Profesional: %s\n" % prof.Name
-        else:
-            msj += "Profesional: %s\n" % prof.id
-        phone = prof.getField('Phone')
-        if phone: msj += "Telefono: %s\n" % phone
-        email = prof.getField('Email')
-        if email: msj += "Email: %s\n" % email
-        adddress = prof.getField('Address')
-        if address: msj += "Dirección: %s\n" % address
-        city = prof.getField('City')
-        if city: msj += "Ciudad: %s\n" % city
-        msj += "\n"
-        return mail.sendMail(CustEmail,Subject,msj)
-
 
     def getLinkToFromRecord(self,TableClass):
         if TableClass==Service:

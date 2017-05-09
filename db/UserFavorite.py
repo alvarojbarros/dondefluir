@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey, Index

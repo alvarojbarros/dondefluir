@@ -187,7 +187,7 @@ class Activity(Base,Record):
         if current_user.UserType == 3:
             if fieldname in ['Comment']:
                 return 1 #solo insertar nuevos
-            elif fieldname in ('ProfId','CompanyId','TransDate','StartTime','EndTime','CustId'):
+            elif fieldname in ('ProfId','CompanyId','TransDate','StartTime','EndTime','CustId','Type'):
                 return 2 # nunca
         return 0 # siempre
 
@@ -228,6 +228,8 @@ class Activity(Base,Record):
 
     @classmethod
     def customGetFieldsDefinition(cls,record,res):
+        if current_user.UserType==3:
+            res['Type']['Input'] = 'Hidde'
         if current_user.UserType!=3 and record.Type!=0:
             res['Comment']['Label'] = 'Nombre de Curso/Evento'
         return res

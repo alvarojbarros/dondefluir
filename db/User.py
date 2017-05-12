@@ -135,7 +135,7 @@ class User(Base,Record,UserMixin):
         session.add(new_user)
         try:
             session.commit()
-            from tools.MailTools import sendNewUserMail
+            from dondefluir.MailTools import sendNewUserMail
             sendNewUserMail(username,name,password)
         except Exception as e:
             session.rollback()

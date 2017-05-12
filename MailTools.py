@@ -90,7 +90,7 @@ def sendMailNewActivity(user,activity):
 
 def sendNewUserMail(user,name,password):
     msj = render_template('notificacionesCreacionUsuario.html',user=user,name=name,password=password)
-    subject = '¡Te damos la bienvenida a Donde Fluir!'
+    subject = 'Te damos la bienvenida a Donde Fluir!'
     return sendMail(user,subject,msj)
 
 def sendMailNewCustActivity(user,activity):

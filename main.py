@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from flask import render_template, request,jsonify
 from flask_login import login_required, current_user
@@ -396,3 +396,30 @@ def event_list():
     fieldsDef = Activity.fieldsDefinition()
     res = fillRecordList(records,fields,fieldsDef)
     return jsonify(result=res)
+
+@blue_dondefluir.route('/_cancel_activity')
+def cancel_activity():
+    session = Session()
+    session.expire_on_commit = False
+    _id = request.args.get('id')
+    record = session.query(Activity).filter_by(id=_id).first()
+    if not record:
+        return jsonify(result={'res': False,'Error':'Registro no Encontrado'})
+    record.setOldFields()
+    record.Status = record.CANCELLED
+    res = record.check()
+    if not res:
+        return jsonify(result={'res': False,'Error':str(res)})
+    record.syncVersion += 1
+    res = record.afterUpdate()
+    if not res:
+        return jsonify(result={'res': False,'Error':str(res)})
+    try:
+        session.commit()
+        session.close()
+    except Exception as e:
+        session.rollback()
+        session.close()
+        return jsonify(result={'res': False,'Error':str(e)})
+    record.afterCommitUpdate()
+    return jsonify(result={'res':True,'id': record.id,'syncVersion': record.syncVersion})

@@ -215,3 +215,27 @@ function showEvent(id){
 		//})
 	});
 }
+
+function cancelActivity() {
+    var fields = {}
+	_id = vue_record.values.record.id;
+	if (vue_record.values.record.Status==2){
+		messages.error_msg = 'Actividad ya cancelada';
+		return;
+	}
+    if (_id){
+		fields['id'] = _id;
+		$.getJSON($SCRIPT_ROOT + '/_cancel_activity', fields, function(data) {
+		  if (data.result['res']){
+			  messages.success_msg = 'Actividad Cancelada';
+			  vue_record.values.record.syncVersion = data.result['syncVersion'];
+			  vue_record.values._state = 1
+			  vue_record.values.Status = 2
+		  }else{
+			  messages.error_msg = data.result['Error'];
+		  }
+		});
+	}else{
+	  messages.error_msg = 'No se puede cancelar';
+	}
+};

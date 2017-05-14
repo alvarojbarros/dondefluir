@@ -44,6 +44,10 @@ class Activity(Base,Record):
     ACTIVITY_NEW_CUST = 4
     ACTIVITY_NEAR = 5
 
+    REQUESTED = 0
+    CONFIRMED = 1
+    CANCELLED = 2
+
     def __init__(self):
         super(self.__class__,self).__init__()
         #super().__init__()
@@ -67,7 +71,7 @@ class Activity(Base,Record):
         res['MaxPersons'] = {'Type': 'integer', 'Label': 'Cupos', 'Input': 'integer','Level':[0,1,2]}
         res['Price'] = {'Type': 'float', 'Label': 'Valor', 'Input': 'number','Level':[0,1,2]}
         res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
-        res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'Solicitada',1: 'Confirmada',2:'Cancelada'},'Level':[0,1,2]}
+        res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'Solicitada',1: 'Confirmada',2:'Cancelada'},'Level':[0,1,2,3]}
         return res
 
     @classmethod
@@ -187,7 +191,7 @@ class Activity(Base,Record):
         if current_user.UserType == 3:
             if fieldname in ['Comment']:
                 return 1 #solo insertar nuevos
-            elif fieldname in ('ProfId','CompanyId','TransDate','StartTime','EndTime','CustId','Type'):
+            elif fieldname in ('ProfId','CompanyId','TransDate','StartTime','EndTime','CustId','Type','Status'):
                 return 2 # nunca
         return 0 # siempre
 

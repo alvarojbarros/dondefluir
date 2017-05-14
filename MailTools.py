@@ -11,9 +11,11 @@ settings = getsettings.getSettings()
 from tools.Tools import *
 
 def strToDate(d):
+    if isinstance(d,date): return d
     return date(int(d[:4]),int(d[5:7]),int(d[8:10]))
 
 def strToTime(d):
+    if isinstance(d,time): return d
     return time(int(d[:2]),int(d[3:5]),0)
 
 

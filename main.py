@@ -333,6 +333,8 @@ def get_professional_list():
     favorite = request.args.get('Favorite')=='true'
     records = getProfessional(favorite)
     res = fillRecordList(records,['Name','id','CompanyName','Title','City'])
+    for dic in res:
+        dic['Image'] = getImageLink('User',dic['id'],'ImageProfile')
     return jsonify(result=res)
 
 

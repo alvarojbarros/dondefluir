@@ -1,7 +1,7 @@
  <div class="row bg-title" id="vue_title">
     <!-- .page title -->
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-       <h4 class="page-title">{%raw%}{{Title}}{%endraw%}</h4>
+       <h4 class="page-title">Profesionales</h4>
     </div>
     <!-- /.page title -->
     <!-- .breadcrumb -->
@@ -21,9 +21,8 @@
      <div class="col-md-4 col-sm-4" v-for="k in [0+(3*(i-1)),1+(3*(i-1)),2+(3*(i-1))]">
         <div class="white-box" v-if="values[k]">
             <div class="row">
-                {% set image_url = getImageURL('User','{%raw%}{{values[k].id}}{%endraw%}','ImageProfile') %}
                 <div class="col-md-4 col-sm-4 text-center">
-                    <a href="#"><img src="{{image_url}}" alt="user" class="img-circle img-responsive"></a>
+                    <a href="#"><img :src="values[k].Image" alt="user" class="img-circle img-responsive"></a>
                 </div>
                 <div class="col-md-8 col-sm-8">
                     <h3 class="box-title m-b-0"><a href="#"

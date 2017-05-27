@@ -1,6 +1,7 @@
 {% extends "recordform.html" %}
 {% block add_buttons %}
-    <button onclick="cancelActivity()" class="btn btn-danger btn-rounded waves-effect waves-light m-r-10 m-b-10" >
+    <button v-if="id && Status!=2"
+      onclick="cancelActivity()" class="btn btn-danger btn-rounded waves-effect waves-light m-r-10 m-b-10" >
       <span class="btn-label">
         <i class="fa fa-minus">
         </i>

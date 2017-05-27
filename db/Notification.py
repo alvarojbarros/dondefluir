@@ -14,7 +14,7 @@ class Notification(Base,Record):
 
     __tablename__ = 'notification'
     id = Column(Integer, primary_key=True)
-    UserId = Column(String(20), ForeignKey(User.id), nullable=True)
+    UserId = Column(Integer, ForeignKey(User.id), nullable=True)
     Status = Column(Integer)
     Comment = Column(String(255))
     Action = Column(String(255))
@@ -29,7 +29,7 @@ class Notification(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['UserId'] = {'Type': 'text','Hidde': True }
+        res['UserId'] = {'Type': 'integer','Hidde': True }
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text','Readonly':1}
         res['Action'] = {'Type': 'text','Hidde': True}
         res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'No Leída',1: 'Leída'}}

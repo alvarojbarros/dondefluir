@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from mail import sendMail
+from tools.Mail import sendMail
 from flask import render_template
 from dondefluir.db.Service import Service
 from dondefluir.db.Company import Company
@@ -9,6 +9,9 @@ from datetime import date,time
 import getsettings
 settings = getsettings.getSettings()
 from tools.Tools import *
+from mako.template import Template
+import io
+folder = "%s/%s" %(settings.app_folder,settings.template_folder)
 
 def strToDate(d):
     if isinstance(d,date): return d
@@ -54,8 +57,10 @@ def getVars(user,activity):
         var['StartTime'] = strToTime(row.StartTime).strftime("%H:%M")
         var['EndTime'] = strToTime(row.EndTime).strftime("%H:%M")
     company = Company.getRecordById(activity.CompanyId)
+    var['CompanyName'] = ''
     if company and company.Name:
         var['CompanyName'] = company.Name
+    var['WebSite'] = ''
     if company and company.WebSite:
         var['WebSite'] = company.WebSite
     if company and company.Address and not var['UserAddress']:
@@ -66,38 +71,49 @@ def getVars(user,activity):
         var['UserPhone'] = company.Phone
     return var
 
+def getTemplateHTML(f,var):
+    res = Template(f.read(), default_filters=['decode.utf8'], input_encoding='utf-8', output_encoding='utf-8').render(var=var)
+    return res
+
 def sendMailUpdateActivity(user,activity):
     var = getVars(user,activity)
-    msj = render_template('notificacionesModificacionCita.html',var=var)
+    f = io.open('%s/notificacionesModificacionCita.html' % folder,'r', encoding="utf-8")
+    msj = getTemplateHTML(f,var)
     subject = ' Actividad modificada: %s - %s con %s' % (var['TransDate'],var['ActivityTitle'],var['ProfId'])
-    return sendMail(user.id,subject,msj)
+    return sendMail(user.Email,subject,msj)
 
 def sendMailCancelActivity(user,activity):
     var = getVars(user,activity)
-    msj = render_template('notificacionesCancelacionCita.html',var=var)
+    f = io.open('%s/notificacionesCancelacionCita.html' % folder,'r', encoding="utf-8")
+    msj = getTemplateHTML(f,var)
     subject = ' Actividad cancelada: %s - %s con %s' % (var['TransDate'],var['ActivityTitle'],var['ProfId'])
-    return sendMail(user.id,subject,msj)
+    return sendMail(user.Email,subject,msj)
 
 def sendMailConfirmActivity(user,activity):
     var = getVars(user,activity)
-    msj = render_template('notificacionesConfirmacionCita.html',var=var)
+    f = io.open('%s/notificacionesConfirmacionCita.html' % folder,'r', encoding="utf-8")
+    msj = getTemplateHTML(f,var)
     subject = ' Actividad confirmada: %s - %s con %s' % (var['TransDate'],var['ActivityTitle'],var['ProfId'])
-    return sendMail(user.id,subject,msj)
+    return sendMail(user.Email,subject,msj)
 
 def sendMailNewActivity(user,activity):
     var = getVars(user,activity)
-    msj = render_template('notificacionesCreacionCita.html',var=var)
+    f = io.open('%s/notificacionesCreacionCita.html' % folder,'r', encoding="utf-8")
+    msj = getTemplateHTML(f,var)
     subject = ' Nueva actividad: %s - %s con %s' % (var['TransDate'],var['ActivityTitle'],var['ProfId'])
-    return sendMail(user.id,subject,msj)
+    return sendMail(user.Email,subject,msj)
 
 def sendNewUserMail(user,name,password):
-    msj = render_template('notificacionesCreacionUsuario.html',user=user,name=name,password=password)
+    f = io.open('%s/notificacionesCreacionUsuario.html' % folder,'r', encoding="utf-8")
+    msj = Template(f.read(), default_filters=['decode.utf8'], input_encoding='utf-8', output_encoding='utf-8')\
+        .render(user=user,name=name,password=password)
     subject = 'Te damos la bienvenida a Donde Fluir!'
     return sendMail(user,subject,msj)
 
 def sendMailNewCustActivity(user,activity):
     var = getVars(user,activity)
-    msj = render_template('notificacionesNuevosClientesActividad.html',var=var)
+    f = io.open('%s/notificacionesNuevosClientesActividad.html' % folder,'r', encoding="utf-8")
+    msj = getTemplateHTML(f,var)
     subject = ' Hay nuevos clientes en el %s: %s - %s con %s' % (['la Actividad','el Curso','el Evento'][activity.Type] \
         ,var['TransDate'],var['ActivityTitle'],var['ProfId'])
-    return sendMail(user.id,subject,msj)
+    return sendMail(user.Email,subject,msj)

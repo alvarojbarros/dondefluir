@@ -13,8 +13,8 @@ Base = declarative_base()
 class UserFavorite(Base,Record):
     __tablename__ = 'userfavorite'
     id = Column(Integer, primary_key=True)
-    UserId = Column(String(20), ForeignKey(User.id), nullable=False)
-    FavoriteId = Column(String(20), ForeignKey(User.id), nullable=False)
+    UserId = Column(Integer, ForeignKey(User.id), nullable=False)
+    FavoriteId = Column(Integer, ForeignKey(User.id), nullable=False)
     CompanyId = Column(Integer, ForeignKey(Company.id), nullable=False)
     Checked = Column(Boolean)
 
@@ -28,8 +28,8 @@ class UserFavorite(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'text', 'Hidde': True}
-        res['UserId'] = {'Type': 'text'}
-        res['FavoriteId'] = {'Type': 'text'}
+        res['UserId'] = {'Type': 'integer'}
+        res['FavoriteId'] = {'Type': 'integer'}
         res['Checked'] = {'Type': 'boolean'}
         return res
 

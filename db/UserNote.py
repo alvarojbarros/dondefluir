@@ -15,8 +15,8 @@ class UserNote(Base,Record):
 
     __tablename__ = 'usernote'
     id = Column(Integer, primary_key=True)
-    UserId = Column(String(20), ForeignKey(User.id), nullable=False)
-    ProfId = Column(String(20), ForeignKey(User.id), nullable=False)
+    UserId = Column(Integer, ForeignKey(User.id), nullable=False)
+    ProfId = Column(Integer, ForeignKey(User.id), nullable=False)
     CompanyId = Column(Integer, ForeignKey(Company.id))
     TransDate = Column(DateTime)
     Note = Column(MediumText())
@@ -25,11 +25,8 @@ class UserNote(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['UserId'] = {'Type': 'text','Hidde': True}
-        #res['ProfId'] = {'Type': 'text', 'Label': 'Usuario', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
-        #res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
-        #res['TransDate'] = {'Type': 'datetime', 'Label': 'Fecha','Input':'datetime'}
-        res['ProfId'] = {'Type': 'text', 'Hidde': True}
+        res['UserId'] = {'Type': 'integer','Hidde': True}
+        res['ProfId'] = {'Type': 'integer', 'Hidde': True}
         res['CompanyId'] = {'Type': 'text', 'Hidde': True}
         res['TransDate'] = {'Type': 'datetime', 'Hidde': True}
         res['Note'] = {'Type': 'text', 'Label': 'Nota','Input':'textarea','rows':'4','cols':'50'}

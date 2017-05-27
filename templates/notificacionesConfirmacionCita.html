@@ -48,20 +48,20 @@
     </head>
     <body>
         <img src="http://app.dondefluir.com/dondefluir/static/images/DondeFluirLogo.png" alt="Donde Fluir" width="200" height="88">
-    <p>¡Hola <strong>{{var['UserName']}}</strong>!<br>
+    <p>¡Hola <strong>${var['UserName']}</strong>!<br>
       Se ha confirmada tu actividad en <a href="http://www.dondefluir.com" target="_blank">Donde Fluir</a>.<br>
 Un portal al servicio  de iniciativas globales armoniosas<br>
 para la gestión de los sueños, el tiempo, el  espacio, la energía.</p>
     <div class="bloque">
     <p class="subtitulo">ACTIVIDAD CONFIRMADA</p>
     <p>
-      <strong>{{var['ActivityTitle']}}</strong> con <strong>{{var['ProfId']}}</strong><br>
-      <strong>{{var['TransDateStr']}}</strong><br>
-      <strong>{{var['StartTime']}}</strong> a <strong>{{var['EndTime']}}</strong></p>
+      <strong>${var['ActivityTitle']}</strong> con <strong>${var['ProfId']}</strong><br>
+      <strong>${var['TransDateStr']}</strong><br>
+      <strong>${var['StartTime']}</strong> a <strong>${var['EndTime']}</strong></p>
     <p><span class="gris">INFORMACIÓN DE CONTACTO</span><br>
-      <strong>{{var['CompanyName']}}</strong><br>
-      {{var['UserAddress']}}<br>
-      Teléfono: {{var['UserPhone']}} | Sitio web: <a href="http://{{var['WebSite']}}">{{var['WebSite']}}</a></p>
+      <strong>${var['CompanyName']}</strong><br>
+      ${var['UserAddress']}<br>
+      Teléfono: ${var['UserPhone']} | Sitio web: <a href="http://${var['WebSite']}">${var['WebSite']}</a></p>
     </div>
     <p class="enlacesApp"><a href="http://app.dondefluir.com" target="_blank">Agendar  cita</a> <span class="separador">|</span> <a href="http://app.dondefluir.com" target="_blank">Reservar cupo</a> <span class="separador">|</span> <a href="http://www.dondefluir.com" target="_blank">Gestionar mi agenda</a></p>
     <p><strong>Contacto<br>

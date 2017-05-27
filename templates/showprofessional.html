@@ -31,7 +31,7 @@
                     <div class="col-md-12"><strong>Especialidad</strong>
                         <p id="user_title"> {%raw%}{{values.Title}}{%endraw%} </p>
                     </div>
-                    <button :class="classname" type="button" id="favorite" onclick="setFavorite(this)">
+                    <button :class="classname" type="button" id="favorite" onclick="setFavorite(this,'0')">
                       <span class="btn-label">
                         <i class="fa fa-heart">
                         </i>
@@ -51,7 +51,7 @@
                 <!-- .row -->
                 <div class="row text-center m-t-10">
                     <div class="col-md-12 b-r"><strong>E-mail</strong>
-                        <p id="record_email"> {%raw%}{{values.id}}{%endraw%} </p>
+                        <p id="record_email"> {%raw%}{{values.Email}}{%endraw%} </p>
                     </div>
                     <div class="col-md-12"><strong>Teléfono</strong>
                         <p id="record_phone">  {%raw%}{{values.Phone}}{%endraw%} </p>
@@ -68,12 +68,15 @@
     <div class="col-md-9 col-xs-12">
         <div class="white-box">
             <!-- .tabs -->
-            <ul class="nav nav-tabs tabs customtab">
+            <ul class="nav nav-tabs tabs customtab" id="vue_tabs">
                 <li class="active tab">
                     <a href="#citas" data-toggle="tab"> <span><i class="fa fa-calendar"></i></span> <span class="hidden-xs">Reservar cita</span> </a>
                 </li>
                 <li class="tab">
                     <a href="#cursos" data-toggle="tab"> <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver cursos y eventos</span> </a>
+                </li>
+                <li class="tab" v-if="{{current_user.UserType}}==0">
+                    <a href="#agenda" data-toggle="tab"><span><i class="fa fa-book"></i></span> <span class="hidden-xs">Agenda</span></a>
                 </li>
             </ul>
             <div class="tab-content" id="vue_schedule">
@@ -85,7 +88,10 @@
                       <a href="javascript:void(0)" class="list-group-item active">{%raw%}{{d[0]['FechaStr']}}{%endraw%}</a>
                       <a v-for="value in d" href="#" class="list-group-item"
                         :onclick="'createActivity(\''+value['Date']+'\',\''+value['StartTime']+'\',\''+value['EndTime']+'\',\''+profId+'\',\''+value['CompanyId']+'\',\''+current_user_id+'\')'">
-                        {%raw%}{{value['StartTime']}} a {{value['EndTime']}}{%endraw%}</a>
+                        {%raw%}{{value['StartTime']}} a {{value['EndTime']}} {%endraw%}
+                        <div v-if="value['Service']">Servicio: {%raw%}{{value['Service']}}{%endraw%}</div>
+                        <div v-if="value['Comment']">{%raw%}{{value['Comment']}}{%endraw%}</div>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -130,6 +136,11 @@
 
                   </div>
                 </div> <!-- cursos -->
+                <div class="tab-pane" id="agenda">
+                    <a href="#" :onClick="'getTemplate(\'container-fluid\',{\'Template\':\'calendar.html\',\'UserId\':\''+ profId +'\',\'UserName\':\''+ profName +'\'})'">
+                      <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver Agenda</span>
+                    </a>
+                </div>
             </div> <!-- tab-content -->
         </div>
     </div>

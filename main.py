@@ -10,6 +10,7 @@ from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Notification import Notification
+from dondefluir.db.Service import Service
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
 from sqlalchemy import or_
 
@@ -17,42 +18,81 @@ blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templat
 
 def getActivitiesModuleName():
     if current_user.UserType==3:
-        return "Mi Agenda"
+        return "Mi agenda"
     else:
-        return "Actividades"
+        return "Todas las actividades"
 
-def addElementToList(Tables,Table,UserType):
-    if ('Level' not in Table) or (UserType in Table['Level']):
-        Tables[len(Tables)] = Table
+def addElementToList(Elements,Element,UserType):
+    if ('Level' not in Element) or (UserType in Element['Level']):
+        Elements[len(Elements)] = Element
 
 def getModules(UserType):
-    Tables = {}
+    Elements = {}
     functions = "runSearchBoxOnKey()"
-    Table = {'Name':'Usuários','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions},'Image':'fa-users'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions},'Image':'fa-fort-awesome'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html','Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html','Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html','Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Mis Clientes','Level':[0,1,2],'Template':'customer.html','Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':'fa-smile-o'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Servicios','Level':[0,1],'Template':'service.html','Vars':{'Table':'Service','Functions':functions},'Image':'fa-coffee'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html','Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Agenda','Level':[0,1,2],'Template':'calendar.html','Vars':{'Functions':functions},'Image':'ti-calendar p-r-10'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-star'}
-    addElementToList(Tables,Table,UserType)
-    Table = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
-    addElementToList(Tables,Table,UserType)
-    return Tables
+    Element = {'Name':'Usuários','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions} \
+        ,'Image':'fa-users'}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \
+        ,'Image':'fa-fort-awesome','Module':{0:'Empresas'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html' \
+        ,'Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o' \
+        ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html' \
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html'
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic' \
+        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html'
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o' \
+        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Mis Clientes','Level':[0,1,2],'Template':'customer.html' \
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':'fa-smile-o'}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Servicios','Level':[0,1],'Template':'service.html' \
+        ,'Vars':{'Table':'Service','Functions':functions},'Image':'fa-coffee' \
+        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html' \
+        ,'Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase' \
+        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Vista de calendario','Level':[0,1,2],'Template':'calendar.html' \
+        ,'Vars':{'Functions':functions,'UserId':current_user.id,'UserName':current_user.Name},'Image':'ti-calendar p-r-10' \
+        ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-star' \
+        ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Vista de lista','Level':[0,1,2],'Template':'myschedule.html' \
+        ,'Vars':{'Template': 'myschedule.html','profId': current_user.id},'Image':'fa-magic' \
+        ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
+    addElementToList(Elements,Element,UserType)
+
+    Modules = resumeModules(Elements,UserType)
+    return Modules
+
+def resumeModules(Elements,UserType):
+    Modules = {}
+    for key in Elements:
+        Element = Elements[key]
+        Element['Vars']['Template'] = Element['Template']
+        Element['Vars']['Name'] = Element['Name']
+        if 'Module' in Element:
+            ModuleName = Element['Module']
+            if ModuleName:
+                if ModuleName not in Modules:
+                    Modules[ModuleName] = {}
+                Modules[ModuleName][len(Modules[ModuleName])] = Element
+        else:
+            Modules[Element.get('Name',None)] = {0: Element}
+    return Modules
 
 def getMyFunction(function,params):
     res = eval('%s(%s)' % (function,str(params)))
@@ -130,19 +170,20 @@ def get_calendar_events():
 @blue_dondefluir.route('/_get_calendar_dates')
 def get_calendar_dates():
     profId = request.args.get('id')
-    res = getCalendarDates(profId)
+    AddActivities = request.args.get('AddActivities',True)
+    res = getCalendarDates(profId,AddActivities)
     for d in res:
         list = res[d]
         for dic in list:
             for i in dic:
                 if i in ('StartTime','EndTime'):
                     dic[i] = dic[i].strftime("%H:%M")
-                elif i == 'Date' and isinstance(dic[i],datetime):
-                    dic[i] = dic[i].strftime("%d/%m/%Y")
+                elif i == 'Date' and isinstance(dic[i],date):
+                    dic[i] = dic[i].strftime("%Y-%m-%d")
     return jsonify(result=res)
 
 
-def getCalendarDates(profId):
+def getCalendarDates(profId,AddActivities=False):
     session = Session()
     user = session.query(User).filter_by(id=profId).first()
     if not user:
@@ -156,10 +197,13 @@ def getCalendarDates(profId):
     td = addDays(d,ShowDays)
 
     activities = session.query(Activity) \
-        .filter(Activity.ProfId==profId) \
+        .filter(Activity.ProfId==profId,Activity.Status!=2) \
         .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
         .filter(ActivitySchedules.TransDate>=d,ActivitySchedules.TransDate<=td) \
-        .with_entities(ActivitySchedules.TransDate,ActivitySchedules.StartTime,ActivitySchedules.EndTime)
+        .outerjoin(Service,Service.id==Activity.ServiceId)\
+        .outerjoin(User,Activity.CustId==User.id)\
+        .with_entities(ActivitySchedules.TransDate,ActivitySchedules.StartTime,ActivitySchedules.EndTime,Service.Name.label('Name') \
+            ,Activity.Comment,Activity.id,User.Name.label('Customer'))
     dates = {}
 
     while d<td:
@@ -199,6 +243,15 @@ def getCalendarDates(profId):
                     newArray[d].append({'FechaStr':datestr,'StartTime':startTime,'EndTime':endTime,'CompanyId':user.CompanyId,'Date':d})
                     startTime = addMinutesToTime(startTime,user.MinTime)
         dates = newArray
+    if AddActivities:
+        for activity in activities:
+            d = activity.TransDate
+            weekday = d.weekday()
+            datestr = WeekName[weekday] + " " + d.strftime("%d/%m/%Y")
+            datekey = d.strftime("%Y-%m-%d")
+            dates[datekey].append({'FechaStr':datestr,'StartTime':activity.StartTime,'EndTime':activity.EndTime \
+                ,'CompanyId':user.CompanyId, 'Date':d, 'Comment': activity.Comment, 'Service': activity.Name \
+                , 'id': activity.id, 'Customer': activity.Customer})
     session.close()
     return dates
 
@@ -206,7 +259,6 @@ def getCalendarDates(profId):
 def set_favorite():
     from dondefluir.db.UserFavorite import UserFavorite
     favId = request.args.get('favId')
-
     session = Session()
     session.expire_on_commit = False
     record = session.query(UserFavorite).filter_by(UserId=current_user.id,FavoriteId=favId).first()
@@ -311,8 +363,8 @@ def set_cust_to_event():
     return jsonify(result={'res':False,'Error':'Registro Inexistente'})
 
 
-def getCalendarData():
-    records = Activity.getRecordList(Activity)
+def getCalendarData(UserId):
+    records = Activity.getRecordList(Activity,ProfId=UserId)
     list = []
     for record in records:
         st = "%sT%s" %(record.TransDate.strftime('%Y-%m-%d'),record.StartTime.strftime('%H:%M:%S'))
@@ -337,8 +389,9 @@ def getCalendarData():
 
 @blue_dondefluir.route('/data')
 def return_data():
-    res = getCalendarData()
-    if res: return jsonify(res)
+    UserId = request.args.get('UserId', '')
+    res = getCalendarData(UserId)
+    return jsonify(res)
     start_date = request.args.get('start', '')
     end_date = request.args.get('end', '')
     with open("events.json", "r") as input_data:
@@ -421,5 +474,5 @@ def cancel_activity():
         session.rollback()
         session.close()
         return jsonify(result={'res': False,'Error':str(e)})
-    record.afterCommitUpdate()
+    record.callAfterCommitUpdate()
     return jsonify(result={'res':True,'id': record.id,'syncVersion': record.syncVersion})

@@ -1,8 +1,11 @@
 
 function showProfessional(id,Name,current_user_id){
+	Vue.set(vue_spinner,"loading",true);
 	vars = {Template: 'showprofessional.html',profId: id}
 	getTemplate('container-fluid',vars,function (){
-		setProffesional(id,current_user_id);
+		setProffesional(id,current_user_id,function(){
+			Vue.set(vue_spinner,"loading",false);
+		});
 	})
 }
 
@@ -17,19 +20,20 @@ function getProfessionalList(favorite,current_user_id){
 }
 
 
-function setProffesional(id,current_user_id){
+function setProffesional(id,current_user_id,callback){
 	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
 		Vue.set(vue_title,'Title', data.record.Name);
 		Vue.set(vue_record,'values', data.record);
 
-		$.getJSON($SCRIPT_ROOT + '/_get_calendar_dates', {'id':id},function(data) {
-			Vue.set(vue_schedule,'values',data.result)
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_dates', {'id':id},function(data1) {
+			Vue.set(vue_schedule,'values',data1.result)
 			Vue.set(vue_schedule,'profId',id)
+			Vue.set(vue_schedule,'profName',data.record.Name)
 			Vue.set(vue_schedule,'current_user_id',current_user_id)
 		});
 
-		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'id':id},function(data) {
-			Vue.set(vue_schedule,'events',data.result)
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'id':id},function(data2) {
+			Vue.set(vue_schedule,'events',data2.result)
 		});
 
 		getRecordBy('UserFavorite',{UserId: current_user_id, FavoriteId: data.record.id},function(recordFav){
@@ -45,21 +49,40 @@ function setProffesional(id,current_user_id){
 			if (!data.record.Address){record_address.innerHTML = company.Address;}
 			if (!data.record.City){record_city.innerHTML = company.City;} */
 		});
+		if (callback){
+			callback();
+		}
 	});
 }
 
-function setFavorite(element){
-  favId = vue_record.values.id
+function setFavorite(element,t){
+  if (t=='0'){favId = vue_record.values.id}
+  if (t=='1'){favId = vue_record.values.record.id}
   $.getJSON($SCRIPT_ROOT + '/_set_favorite',{favId: favId}, function(data) {
       if (data.result['res']==true){
 		  favorite = document.getElementById('favorite');
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
-		 	  	  Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
-				  Vue.set(vue_record,'classname', 'btn btn-danger btn-rounded waves-effect waves-light m-t-20');
+		 	  	  if (t=="1"){
+					  console.log(7)
+					  vue_record.values.fields.Favorite.Label = 'Eliminar de Favoritos'
+					  vue_record.values.record.Favorite = 1
+					  vue_record.values.fields.Favorite.Class = 'btn btn-danger btn-rounded waves-effect waves-light m-t-20'
+				  }
+		 	  	  if (t=="0"){
+					  Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
+					  Vue.set(vue_record,'classname', 'btn btn-danger btn-rounded waves-effect waves-light m-t-20');
+				  }
 		  	  }else{
-		 	  	  Vue.set(vue_record,'favorite', 'Agregar a Favoritos');
-				  Vue.set(vue_record,'classname', 'btn btn-primary btn-rounded waves-effect waves-light m-t-20');
+		 	  	  if (t=="1"){
+					  vue_record.values.record.Favorite = 0
+					  vue_record.values.fields.Favorite.Label = 'Agregar a Favoritos'
+					  vue_record.values.fields.Favorite.Class = 'btn btn-primary btn-rounded waves-effect waves-light m-t-20'
+				  }
+		 	  	  if (t=="0"){
+					  Vue.set(vue_record,'favorite', 'Agregar a Favoritos');
+					  Vue.set(vue_record,'classname', 'btn btn-primary btn-rounded waves-effect waves-light m-t-20');
+				  }
 			  }
 		  }
 	  }
@@ -86,13 +109,14 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 
 
 function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
-	vars = {Template: 'recordform.html',Table:'Activity'}
+	vars = {Template: 'activityform.html',Table:'Activity'}
 	getTemplate('container-fluid',vars,function(){
 		getRecord({TableName:'Activity'},function (data){
 			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_buttons,'canEdit', data.canEdit);
 			Vue.set(vue_buttons,'canDelete', data.canDelete);
+			setCustomVue('Activity',data.record)
 			vue_title.Title = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
@@ -219,6 +243,7 @@ function showEvent(id){
 function cancelActivity() {
     var fields = {}
 	_id = vue_record.values.record.id;
+	messages.error_msg = '';
 	if (vue_record.values.record.Status==2){
 		messages.error_msg = 'Actividad ya cancelada';
 		return;
@@ -227,10 +252,12 @@ function cancelActivity() {
 		fields['id'] = _id;
 		$.getJSON($SCRIPT_ROOT + '/_cancel_activity', fields, function(data) {
 		  if (data.result['res']){
-			  messages.success_msg = 'Actividad Cancelada';
+			  setMessageTimeout('Actividad Cancelada')
 			  vue_record.values.record.syncVersion = data.result['syncVersion'];
 			  vue_record.values._state = 1
-			  vue_record.values.Status = 2
+			  vue_record.values.record.Status = 2
+			  Vue.set(vue_buttons,'id', data.result.id);
+			  Vue.set(vue_buttons,'Status', 2);
 		  }else{
 			  messages.error_msg = data.result['Error'];
 		  }
@@ -239,3 +266,10 @@ function cancelActivity() {
 	  messages.error_msg = 'No se puede cancelar';
 	}
 };
+
+function setCustomVue(Table,record){
+	if (Table=='Activity'){
+		Vue.set(vue_buttons,'id', record.id);
+		Vue.set(vue_buttons,'Status', record.Status);
+	}
+}

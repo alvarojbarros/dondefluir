@@ -14,16 +14,22 @@
         </li>
         <!-- User profile-->
         <li class="user-pro">
-           <a href="#" class="waves-effect"><img src="{{image_url}}" alt="user-img"  class="img-circle"> <span class="hide-menu">{{current_user.Name}}<span class="fa arrow"></span></span></a>
+           <a href="#" class="waves-effect">
+            <img src="{{image_url}}" alt="user-img"  class="img-circle">
+              <span class="hide-menu">{{current_user.Name}}<span class="fa arrow">
+              </span>
+            </span>
+           </a>
            <ul class="nav nav-second-level">
-              <li><a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}',runFunction='OpenCloseMenu()')"><i class="ti-user"></i> Perfil</a></li>
+              <li>
+                <a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}',runFunction='OpenCloseMenu()')">
+                  <i class="ti-user"></i> Perfil
+                </a>
+              </li>
               {% if myFunction(function='isUserAdmin',params={}) %}
               <li><a href="javascript:void(0)" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}',runFunction='OpenCloseMenu()')"><i class="ti-user"></i>Empresa</a></li>
               {% endif %}
               <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html','runFunction':'OpenCloseMenu()'})"><i class="ti-user"></i>Modificar Password</a></li>
-              <!--li><a href="javascript:void(0)"><i class="ti-wallet"></i> My Balance</a></li-->
-              <!--li><a href="javascript:void(0)"><i class="ti-email"></i> Inbox</a></li-->
-              <!--li><a href="javascript:void(0)" ><i class="ti-settings"></i> Opciones de usuario</a></li-->
               <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
            </ul>
         </li>
@@ -31,19 +37,29 @@
         <li>
            <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
         </li>
-        <!--li> <a href="javascript:void(0);" class="waves-effect"><i class="icon-envelope p-r-10"></i> <span class="hide-menu"> Mailbox <span class="fa arrow"></span><span class="label label-rouded label-danger pull-right">6</span></span></a>
-              <ul class="nav nav-second-level">
-                  <li> <a href="inbox.html">Inbox</a></li>
-                  <li> <a href="inbox-detail.html">Inbox detail</a></li>
-                  <li> <a href="compose.html">Compose mail</a></li>
-              </ul>
+        <li class="user-pro" v-for="(module,moduleName) in values">
 
-          </li-->
-          <li v-for="(module,index) in values">
-            <a href="#"  :onClick="'getTemplateModule(\'container-fluid\','+ index + ')'"
-            class="waves-effect"><i data-icon="F" :class="'fa ' + module.Image + ' fa-fw'">
-            </i><span class="hide-menu">{%raw%}{{ module.Name }}{%endraw%}<span class="fa arrow"></span></span></a>
-          </li>
+          <a href="#"  v-if="Object.keys(module).length==1"
+            :onClick="'getTemplateModule(\'container-fluid\',\''+ moduleName + '\','+ 0 + ')'"
+            class="waves-effect"><i data-icon="F" :class="'fa ' + module[0].Image + ' fa-fw'">
+          </i><span class="hide-menu">{%raw%}{{ module[0].Name }}{%endraw%}<span class="fa arrow"></span></span></a>
+
+          <a href="#" class="waves-effect" v-if="Object.keys(module).length>1">
+            <i class="icon-envelope p-r-10"></i>
+            <span class="hide-menu">{%raw%}{{ moduleName }}{%endraw%}
+              <span class="fa arrow">
+              </span>
+            </span>
+          </a>
+          <ul class="nav nav-second-level" v-if="Object.keys(module).length>1">
+            <li v-for="(table,index) in module">
+              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\''+ moduleName + '\','+ index + ')'">
+                <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
+                {%raw%}{{ table.Name }}{%endraw%}
+              </a>
+            </li>
+          </ul>
+        </li>
      </ul>
   </div>
 </div>

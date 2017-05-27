@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask_login import UserMixin
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime, Index
 from tools.dbconnect import engine,MediumText,Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -16,7 +16,8 @@ Base = declarative_base()
 
 class User(Base,Record,UserMixin):
     __tablename__ = 'user'
-    id = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    Email = Column(String(50))
     Password = Column(String(20))
     Active = Column(Integer)
     UserType = Column(Integer)
@@ -52,7 +53,8 @@ class User(Base,Record,UserMixin):
     @classmethod
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
-        res['id'] = {'Type': 'text', 'Label': 'Email','Input':'text','Readonly':1}
+        res['id'] = {'Type': 'integer','Hidde': True}
+        res['Email'] = {'Type': 'text', 'Label': 'Email','Input':'text'}
         res['Password'] = {'Type': 'text', 'Label': 'Password','Input':'password'}
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['UserType'] = {'Type': 'integer', 'Label': 'Tipo de Usuario', 'Input': 'combo', \
@@ -76,8 +78,8 @@ class User(Base,Record,UserMixin):
             'Values': {0: 'SI',1: 'NO'},'Level':[0,1],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Schedules'] = {'Type':[],'Label':'Horarios','Class':'UserSchedule',\
             'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
-        res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'checkbox','Level':[0,1,2],'Persistent':False, \
-            'Method':'getFavorite()','onClick': 'setFavorite(this)' }
+        res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'button','Level':[0,1,2],'Persistent':False, \
+            'Method':'getFavorite()','onClick': 'setFavorite(this,"1")','Class':'btn btn-primary btn-rounded waves-effect waves-light m-t-20' }
         res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
         res['NtfActivityNew'] = {'Type': 'integer', 'Label': 'Nueva Actividad', 'Input': 'checkbox'}
         res['NtfActivityCancel'] = {'Type': 'integer', 'Label': 'Actividad Cancelada', 'Input': 'checkbox'}
@@ -94,7 +96,7 @@ class User(Base,Record,UserMixin):
         Tabs = {}
         Tabs[0] = {"Name":"Información del Usuario", "Fields": [[0,["Name","Phone"]],[3,["Address","City"]] \
             ,[6,["Comment"]],[7,["Title","ImageProfile"]]]}
-        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["id","Password"]],[2,["UserType"]] \
+        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["Email","Password"]],[2,["UserType"]] \
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
         Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]\
             ,'ShowIf':['UserType',["0","1","2"],-1]}
@@ -116,32 +118,40 @@ class User(Base,Record,UserMixin):
             del fields['Password']
 
     @classmethod
-    def getUserFromDataBase(cls,username,all=False):
-        user = cls.getRecordById(username)
+    def getUserFromDataBase(cls,id):
+        user = cls.getRecordById(id)
         if user:
-            if all:
-                return User(user.id,user.Password,user.Active,user.UserType)
-            else:
-                return user
+            return user
 
     @classmethod
-    def addNewUser(cls,username,password,name):
+    def getUserIdByEmail(cls,email):
+        session = Session()
+        record = session.query(cls).filter_by(Email=email).first()
+        if not record:
+            return
+        id = record.id
+        session.close()
+        return id
+
+    @classmethod
+    def addNewUser(cls,email,password,name):
         from sqlalchemy.orm import sessionmaker
         session = Session()
-        new_user = User(username,password,0,None)
+        new_user = User(Password=password)
         new_user.syncVersion = 0
         new_user.UserType = 3
         new_user.Name = name
+        new_user.Email = email
         session.add(new_user)
         try:
             session.commit()
             from dondefluir.MailTools import sendNewUserMail
-            sendNewUserMail(username,name,password)
+            sendNewUserMail(email,name,password)
         except Exception as e:
             session.rollback()
             session.close()
             return Error(str(e))
-        user = session.query(User).filter_by(id=username).first()
+        user = session.query(User).filter_by(Email=email).first()
         session.close()
         if user:
             return User(user.id,user.Password,user.Active,user.UserType,user.CompanyId)
@@ -151,7 +161,7 @@ class User(Base,Record,UserMixin):
         user_data = cls.getUserFromDataBase(username)
         return user_data
 
-    def __init__(self, id=None, Password=None, Active=None, UserType=None, CompanyId=None, EditSchedule=None):
+    def __init__(self, id=None, Password=None, Active=0, UserType=3, CompanyId=None, EditSchedule=None):
         self.id = id
         self.Password = Password
         self.Active = Active
@@ -204,6 +214,8 @@ class User(Base,Record,UserMixin):
 
     @classmethod
     def getUserFieldsReadOnly(cls,record,fieldname):
+        if fieldname=="Favorite":
+            return
         if record and record.id==current_user.id:
             return
         if current_user.UserType==1:
@@ -244,7 +256,7 @@ class User(Base,Record,UserMixin):
 class UserSchedule(Base,DetailRecord):
     __tablename__ = 'userschedule'
     id = Column(Integer, primary_key=True)
-    user_id = Column(String(20), ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     StartTime = Column(Time)
     EndTime = Column(Time)
     d1 = Column(Integer)
@@ -286,6 +298,6 @@ class UserSchedule(Base,DetailRecord):
     def fieldsDetail(self):
         return []
 
-#Index('Email', User.Email, unique=True)
+Index('Email', User.Email, unique=True)
 
 Base.metadata.create_all(engine)

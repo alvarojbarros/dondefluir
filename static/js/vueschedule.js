@@ -6,6 +6,7 @@ var vue_schedule = new Vue({
     values: '',
     events: '',
     profId: '',
+    profName: '',
     current_user_id: '',
   },
 })

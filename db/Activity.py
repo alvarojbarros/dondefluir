@@ -21,8 +21,8 @@ class Activity(Base,Record):
 
     __tablename__ = 'activity'
     id = Column(Integer, primary_key=True)
-    CustId = Column(String(20), ForeignKey(User.id), nullable=True)
-    ProfId = Column(String(20), ForeignKey(User.id), nullable=False)
+    CustId = Column(Integer, ForeignKey(User.id), nullable=True)
+    ProfId = Column(Integer, ForeignKey(User.id), nullable=False)
     CompanyId = Column(Integer, ForeignKey(Company.id))
     ServiceId = Column(Integer, ForeignKey(Service.id), nullable=True)
     Type = Column(Integer)
@@ -56,9 +56,9 @@ class Activity(Base,Record):
     def fieldsDefinition(cls):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
+        res['CustId'] = {'Type': 'integer', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
             ,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
-        res['ProfId'] = {'Type': 'text', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
+        res['ProfId'] = {'Type': 'integer', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
@@ -106,7 +106,7 @@ class Activity(Base,Record):
 
 
     @classmethod
-    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None):
+    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None):
         UserProf = aliased(User)
         UserCust = aliased(User)
         if current_user.UserType==3:
@@ -162,7 +162,7 @@ class Activity(Base,Record):
         else:
             session = Session()
             records = session.query(cls).join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-                .filter(ActivitySchedules.TransDate>=today()) \
+                .filter(ActivitySchedules.TransDate>=today(),or_(ProfId==None,cls.ProfId==ProfId)) \
                 .join(Company,cls.CompanyId==Company.id)\
                 .join(UserProf,cls.ProfId==UserProf.id)\
                 .outerjoin(UserCust,cls.CustId==UserCust.id)\
@@ -208,6 +208,59 @@ class Activity(Base,Record):
             return Error("Debe ingresar horarios")
         if self.Type in (1,2) and not self.Comment:
             return Error("Debe ingresar Nombre del Curso o Evento")
+        res = self.checSchedules()
+        if not res: return res
+        return True
+
+    def getOverlapHeader(self,UserId,TransDate,StartTime,EndTime,ActivityUser):
+        session = Session()
+        records = session.query(Activity) \
+            .filter(Activity.Status!=2,ActivityUser==UserId,Activity.id!=self.id) \
+            .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
+            .filter(ActivitySchedules.TransDate==TransDate,~ or_(ActivitySchedules.EndTime<=StartTime,ActivitySchedules.StartTime>=EndTime)) \
+            .join(User,ActivityUser==User.id)\
+            .with_entities(User.Name,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+            ,ActivitySchedules.EndTime,Activity.id,Activity.Status)
+        session.close()
+        if records.count()>0:
+            return True
+        return False
+
+    def getOverlapCustRow(self,UserId,TransDate,StartTime,EndTime):
+        session = Session()
+        records = session.query(Activity) \
+            .filter(Activity.Status!=2,Activity.id!=self.id) \
+            .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
+            .filter(ActivitySchedules.TransDate==TransDate,~ or_(ActivitySchedules.EndTime<=StartTime,ActivitySchedules.StartTime>=EndTime)) \
+            .join(ActivityUsers,Activity.id==ActivityUsers.activity_id)\
+            .filter(ActivityUsers.CustId==UserId)\
+            .join(User,ActivityUsers.CustId==User.id)\
+            .with_entities(User.Name,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+            ,ActivitySchedules.EndTime,Activity.id,Activity.Status)
+        session.close()
+        if records.count()>0:
+            return True
+        return False
+
+    def checSchedules(self):
+        if self.ProfId:
+            for row in self.Schedules:
+                res = self.getOverlapHeader(self.ProfId,row.TransDate,row.StartTime,row.EndTime,Activity.ProfId)
+                if res: return Error('Superposición de Horarios')
+                res = self.getOverlapCustRow(self.ProfId,row.TransDate,row.StartTime,row.EndTime)
+                if res: return Error('Superposición de Horarios')
+        if self.CustId:
+            for row in self.Schedules:
+                res = self.getOverlapHeader(self.CustId,row.TransDate,row.StartTime,row.EndTime,Activity.CustId)
+                if res: return Error('Superposición de Horarios')
+                res = self.getOverlapCustRow(self.CustId,row.TransDate,row.StartTime,row.EndTime)
+                if res: return Error('Superposición de Horarios')
+        for row in self.Users:
+            if row.CustId:
+                res = self.getOverlapHeader(row.CustId,row.TransDate,row.StartTime,row.EndTime,Activity.CustId)
+                if res: return Error('Superposición de Horarios')
+                res = self.getOverlapCustRow(row.CustId,row.TransDate,row.StartTime,row.EndTime)
+                if res: return Error('Superposición de Horarios')
         return True
 
     @classmethod
@@ -237,49 +290,6 @@ class Activity(Base,Record):
         if current_user.UserType!=3 and record.Type!=0:
             res['Comment']['Label'] = 'Nombre de Curso/Evento'
         return res
-
-
-    '''@classmethod
-    def getfieldsDefinition(cls,record):
-        res = Record.getfieldsDefinition(record)
-        print(res)
-        if record.id and not record.Type:
-            del res['Users']
-        return res '''
-
-    def afterCommitUpdate(self):
-        True
-        '''if current_user.id!=self.ProfId:
-            user = User.getRecordById(self.ProfId)
-            if user and user.NtfActivityNew:
-                msj = "\n"
-                msj += "Fecha: %s\n" % self.TransDate.strftime('%d/%m/%Y')
-                msj += "Horario: %s a %s\n" % (self.StartTime.strftime('%M:%H'),self.EndTime.strftime('%M:%H'))
-                msj += "\n"
-                if self.CustId:
-                    customer = User.getRecordById(self.CustId)
-                    if customer:
-                        if customer.Name:
-                            msj += "Cliente: %s\n" % customer.Name
-                        if customer.Phone:
-                            msj += "Telefono: %s\n" % customer.Phone
-                        msj += "Email: %s\n" % customer.id
-                msj += "\n"
-                return mail.sendMail(user.id,'Tiene una nueva Actividad',msj)
-        if not self.Type and self.current_user.id==self.CustId:
-            if current_user.NtfActivityNew:
-                if self.ProfId:
-                    prof = User.getRecordById(self.ProfId)
-                    if prof:
-                        self.sendCustomerMailNewActivity(prof,user.id)
-        if self.Type and self.ProfId:
-            prof = User.getRecordById(self.ProfId)
-            if prof:
-                for row in self.Users:
-                    customer = User.getRecordById(row.CustId)
-                    if customer and customer.NtfActivityNew:
-                        self.sendCustomerMailNewActivity(prof,customer.id) '''
-
 
     def setNotification(self,comment,user_id,type):
         ntf = Notification()
@@ -329,7 +339,7 @@ class Activity(Base,Record):
         return res
 
 
-    def afterUpdate(self):
+    def afterCommitUpdate(self):
         if self.ProfId and current_user.id!=self.ProfId:
             if len(self.Users)==len(self.OldFields['Users']):
                 res = self.setNotificationActivityUpdate(self.ProfId)
@@ -364,7 +374,7 @@ class Activity(Base,Record):
 
         return True
 
-    def afterInsert(self):
+    def afterCommitInsert(self):
         if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actvididad",self.ProfId,self.ACTIVITY_NEW)
         if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actvididad",self.CustId,self.ACTIVITY_NEW)
         for row in self.Users:
@@ -404,13 +414,13 @@ class ActivityUsers(Base,DetailRecord):
     __tablename__ = 'activityusers'
     id = Column(Integer, primary_key=True)
     activity_id = Column(Integer, ForeignKey('activity.id'), nullable=False)
-    CustId = Column(String(20), ForeignKey(User.id), nullable=False)
+    CustId = Column(Integer, ForeignKey(User.id), nullable=False)
 
     @classmethod
     def fieldsDefinition(cls):
         res = DetailRecord.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
-        res['CustId'] = {'Type': 'text', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']},'Class':'col-xs-12 p-b-20'}
+        res['CustId'] = {'Type': 'integer', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']},'Class':'col-xs-12 p-b-20'}
         res['__order__'] = cls.fieldsOrder()
         return res
 

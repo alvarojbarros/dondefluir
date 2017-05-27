@@ -14,7 +14,7 @@ Base = declarative_base()
 class UserService(Base,Record):
     __tablename__ = 'userservice'
     id = Column(Integer, primary_key=True)
-    UserId = Column(String(20), ForeignKey(User.id), nullable=False)
+    UserId = Column(Integer, ForeignKey(User.id), nullable=False)
     CompanyId = Column(Integer, ForeignKey(Company.id), nullable=False)
     ServiceId = Column(Integer, ForeignKey(Service.id), nullable=False)
 
@@ -23,7 +23,7 @@ class UserService(Base,Record):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'text','Hidde': True,'Readonly':1}
         res['CompanyId'] = {'Type': 'integer','Hidde': True}
-        res['UserId'] = {'Type': 'text', 'Label': 'Usuario', 'Input': 'combo','Level':[0,1],'LinkTo':{'Table':'User','Show':['Name']}}
+        res['UserId'] = {'Type': 'integer', 'Label': 'Usuario', 'Input': 'combo','Level':[0,1],'LinkTo':{'Table':'User','Show':['Name']}}
         res['ServiceId'] = {'Type': 'integer', 'Label': 'Servicio', 'Input': 'combo','Level':[0,1],'LinkTo':{'Table':'Service','Show':['Name']}}
         return res
 

@@ -1,11 +1,8 @@
 
 function showProfessional(id,Name,current_user_id){
-	Vue.set(vue_spinner,"loading",true);
 	vars = {Template: 'showprofessional.html',profId: id}
 	getTemplate('container-fluid',vars,function (){
-		setProffesional(id,current_user_id,function(){
-			Vue.set(vue_spinner,"loading",false);
-		});
+		setProffesional(id,current_user_id);
 	})
 }
 
@@ -20,7 +17,7 @@ function getProfessionalList(favorite,current_user_id){
 }
 
 
-function setProffesional(id,current_user_id,callback){
+function setProffesional(id,current_user_id){
 	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
 		Vue.set(vue_title,'Title', data.record.Name);
 		Vue.set(vue_record,'values', data.record);
@@ -49,9 +46,6 @@ function setProffesional(id,current_user_id,callback){
 			if (!data.record.Address){record_address.innerHTML = company.Address;}
 			if (!data.record.City){record_city.innerHTML = company.City;} */
 		});
-		if (callback){
-			callback();
-		}
 	});
 }
 

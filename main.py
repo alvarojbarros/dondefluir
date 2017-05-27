@@ -103,13 +103,13 @@ def getProfessional(favorite):
     if not favorite:
         records = session.query(User).filter_by(FindMe=True)\
             .join(Company,User.CompanyId==Company.id)\
-            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"))
+            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
         records = session.query(User).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .join(Company,User.CompanyId==Company.id)\
-            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"))
+            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     session.close()
     return records
 
@@ -332,7 +332,7 @@ def showProfessionalEvents(*args):
 def get_professional_list():
     favorite = request.args.get('Favorite')=='true'
     records = getProfessional(favorite)
-    res = fillRecordList(records,['Name','id','CompanyName'])
+    res = fillRecordList(records,['Name','id','CompanyName','Title','City'])
     return jsonify(result=res)
 
 

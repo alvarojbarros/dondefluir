@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
-from tools.dbconnect import engine
+from tools.dbconnect import engine,MediumText
 from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
 from tools.Tools import *
@@ -17,9 +17,12 @@ class Company(Base,Record):
     Phone = Column(String(40))
     Email = Column(String(40))
     WebSite = Column(String(40))
-    Comment = Column(String(100))
+    Comment = Column(MediumText())
     City = Column(String(100))
     Address = Column(String(100))
+    ImageProfile = Column(String(100))
+    OnlinePayment = Column(Integer)
+    KeyPayco = Column(String(50))
 
     @classmethod
     def fieldsDefinition(cls):
@@ -30,15 +33,19 @@ class Company(Base,Record):
         res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
         res['Email'] = {'Type': 'text', 'Label': 'Email', 'Input': 'text'}
         res['WebSite'] = {'Type': 'text', 'Label': 'Web Site', 'Input': 'text'}
-        res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input': 'text'}
+        res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'textarea','rows':'4'}
         res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
+        res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
+        res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox'}
+        res['KeyPayco'] = {'Type': 'text', 'Label': 'Clave ePayco', 'Input': 'text'}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"", "Fields": [[0,["Active"]],[1,["Name"]],[2,["Address","City"]],[3,["Phone"]],[4,["Email"]],[5,["WebSite"]],[6,["Comment"]]]}
+        Tabs[0] = {"Name":"", "Fields": [[0,["Active"]],[1,["Name"]],[2,["Address","City"]],[3,["Phone"]],[4,["Email"]],[5,["WebSite"]],[6,["Comment"]] \
+            ,[7,["ImageProfile"]],[8,["KeyPayco","OnlinePayment"]]]}
         return Tabs
 
     def check(self):

@@ -121,13 +121,14 @@ function setCustomerToEvent(id){
     $.getJSON($SCRIPT_ROOT + '/_set_cust_to_event',{id: id}, function(data) {
       	res = data.result['res'];
       	if (res){
-			e = document.getElementById(id);
-			//e.innerHTML = data.result.label;
-			vue_schedule.events[id][0].Status = data.result.label;
+			console.log(1)
+			vue_event.events[id][0].Status = data.result.label;
 			if (data.result.st==1){
-				vue_schedule.events[id][0].Persons += 1;
+				vue_event.events[id][0].Persons += 1;
+				vue_event.events[id][0].StatusValue = 1;
 			}else{
-				vue_schedule.events[id][0].Persons += -1;
+				vue_event.events[id][0].StatusValue = 0;
+				vue_event.events[id][0].Persons += -1;
 			}
 	  	}else{
 			alert(data.result['Error']);
@@ -170,14 +171,21 @@ function getNotifications(){
 		$.getJSON($SCRIPT_ROOT + '/_get_notifications',{}, function(data) {
 			Vue.set(vue_notifications,'values',data.result.values)
 			Vue.set(vue_notifications,'cnt',data.result.cnt)
-			Vue.set(vue_dashboard_ntf,'values',data.result.values)
-			Vue.set(vue_dashboard_ntf,'cnt',data.result.cnt)
+			notif_dash = document.getElementById('notifications');
+			if (notif_dash){
+				Vue.set(vue_dashboard_ntf,'values',data.result.values)
+				Vue.set(vue_dashboard_ntf,'cnt',data.result.cnt)
+			}
 			if (data.result.cnt>0){
 				Vue.set(vue_notifications,'news',data.result.cnt + ' notificaciones nuevas')
-				Vue.set(vue_dashboard_ntf,'news',data.result.cnt + ' notificaciones nuevas')
+				if (notif_dash){
+					Vue.set(vue_dashboard_ntf,'news',data.result.cnt + ' notificaciones nuevas')
+				}
 			}else{
 				Vue.set(vue_notifications,'news','No hay nuevas notificaciones')
-				Vue.set(vue_dashboard_ntf,'news','No hay nuevas notificaciones')
+				if (notif_dash){
+					Vue.set(vue_dashboard_ntf,'news','No hay nuevas notificaciones')
+				}
 			}
 		});
 	}
@@ -219,18 +227,11 @@ function getEventList(fields){
 
 
 function showEvent(id){
-
     var vars = {Template: 'event.html',Table: 'Activity', id: id}
 	getTemplate('container-fluid',vars,function (){
-
 		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'eventId':id},function(data) {
-			//Vue.set(vue_schedule,'events',data.result)
 			Vue.set(vue_event,'events', data.result);
 		});
-
-		//getRecord({TableName:'Activity',id: id, 'NotFilterFields':true},function (data){
-		//	Vue.set(vue_event,'record', data.record);
-		//})
 	});
 }
 

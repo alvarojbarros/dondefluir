@@ -42,8 +42,11 @@
             <div v-if="user_type==3">
               {%raw%}{{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
             </div>
-            <div v-if="user_type!=3">
+            <div v-if="user_type!=3 && record.CustId">
               {%raw%}{{record.CustId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
+            </div>
+            <div v-if="user_type!=3 && !record.CustId">
+              {%raw%}{{record.Comment}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
             </div>
           </a></li>
         </div>

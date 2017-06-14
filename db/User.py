@@ -182,11 +182,11 @@ class User(Base,Record,UserMixin):
     def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         if current_user.UserType==1:
             session = Session()
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1)
             session.close()
         elif current_user.UserType==2:
             session = Session()
-            records = session.query(cls).filter_by(CompanyId=current_user.CompanyId)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType==3)
             session.close()
         else:
             records = Record.getRecordList(TableClass)

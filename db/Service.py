@@ -14,6 +14,7 @@ class Service(Base,Record):
     id = Column(Integer, primary_key=True)
     Name = Column(String(100))
     CompanyId = Column(Integer, ForeignKey(Company.id), nullable=False)
+    OnlinePayment = Column(Integer)
 
     @classmethod
     def fieldsDefinition(cls):
@@ -21,6 +22,7 @@ class Service(Base,Record):
         res['id'] = {'Type': 'text','Hidde': True,'Readonly':1}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
         res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0],'LinkTo':{'Table':'Company','Show':['Name']}}
+        res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox'}
         return res
 
     def check(self):

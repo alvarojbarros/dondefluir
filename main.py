@@ -12,7 +12,10 @@ from dondefluir.db.Company import Company
 from dondefluir.db.Notification import Notification
 from dondefluir.db.Service import Service
 from dondefluir.db.Activity import Activity,ActivitySchedules,ActivityUsers
+from dondefluir.db.Payment import Payment
 from sqlalchemy import or_
+import getsettings
+settings = getsettings.getSettings()
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
 
@@ -32,7 +35,7 @@ def getModules(UserType):
     Element = {'Name':'Usuários','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions} \
         ,'Image':'fa-users'}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Empresas','Level':[0],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \
+    Element = {'Name':'Empresas','Level':[0,3],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \
         ,'Image':'fa-fort-awesome','Module':{0:'Empresas'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html' \
@@ -74,6 +77,9 @@ def getModules(UserType):
         ,'Vars':{'Template': 'myschedule.html','profId': current_user.id},'Image':'fa-magic' \
         ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Pagos','Template':'payment.html','Vars':{'Table':'Payment'},'Image':'fa-envelope-o'}
+    addElementToList(Elements,Element,UserType)
+
 
     Modules = resumeModules(Elements,UserType)
     return Modules
@@ -90,6 +96,8 @@ def resumeModules(Elements,UserType):
                 if ModuleName not in Modules:
                     Modules[ModuleName] = {}
                 Modules[ModuleName][len(Modules[ModuleName])] = Element
+            else:
+                Modules[Element.get('Name',None)] = {0: Element}
         else:
             Modules[Element.get('Name',None)] = {0: Element}
     return Modules
@@ -296,10 +304,12 @@ def showProfessionalEvents(*args):
     eventId = args[0].get('eventId',None)
     session = Session()
     records = session.query(Activity) \
+        .join(Company,Activity.CompanyId==Company.id)\
         .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
         .filter(ActivitySchedules.TransDate>=today(),or_(Activity.Type==1,Activity.Type==2)) \
         .with_entities(Activity.Comment,Activity.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-        ,ActivitySchedules.EndTime,Activity.id,Activity.MaxPersons,Activity.Price,Activity.Description)
+        ,ActivitySchedules.EndTime,Activity.id,Activity.MaxPersons,Activity.Price,Activity.Description,Activity.OnlinePayment \
+        ,Company.KeyPayco,Company.OnlinePayment.label('CompanyPayment'))
     if eventId: records = records.filter(Activity.id==eventId)
     if profId: records = records.filter(Activity.ProfId==profId)
     res = {}
@@ -312,6 +322,8 @@ def showProfessionalEvents(*args):
         if r.id not in res:
             res[r.id] = []
         st = Activity.StatusList[0]
+        stv = 0
+        paid = 0
 
         if k==0:
             FindCust = session.query(Activity).filter_by(id=r.id)\
@@ -320,11 +332,18 @@ def showProfessionalEvents(*args):
                 .count()
             if FindCust:
                 st = Activity.StatusList[1]
+                stv = 1
+                Paid = session.query(Payment)\
+                    .filter_by(UserId=current_user.id,ActivityId=r.id,ResponseCode=1) \
+                    .count()
+                if Paid:
+                    paid = 1
 
         TransDate = WeekName[r.TransDate.weekday()] + " " + r.TransDate.strftime("%d/%m/%Y")
         res[r.id].append({'Comment': r.Comment,'TransDate': TransDate, 'StartTime': r.StartTime.strftime("%H:%M") \
-            , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons \
-            , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st, 'Persons': cnt })
+            , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons, 'OnlinePayment': r.OnlinePayment \
+            , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st, 'Persons': cnt, 'StatusValue': stv, 'Paid': paid \
+            , 'KeyPayco': r.KeyPayco, 'CompanyPayment':r.CompanyPayment})
         k += 1
     return res
 
@@ -478,3 +497,36 @@ def cancel_activity():
         return jsonify(result={'res': False,'Error':str(e)})
     record.callAfterCommitUpdate()
     return jsonify(result={'res':True,'id': record.id,'syncVersion': record.syncVersion})
+
+@blue_dondefluir.route('/epayco/<activity_id>')
+def epayco(activity_id):
+    return render_template('epayco_res.html',current_user=current_user,app_name=settings.app_name,activityId=activity_id)
+
+
+@blue_dondefluir.route('/_set_payment')
+def set_payment():
+    from dondefluir.db.Payment import Payment
+    activityId = request.args.get('activityId')
+    session = Session()
+    session.expire_on_commit = False
+    record = Payment()
+    record.UserId = current_user.id
+    record.CompanyId = current_user.CompanyId
+    record.ActivityId = activityId
+    record.ResponseCode = request.args.get('x_cod_response')
+    record.Response = request.args.get('x_response')
+    record.Amount = request.args.get('x_amount')
+    record.TransDate = now()
+    record.Reference = request.args.get('x_id_invoice')
+    record.Reason = request.args.get('x_response_reason_text')
+    record.TransactionId = request.args.get('x_transaction_id')
+    record.BankName = request.args.get('x_bank_name')
+    record.AutorizationCode = request.args.get('x_approval_code')
+    record.Currency = request.args.get('x_currency_code')
+    record.beforeInsert()
+    session.add(record)
+    res = record.save(session)
+    if res:
+        return jsonify(result={'res':True,'id':record.id})
+    else:
+        return jsonify(result={'res':False,'Error':str(res)})

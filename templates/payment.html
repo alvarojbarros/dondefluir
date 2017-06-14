@@ -1,0 +1,19 @@
+{% extends "recordtable.html" %}
+
+{% block fields_view %}
+
+  <li v-for="record in values" :data-search-term="record.UserId" class="list-group-item">
+  <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+      {%raw%}{{record.UserId}} - {{record.CompanyId}} - {{record.ActivityId}} - {{record.Response}} - {{record.Amount}} - {{record.TransDate}} {%endraw%}
+   </a>
+ </li>
+{% endblock %}
+
+
+{% block button_script %}
+<script type=text/javascript>
+  getRecordList('Payment','UserId,CompanyId,ActivityId,Response,id,Amount,TransDate');
+</script>
+{% endblock %}
+
+

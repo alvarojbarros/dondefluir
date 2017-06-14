@@ -34,6 +34,7 @@ class Activity(Base,Record):
     Users = relationship('ActivityUsers', cascade="all, delete-orphan")
     Schedules = relationship('ActivitySchedules', cascade="all, delete-orphan")
     Status = Column(Integer)
+    OnlinePayment = Column(Integer)
 
     StatusList = ['Tomar este curso','Anular Inscripción']
 
@@ -72,12 +73,14 @@ class Activity(Base,Record):
         res['Price'] = {'Type': 'float', 'Label': 'Valor', 'Input': 'number','Level':[0,1,2]}
         res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Level':[0,1,2]}
         res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'Solicitada',1: 'Confirmada',2:'Cancelada'},'Level':[0,1,2,3]}
+        res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox','Level':[0,1,2]}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]]]}
+        Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]] \
+            ,[5,["OnlinePayment"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
         Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Price","Image"]],[1,["Description"]]],'ShowIf':['Type',["1","2"],-1]}
         Tabs[3] = {"Name":"Clientes",'Level':[0,1,2],"Fields": [[0,["Users"]]],'ShowIf':['Type',["1","2"],-1]}
@@ -121,7 +124,7 @@ class Activity(Base,Record):
                 .outerjoin(Service,cls.ServiceId==Service.id)\
                 .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                 ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
-                ,Service.Name.label('ServiceId'))
+                ,Service.Name.label('ServiceId'),cls.Type)
             if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
             elif order_by: records = records.order_by(ActivitySchedules.TransDate)
             if limit: records = records.limit(limit)
@@ -138,7 +141,7 @@ class Activity(Base,Record):
                     .outerjoin(Service,cls.ServiceId==Service.id)\
                     .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                     ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
-                    ,Service.Name.label('ServiceId'))\
+                    ,Service.Name.label('ServiceId'),cls.Type)\
                     .filter(Activity.CompanyId==current_user.CompanyId)
                 if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
                 elif order_by: records = records.order_by(ActivitySchedules.TransDate)
@@ -154,7 +157,7 @@ class Activity(Base,Record):
                     .outerjoin(Service,cls.ServiceId==Service.id)\
                     .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                     ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
-                    ,Service.Name.label('ServiceId'))
+                    ,Service.Name.label('ServiceId'),cls.Type)
                 if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
                 elif order_by: records = records.order_by(ActivitySchedules.TransDate)
                 if limit: records = records.limit(limit)
@@ -169,7 +172,7 @@ class Activity(Base,Record):
                 .outerjoin(Service,cls.ServiceId==Service.id)\
                 .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
                 ,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId'),Company.Name.label('CompanyId')\
-                ,Service.Name.label('ServiceId'))
+                ,Service.Name.label('ServiceId'),cls.Type)
             if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
             elif order_by: records = records.order_by(ActivitySchedules.TransDate)
             if limit: records = records.limit(limit)
@@ -255,12 +258,13 @@ class Activity(Base,Record):
                 if res: return Error('Superposición de Horarios')
                 res = self.getOverlapCustRow(self.CustId,row.TransDate,row.StartTime,row.EndTime)
                 if res: return Error('Superposición de Horarios')
-        for row in self.Users:
-            if row.CustId:
-                res = self.getOverlapHeader(row.CustId,row.TransDate,row.StartTime,row.EndTime,Activity.CustId)
-                if res: return Error('Superposición de Horarios')
-                res = self.getOverlapCustRow(row.CustId,row.TransDate,row.StartTime,row.EndTime)
-                if res: return Error('Superposición de Horarios')
+        for crow in self.Users:
+            if crow.CustId:
+                for row in self.Schedules:
+                    res = self.getOverlapHeader(crow.CustId,row.TransDate,row.StartTime,row.EndTime,Activity.CustId)
+                    if res: return Error('Superposición de Horarios')
+                    res = self.getOverlapCustRow(crow.CustId,row.TransDate,row.StartTime,row.EndTime)
+                    if res: return Error('Superposición de Horarios')
         return True
 
     @classmethod

@@ -1,3 +1,13 @@
 {% extends "recordtable.html" %}
+{% block title %}
+<h4>Empresas</h4>
+{% endblock %}
+
+{% block title2 %}
+  <li class="active"><a href="#" onClick="getTemplate('container-fluid',{'Template':'company.html','Name':'Empresas','Table':'Company'})">
+    Lista</a></li>
+  <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'company_icon.html','Name':'Empresas'})">
+    Íconos grandes</a></li>
+{% endblock %}
 
 

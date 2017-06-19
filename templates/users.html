@@ -1,0 +1,16 @@
+{% extends "recordtable.html" %}
+
+{% block fields_view %}
+
+  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
+  <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+      {%raw%}{{record.Name}} - {{record.CompanyId}} - {{record.UserType}}{%endraw%}
+   </a></li>
+
+{% endblock %}
+
+{% block button_script %}
+<script type=text/javascript>
+  getRecordList('User','Name,CompanyId,id,UserType');
+</script>
+{% endblock %}

@@ -184,6 +184,8 @@ class User(Base,Record,UserMixin):
             session = Session()
             records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1)
             session.close()
+            #records = session.query(cls).filter(or_(and_(cls.CompanyId==current_user.CompanyId,cls.UserType==1), \
+            #    and_(cls.CompanyId==current_user.CompanyId,cls.UserType==2),cls.UserType==3))
         elif current_user.UserType==2:
             session = Session()
             records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType==3)

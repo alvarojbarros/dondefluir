@@ -19,11 +19,19 @@ settings = getsettings.getSettings()
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
 
-def getActivitiesModuleName():
+def getActivitiesTableName():
     if current_user.UserType==3:
         return "Mi agenda"
     else:
         return "Todas las actividades"
+
+def getPaymentsTableName():
+    if current_user.UserType==3:
+        return "Mis Pagos"
+    elif current_user.UserType==0:
+        return "Pagos"
+    else:
+        return "Pagos Recibidos"
 
 def addElementToList(Elements,Element,UserType):
     if ('Level' not in Element) or (UserType in Element['Level']):
@@ -38,7 +46,7 @@ def getModules(UserType):
     Element = {'Name':'Empresas','Level':[0,3],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \
         ,'Image':'fa-fort-awesome','Module':{0:'Empresas'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':getActivitiesModuleName(),'Level':[0,1,2,3],'Template':'activity.html' \
+    Element = {'Name':getActivitiesTableName(),'Level':[0,1,2,3],'Template':'activity.html' \
         ,'Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o' \
         ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
@@ -77,7 +85,8 @@ def getModules(UserType):
         ,'Vars':{'Template': 'myschedule.html','profId': current_user.id},'Image':'fa-magic' \
         ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Pagos','Template':'payment.html','Vars':{'Table':'Payment'},'Image':'fa-envelope-o'}
+    Element = {'Name': getPaymentsTableName(),'Template':'payment.html','Vars':{'Table':'Payment'},'Image':'fa-envelope-o' \
+        ,'Level':[0,1,3]}
     addElementToList(Elements,Element,UserType)
 
 
@@ -385,7 +394,7 @@ def set_cust_to_event():
 
 
 def getCalendarData(UserId):
-    records = Activity.getRecordList(Activity,ProfId=UserId)
+    records = Activity.getRecordListCalendar(Activity,ProfId=UserId)
     list = []
     for record in records:
         st = "%sT%s" %(record.TransDate.strftime('%Y-%m-%d'),record.StartTime.strftime('%H:%M:%S'))
@@ -405,7 +414,7 @@ def getCalendarData(UserId):
             BGColor = 'gray'
             textColor = 'white'
         list.append({'title': record.Comment,'start':st,'end':st,'onclick':onclick,'id':id,'backgroundColor':BGColor, \
-            'textColor':textColor})
+            'textColor': textColor})
     return list
 
 @blue_dondefluir.route('/data')
@@ -413,8 +422,6 @@ def return_data():
     UserId = request.args.get('UserId', '')
     res = getCalendarData(UserId)
     return jsonify(res)
-    start_date = request.args.get('start', '')
-    end_date = request.args.get('end', '')
     with open("events.json", "r") as input_data:
         return input_data.read()
 

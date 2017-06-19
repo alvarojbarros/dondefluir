@@ -58,7 +58,8 @@ class Activity(Base,Record):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
         res['CustId'] = {'Type': 'integer', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
-            ,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
+            #,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
+            ,'Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
         res['ProfId'] = {'Type': 'integer', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
@@ -110,6 +111,59 @@ class Activity(Base,Record):
 
     @classmethod
     def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None):
+        UserProf = aliased(User)
+        UserCust = aliased(User)
+        if current_user.UserType==3:
+            session = Session()
+            records = session.query(cls) \
+                .filter_by(CustId=current_user.id) \
+                .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
+                .filter(ActivitySchedules.TransDate>=today()) \
+                .with_entities(cls.Comment,ActivitySchedules.TransDate,ActivitySchedules.StartTime,cls.CompanyId\
+                ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.Type,cls.CustId,cls.ProfId,cls.ServiceId)
+            if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+            elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+            if limit: records = records.limit(limit)
+            session.close()
+        elif current_user.UserType in (1,2):
+            session = Session()
+            if not custId:
+                records = session.query(cls) \
+                    .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
+                    .filter(ActivitySchedules.TransDate>=today()) \
+                    .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                    ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.CustId,cls.CompanyId,cls.ServiceId,cls.Type)\
+                    .filter(Activity.CompanyId==current_user.CompanyId)
+                if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+                elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+                if limit: records = records.limit(limit)
+            else:
+                records = session.query(cls) \
+                    .filter_by(CompanyId=current_user.CompanyId,CustId=custId) \
+                    .join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
+                    .filter(ActivitySchedules.TransDate>=today()) \
+                    .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                    ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.CustId,cls.CompanyId\
+                    ,cls.ServiceId,cls.Type)
+                if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+                elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+                if limit: records = records.limit(limit)
+            session.close()
+        else:
+            session = Session()
+            records = session.query(cls).join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
+                .filter(ActivitySchedules.TransDate>=today(),or_(ProfId==None,cls.ProfId==ProfId)) \
+                .with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.CustId,cls.CompanyId\
+                ,cls.ServiceId,cls.Type)
+            if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
+            elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+            if limit: records = records.limit(limit)
+            session.close()
+        return records
+
+    @classmethod
+    def getRecordListCalendar(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None):
         UserProf = aliased(User)
         UserCust = aliased(User)
         if current_user.UserType==3:
@@ -179,6 +233,7 @@ class Activity(Base,Record):
             session.close()
         return records
 
+
     @classmethod
     def getUserFieldsReadOnly(cls,record,fieldname):
         if current_user.UserType == 1:
@@ -211,7 +266,7 @@ class Activity(Base,Record):
             return Error("Debe ingresar horarios")
         if self.Type in (1,2) and not self.Comment:
             return Error("Debe ingresar Nombre del Curso o Evento")
-        res = self.checSchedules()
+        res = self.checkSchedules()
         if not res: return res
         return True
 
@@ -245,7 +300,7 @@ class Activity(Base,Record):
             return True
         return False
 
-    def checSchedules(self):
+    def checkSchedules(self):
         if self.ProfId:
             for row in self.Schedules:
                 res = self.getOverlapHeader(self.ProfId,row.TransDate,row.StartTime,row.EndTime,Activity.ProfId)
@@ -407,7 +462,7 @@ class Activity(Base,Record):
             session.close()
             return records
         else:
-            return TableClass.getRecordList(TableClass)
+            return TableClass.getAllRecordList(TableClass)
 
     @classmethod
     def getRecordTitle(self):

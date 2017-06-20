@@ -30,7 +30,6 @@ var vue_event = new Vue({
 		for (k in this.events){
 			$(this.$refs['form' + k]).html(this.getScript(k,this.events[k][0]))
 		}
-}
-
+	}
 
 })

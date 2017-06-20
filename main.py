@@ -90,8 +90,8 @@ def getModules(UserType):
     addElementToList(Elements,Element,UserType)
 
 
-    Modules = resumeModules(Elements,UserType)
-    return Modules
+    Modules,Names = resumeModules(Elements,UserType)
+    return Modules,Names
 
 def resumeModules(Elements,UserType):
     Modules = {}
@@ -109,7 +109,14 @@ def resumeModules(Elements,UserType):
                 Modules[Element.get('Name',None)] = {0: Element}
         else:
             Modules[Element.get('Name',None)] = {0: Element}
-    return Modules
+    res = {}
+    names = {}
+    c = 0
+    for ModuleName in Modules:
+        res[c] = Modules[ModuleName]
+        names[c] = ModuleName
+        c += 1
+    return res,names
 
 def getMyFunction(function,params):
     res = eval('%s(%s)' % (function,str(params)))

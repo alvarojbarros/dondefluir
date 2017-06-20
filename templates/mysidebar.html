@@ -29,30 +29,30 @@
         <li>
            <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
         </li>
-        {% for moduleName in getModules() %}
-        {% set module = getModules()[moduleName] %}
+        {% for index in getModulesDir() %}
+        {% set module = getModulesDir()[index] %}
         <li class="user-pro" >
 
           <a href="#"  v-if="{{module|length}}==1"
-            :onClick="'getTemplateModule(\'container-fluid\',\'{{moduleName}}\','+ 0 + ')'"
+            :onClick="'getTemplateModule(\'container-fluid\',\'{{index}}\','+ 0 + ')'"
             class="waves-effect">
             <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
-            <span class="hide-menu">{{ module[0].Name }}
+            <span class="hide-menu"> <b ref="module-{{index}}"></b>
             </span>
           </a>
 
           <a href="#" class="waves-effect" v-if="{{module|length}}>1">
             <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
-            <span class="hide-menu">{{moduleName}}
+            <span class="hide-menu">  <b ref="module-{{index}}">{{index}}</b>
               <span class="fa arrow">
               </span>
             </span>
           </a>
           <ul class="nav nav-second-level" v-if="{{module|length}}>1">
-            <li v-for="(table,index) in values['{{moduleName}}']">
-              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\'{{moduleName}}\','+ index + ')'">
+            <li v-for="(table,index) in values['{{index}}']">
+              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\'{{index}}\','+ index + ')'">
                 <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
-                {%raw%}{{ table.Name }}{%endraw%}
+                {%raw%}{{table.Name}}{%endraw%}
               </a>
             </li>
           </ul>

@@ -58,7 +58,6 @@ function setFavorite(element,t){
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
 		 	  	  if (t=="1"){
-					  console.log(7)
 					  vue_record.values.fields.Favorite.Label = 'Eliminar de Favoritos'
 					  vue_record.values.record.Favorite = 1
 					  vue_record.values.fields.Favorite.Class = 'btn btn-danger btn-rounded waves-effect waves-light m-t-20'
@@ -120,7 +119,6 @@ function setCustomerToEvent(id){
     $.getJSON($SCRIPT_ROOT + '/_set_cust_to_event',{id: id}, function(data) {
       	res = data.result['res'];
       	if (res){
-			console.log(1)
 			vue_event.events[id][0].Status = data.result.label;
 			if (data.result.st==1){
 				vue_event.events[id][0].Persons += 1;

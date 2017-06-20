@@ -98,7 +98,6 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	vue_record.values.record.Type = 0
 	vue_record.values.record.Schedules.push({'StartTime': StartTime,'TransDate': TransDate, 'EndTime': EndTime})
 	updateLinkTo()
-
 }
 
 

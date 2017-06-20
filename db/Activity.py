@@ -59,8 +59,9 @@ class Activity(Base,Record):
         res['id'] = {'Type': 'integer','Hidde': True}
         res['CustId'] = {'Type': 'integer', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
             #,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
-            ,'Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
-        res['ProfId'] = {'Type': 'integer', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']}}
+            ,'Filters': {'UserType':[3]},'Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
+        res['ProfId'] = {'Type': 'integer', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name'] \
+            ,'Filters': {'UserType':[0,1,2]}}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
@@ -462,7 +463,7 @@ class Activity(Base,Record):
             session.close()
             return records
         else:
-            return TableClass.getAllRecordList(TableClass)
+            return TableClass.getRecordList(TableClass)
 
     @classmethod
     def getRecordTitle(self):

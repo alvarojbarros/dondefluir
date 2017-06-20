@@ -3,14 +3,6 @@
   <div class="sidebar-nav navbar-collapse slimscrollsidebar">
      <ul class="nav" id="side-menu">
         <li class="sidebar-search hidden-sm hidden-md hidden-lg">
-           <!-- Search input-group this is only view in mobile -->
-           <!--div class="input-group custom-search-form">
-              <input type="text" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-              <button class="btn btn-default" type="button"> <i class="fa fa-search"></i> </button>
-              </span>
-           </div-->
-           <!-- / Search input-group this is only view in mobile-->
         </li>
         <!-- User profile-->
         <li class="user-pro">
@@ -37,29 +29,35 @@
         <li>
            <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu">Dashboard</span></a>
         </li>
-        <li class="user-pro" v-for="(module,moduleName) in values">
+        {% for moduleName in getModules() %}
+        {% set module = getModules()[moduleName] %}
+        <li class="user-pro" >
 
-          <a href="#"  v-if="Object.keys(module).length==1"
-            :onClick="'getTemplateModule(\'container-fluid\',\''+ moduleName + '\','+ 0 + ')'"
-            class="waves-effect"><i data-icon="F" :class="'fa ' + module[0].Image + ' fa-fw'">
-          </i><span class="hide-menu">{%raw%}{{ module[0].Name }}{%endraw%}<span class="fa arrow"></span></span></a>
+          <a href="#"  v-if="{{module|length}}==1"
+            :onClick="'getTemplateModule(\'container-fluid\',\'{{moduleName}}\','+ 0 + ')'"
+            class="waves-effect">
+            <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
+            <span class="hide-menu">{{ module[0].Name }}
+            </span>
+          </a>
 
-          <a href="#" class="waves-effect" v-if="Object.keys(module).length>1">
-            <i class="icon-envelope p-r-10"></i>
-            <span class="hide-menu">{%raw%}{{ moduleName }}{%endraw%}
+          <a href="#" class="waves-effect" v-if="{{module|length}}>1">
+            <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
+            <span class="hide-menu">{{moduleName}}
               <span class="fa arrow">
               </span>
             </span>
           </a>
-          <ul class="nav nav-second-level" v-if="Object.keys(module).length>1">
-            <li v-for="(table,index) in module">
-              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\''+ moduleName + '\','+ index + ')'">
+          <ul class="nav nav-second-level" v-if="{{module|length}}>1">
+            <li v-for="(table,index) in values['{{moduleName}}']">
+              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\'{{moduleName}}\','+ index + ')'">
                 <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
                 {%raw%}{{ table.Name }}{%endraw%}
               </a>
             </li>
           </ul>
         </li>
+        {% endfor %}
      </ul>
   </div>
 </div>

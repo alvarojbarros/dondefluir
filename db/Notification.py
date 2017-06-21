@@ -34,7 +34,7 @@ class Notification(Base,Record):
         res['Action'] = {'Type': 'text','Hidde': True}
         res['Status'] = {'Type': 'integer', 'Label': 'Estado', 'Input': 'combo','Values': {0: 'No Leída',1: 'Leída'}}
         res['TransDate'] = {'Type': 'datetime','Label':'Fecha', 'Input':'datetime','Readonly':1}
-        res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4'}
+        res['Description'] = {'Type': 'text', 'Label': 'Descripción','Input':'textarea','rows':'4','Readonly':1}
         return res
 
     @classmethod

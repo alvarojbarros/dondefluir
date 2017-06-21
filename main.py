@@ -40,7 +40,7 @@ def addElementToList(Elements,Element,UserType):
 def getModules(UserType):
     Elements = {}
     functions = "runSearchBoxOnKey()"
-    Element = {'Name':'Usuários','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions} \
+    Element = {'Name':'Usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions} \
         ,'Image':'fa-users'}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Empresas','Level':[0,3],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \

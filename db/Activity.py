@@ -355,7 +355,10 @@ class Activity(Base,Record):
         ntf = Notification()
         ntf.defaults()
         ntf.UserId = user_id
-        ntf.Comment = "%s: %s" %(comment,self.Comment)
+        if self.Comment:
+            ntf.Comment = "%s: %s" %(comment,self.Comment)
+        else:
+            ntf.Comment = comment
         ntf.Action = ""
         session = Session()
         res = ntf.save(session)

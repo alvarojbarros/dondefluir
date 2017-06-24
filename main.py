@@ -125,12 +125,13 @@ def getMyFunction(function,params):
 def getProfessional(favorite):
     session = Session()
     if not favorite:
-        records = session.query(User).filter_by(FindMe=True)\
+        records = session.query(User).filter_by(FindMe=True,Closed=0)\
             .join(Company,User.CompanyId==Company.id)\
             .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
-        records = session.query(User).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
+        records = session.query(User).filter_by(Closed=0)\
+            .join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .join(Company,User.CompanyId==Company.id)\
             .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
@@ -149,10 +150,10 @@ def getCustomer(*args):
     favorite = args[0]['favorite']
     session = Session()
     if not favorite:
-        records = session.query(User).filter_by(UserType=3)
+        records = session.query(User).filter_by(UserType=3,Closed=0)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
-        records = session.query(User).filter_by(UserType=3).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
+        records = session.query(User).filter_by(UserType=3,Closed=0).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .with_entities(User.id,User.Name)
     session.close()
@@ -209,7 +210,7 @@ def get_calendar_dates():
 
 def getCalendarDates(profId,AddActivities=False):
     session = Session()
-    user = session.query(User).filter_by(id=profId).first()
+    user = session.query(User).filter_by(id=profId,Closed=0).first()
     if not user:
         return []
 
@@ -457,7 +458,8 @@ def get_notifications():
     k = 0
     for r in record:
         k += 1
-        l.append({'Comment':r.Comment,'TransDate':r.TransDate,'id':r.id})
+        l.append({'Comment':r.Comment,'TransDate': "%s %s" % (WeekName[int(r.TransDate.strftime("%w"))] \
+            ,r.TransDate.strftime("%d/%m/%Y")),'id':r.id})
         if k>=4:
             break
     return jsonify(result={'cnt':cnt,'values':l})

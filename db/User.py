@@ -44,6 +44,7 @@ class User(Base,Record,UserMixin):
     ShowFromDays = Column(Integer)
     NtfActivityConfirm = Column(Integer)
     NtfActivityNewCust = Column(Integer)
+    Closed = Column(Integer)
 
     Schedules = relationship('UserSchedule', cascade="all, delete-orphan")
 
@@ -89,6 +90,7 @@ class User(Base,Record,UserMixin):
         res['NtfReminderHours'] = {'Type': 'integer', 'Label': 'Horas de Antelación para Recordatorio', 'Input': 'integer'}
         res['NtfActivityConfirm'] = {'Type': 'integer', 'Label': 'Actividad Confirmada', 'Input': 'checkbox'}
         res['NtfActivityNewCust'] = {'Type': 'integer', 'Label': 'Nuevos Clientes', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['Closed'] = {'Type': 'integer', 'Label': 'Cerrado', 'Input': 'checkbox','Level': [0]}
         return res
 
     @classmethod
@@ -96,7 +98,7 @@ class User(Base,Record,UserMixin):
         Tabs = {}
         Tabs[0] = {"Name":"Información del Usuario", "Fields": [[0,["Name","Phone"]],[3,["Address","City"]] \
             ,[6,["Comment"]],[7,["Title","ImageProfile"]]]}
-        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["Email","Password"]],[2,["UserType"]] \
+        Tabs[1] = {"Name":"Configuración del Usuario", "Fields": [[0,["Email","Password"]],[2,["UserType","Closed"]] \
             ,[4,["CompanyId","EditSchedule"]],[6,["FindMe"]],[7,["Favorite"]]]}
         Tabs[2] = {"Name":"Agenda","Fields": [[0,["ShowFromDays","ShowDays"]],[1,["FixedSchedule"]],[2,["MaxTime","MinTime"]],[3,["Schedules"]]]\
             ,'ShowIf':['UserType',["0","1","2"],-1]}
@@ -182,13 +184,11 @@ class User(Base,Record,UserMixin):
     def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         if current_user.UserType==1:
             session = Session()
-            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1,cls.TableClass!=1)
             session.close()
-            #records = session.query(cls).filter(or_(and_(cls.CompanyId==current_user.CompanyId,cls.UserType==1), \
-            #    and_(cls.CompanyId==current_user.CompanyId,cls.UserType==2),cls.UserType==3))
         elif current_user.UserType==2:
             session = Session()
-            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType==3)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType==3,cls.TableClass!=1)
             session.close()
         else:
             records = Record.getRecordList(TableClass)

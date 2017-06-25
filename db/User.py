@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask_login import UserMixin
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime, Index
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime, Index,or_
 from tools.dbconnect import engine,MediumText,Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -184,11 +184,12 @@ class User(Base,Record,UserMixin):
     def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         if current_user.UserType==1:
             session = Session()
-            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1,cls.TableClass!=1)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1,cls.Closed!=1)
             session.close()
         elif current_user.UserType==2:
             session = Session()
-            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType==3,cls.TableClass!=1)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId, \
+                or_(cls.UserType==3,cls.id==current_user.id),cls.Closed!=1)
             session.close()
         else:
             records = Record.getRecordList(TableClass)

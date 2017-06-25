@@ -32,7 +32,6 @@ function setCompany(id,current_user_id){
 		});
 
 	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'CompanyId': id },function(data) {
-		console.log(data.result)
 		Vue.set(vue_schedule,'values', data.result);
 		Vue.set(vue_schedule,'current_user_id', current_user_id);
 		//Vue.set(vue_schedule,'user_type', vue_user_menu.current_user_type);
@@ -288,5 +287,18 @@ function setCustomVue(Table,record){
 	if (Table=='Activity'){
 		Vue.set(vue_buttons,'id', record.id);
 		Vue.set(vue_buttons,'Status', record.Status);
+		if (!record.Comment){
+			record.Comment = 'Pago ePayco';
+		}
+		Vue.set(vue_activity,'record',record)
+		if (record.OnlinePayment==1){
+			$.getJSON($SCRIPT_ROOT + '/_get_payment', {'activityId': record.id, 'userId': record.CustId,'companyId': record.CompanyId}
+				, function(data) {
+				Vue.set(vue_activity,'Paid',data.result.res)
+				if (!data.result.res){
+					Vue.set(vue_activity,'KeyPayco',data.result.KeyPayco)
+				}
+			});
+		}
 	}
 }

@@ -38,7 +38,7 @@
         <div class="white-box">
           <h3 class="box-title">Pr&oacute;ximas Actividades</h3>
           <li v-for="record in values" class="list-group-item">
-          <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+          <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'activityform.html\',\'' + record.id + '\')'">
             <div v-if="user_type==3">
               {%raw%}{{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.Status}}{%endraw%}
             </div>

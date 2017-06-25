@@ -554,3 +554,22 @@ def set_payment():
         return jsonify(result={'res':True,'id':record.id})
     else:
         return jsonify(result={'res':False,'Error':str(res)})
+
+
+@blue_dondefluir.route('/_get_payment')
+def get_payment():
+    activityId = request.args.get('activityId')
+    userId = request.args.get('userId')
+    session = Session()
+    Paid = session.query(Payment)\
+        .filter_by(UserId=userId ,ActivityId=activityId,ResponseCode=1) \
+        .count()
+    if Paid:
+        return jsonify(result={'res':True})
+    else:
+        KeyPayco = ''
+        companyId = request.args.get('companyId')
+        company = Company.getRecordById(companyId)
+        if company:
+            KeyPayco = company.KeyPayco
+        return jsonify(result={'res':False,'KeyPayco': KeyPayco})

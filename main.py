@@ -122,19 +122,23 @@ def getMyFunction(function,params):
     res = eval('%s(%s)' % (function,str(params)))
     return res
 
-def getProfessional(favorite):
+def getProfessional(favorite,companyId):
     session = Session()
     if not favorite:
         records = session.query(User).filter_by(FindMe=True,Closed=0)\
-            .join(Company,User.CompanyId==Company.id)\
-            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
+            .join(Company,User.CompanyId==Company.id)
+        if companyId:
+            records = records.filter(User.CompanyId==companyId)
+        records  = records.with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
         records = session.query(User).filter_by(Closed=0)\
             .join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
-            .join(Company,User.CompanyId==Company.id)\
-            .with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
+            .join(Company,User.CompanyId==Company.id)
+        if companyId:
+            records = records.filter(User.CompanyId==companyId)
+        records  = records.with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     session.close()
     return records
 
@@ -186,9 +190,10 @@ def getBreakCalendarDates(act,dates):
 
 @blue_dondefluir.route('/_get_calendar_events')
 def get_calendar_events():
-    profId = request.args.get('id',None)
+    profId = request.args.get('prodId',None)
+    companyId = request.args.get('companyId',None)
     eventId = request.args.get('eventId',None)
-    res = showProfessionalEvents({'profId':profId,'eventId':eventId})
+    res = showProfessionalEvents({'profId':profId,'eventId':eventId,'companyId': companyId})
     return jsonify(result=res)
 
 
@@ -319,6 +324,7 @@ def getUserService(params):
 def showProfessionalEvents(*args):
     profId = args[0].get('profId',None)
     eventId = args[0].get('eventId',None)
+    companyId = args[0].get('companyId',None)
     session = Session()
     records = session.query(Activity) \
         .join(Company,Activity.CompanyId==Company.id)\
@@ -329,6 +335,7 @@ def showProfessionalEvents(*args):
         ,Company.KeyPayco,Company.OnlinePayment.label('CompanyPayment'))
     if eventId: records = records.filter(Activity.id==eventId)
     if profId: records = records.filter(Activity.ProfId==profId)
+    if companyId: records = records.filter(Activity.CompanyId==companyId)
     res = {}
     k = 0
     for r in records:
@@ -367,7 +374,8 @@ def showProfessionalEvents(*args):
 @blue_dondefluir.route('/_get_professional_list')
 def get_professional_list():
     favorite = request.args.get('Favorite')=='true'
-    records = getProfessional(favorite)
+    companyId = request.args.get('CompanyId',None)
+    records = getProfessional(favorite,companyId)
     res = fillRecordList(records,['Name','id','CompanyName','Title','City'])
     for dic in res:
         dic['Image'] = getImageLink('User',dic['id'],'ImageProfile')

@@ -61,4 +61,17 @@ class Company(Base,Record):
     def getRecordTitle(self):
         return ['Name']
 
+    @classmethod
+    def canUserEdit(cls,record):
+        if current_user.UserType==3:
+            return False
+        return False
+
+    @classmethod
+    def getUserFieldsReadOnly(cls,record,fieldname):
+        if current_user.UserType==3:
+            return 2
+        return 0
+
+
 Base.metadata.create_all(engine)

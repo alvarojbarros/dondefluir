@@ -6,13 +6,38 @@ function showProfessional(id,Name,current_user_id){
 	})
 }
 
+function showCompany(id,Name,current_user_id){
+	vars = {Template: 'showcompany.html',companyId: id}
+	getTemplate('container-fluid',vars,function (){
+		setCompany(id,current_user_id);
+	})
+}
+
 
 function getProfessionalList(favorite,current_user_id){
-
 	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'Favorite': favorite },function(data) {
 		Vue.set(vue_recordlist,'values', data.result);
 		Vue.set(vue_recordlist,'user_id', current_user_id);
 		Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
+	});
+}
+
+function setCompany(id,current_user_id){
+	getRecordBy('Company',{id:id,NotFilterFields:true},function(data){
+		Vue.set(vue_title,'Title', data.record.Name);
+		Vue.set(vue_record,'values', data.record);
+
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'companyId':id},function(data2) {
+			Vue.set(vue_schedule,'events',data2.result)
+		});
+
+	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'CompanyId': id },function(data) {
+		console.log(data.result)
+		Vue.set(vue_schedule,'values', data.result);
+		Vue.set(vue_schedule,'current_user_id', current_user_id);
+		//Vue.set(vue_schedule,'user_type', vue_user_menu.current_user_type);
+	});
+
 	});
 }
 
@@ -29,7 +54,7 @@ function setProffesional(id,current_user_id){
 			Vue.set(vue_schedule,'current_user_id',current_user_id)
 		});
 
-		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'id':id},function(data2) {
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'profId':id},function(data2) {
 			Vue.set(vue_schedule,'events',data2.result)
 		});
 

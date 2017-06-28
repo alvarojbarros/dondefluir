@@ -12,7 +12,7 @@
 
 
 {% block fields_view %}
-  <li v-for="record in values" :data-search-term="record.Name" class="list-group-item">
+  <li v-for="record in values" :data-search-term="record.Name" class="list-group-item" v-if="record._Skip==false">
     <a href="#" v-if="user_type==3" :onClick="'showCompany(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">
     {%raw%}{{record.Name}}{%endraw%}
     </a>

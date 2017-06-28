@@ -34,7 +34,7 @@ function setCompany(id,current_user_id){
 	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'CompanyId': id },function(data) {
 		Vue.set(vue_schedule,'values', data.result);
 		Vue.set(vue_schedule,'current_user_id', current_user_id);
-		//Vue.set(vue_schedule,'user_type', vue_user_menu.current_user_type);
+		Vue.set(vue_schedule,'user_type', vue_user_menu.current_user_type);
 	});
 
 	});

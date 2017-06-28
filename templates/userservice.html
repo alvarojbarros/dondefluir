@@ -4,7 +4,7 @@
 {% endblock %}
 {% block fields_view %}
 {% for record in myFunction(function='getUserService') %}
-    <li data-search-term="{{record.UserName}} {{record.ServiceName}}" class="list-group-item">
+    <li data-search-term="{{record.UserName}} {{record.ServiceName}}" class="list-group-item" v-if="record._Skip==false">
     <a href="#" onClick="getRecordForm('{{var['Table']}}','recordform.html',id='{{record.id}}')">{{record.UserName}} - {{record.ServiceName}}</a></li>
 {% endfor %}
 {% endblock %}

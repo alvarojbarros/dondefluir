@@ -5,7 +5,7 @@
 
 {% block fields_view %}
 {% for record in myFunction(function='getCustomer',params={'favorite': var['favorite']}) %}
-    <li data-search-term="{{record.Name}}" class="list-group-item">
+    <li data-search-term="{{record.Name}}" class="list-group-item" >
     <a href="#" onClick="getRecordForm('{{var['Table']}}','customerform.html',id='{{record.id}}')">{{record.Name}}</a></li>
 {% endfor %}
 {% endblock %}

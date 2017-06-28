@@ -1,7 +1,7 @@
 {% extends "recordtable.html" %}
 {% block fields_view %}
 
-  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
+  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item" v-if="record._Skip==false">
   <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'activityform.html\',\'' + record.id + '\')'">
     <div v-if="user_type==3">
       {%raw%}{{record.Type}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}} - {{record.CompanyId}} - {{record.ProfId}} - {{record.ServiceId}} ({{record.Status}}){%endraw%}

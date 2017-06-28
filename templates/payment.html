@@ -2,7 +2,7 @@
 
 {% block fields_view %}
 
-  <li v-for="record in values" :data-search-term="record.UserId" class="list-group-item">
+  <li v-for="record in values" :data-search-term="record.UserId" class="list-group-item" v-if="record._Skip==false">
   <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
       {%raw%}{{record.UserId}} - {{record.CompanyId}} - {{record.ActivityId}} - {{record.Response}} - {{record.Amount}} - {{record.TransDate}} {%endraw%}
    </a>

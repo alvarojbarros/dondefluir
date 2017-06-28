@@ -64,7 +64,7 @@ class Activity(Base,Record):
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
         res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
-        res['Type'] = {'Type': 'integer', 'Label': 'Tipo', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'}}
+        res['Type'] = {'Type': 'integer', 'Label': 'Tipo de actividad', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'}}
         if current_user.UserType==3:
             res['Type']['Hidde'] = True
         res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2],'htmlView':ActivityUsers.htmlView()}
@@ -178,6 +178,10 @@ class Activity(Base,Record):
             elif fieldname in ('ProfId','CompanyId','TransDate','StartTime','EndTime','CustId','Type','Status','Price'):
                 return 2 # nunca
         return 0 # siempre
+
+    @classmethod
+    def recordListFilters(cls):
+        return ['Type','ServiceId','Status']
 
     def defaults(self):
         if current_user.UserType in (0,1,2):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask_login import UserMixin
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime, Index,or_
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time, DateTime, Index, or_, Date
 from tools.dbconnect import engine,MediumText,Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -45,6 +45,7 @@ class User(Base,Record,UserMixin):
     NtfActivityConfirm = Column(Integer)
     NtfActivityNewCust = Column(Integer)
     Closed = Column(Integer)
+    CreatedDate = Column(Date)
 
     Schedules = relationship('UserSchedule', cascade="all, delete-orphan")
 
@@ -91,6 +92,7 @@ class User(Base,Record,UserMixin):
         res['NtfActivityConfirm'] = {'Type': 'integer', 'Label': 'Actividad Confirmada', 'Input': 'checkbox'}
         res['NtfActivityNewCust'] = {'Type': 'integer', 'Label': 'Nuevos Clientes', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Closed'] = {'Type': 'integer', 'Label': 'Cerrado', 'Input': 'checkbox','Level': [0]}
+        res['CreatedDate'] = {'Type': 'date','Hidde': True}
         return res
 
     @classmethod
@@ -139,6 +141,11 @@ class User(Base,Record,UserMixin):
         self.syncVersion = 0
         self.UserType = 3
         self.Closed = 0
+        self.NtfActivityConfirm = 1
+        self.NtfActivityCancel = 1
+        self.NtfActivityChange = 1
+        self.NtfActivityNew = 1
+        self.CreatedDate = today()
 
     @classmethod
     def addNewUser(cls,email,password,name):
@@ -153,6 +160,7 @@ class User(Base,Record,UserMixin):
         new_user.NtfActivityNew = 1
         new_user.Name = name
         new_user.Email = email
+        new_user.CreatedDate = today()
         session.add(new_user)
         try:
             session.commit()

@@ -95,6 +95,14 @@ def getModules(UserType):
         ,'Level':[0,1,3]}
     addElementToList(Elements,Element,UserType)
 
+    # reportes
+    Element = {'Name': 'Nuevos usuarios por mes','Template':'report.html','Vars':{'ReportClass':'NewUsers'} \
+        ,'Image':'fa-envelope-o','Level':[0],'Module':'Reportes'}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name': 'Nuevos usuarios por mes','Template':'report.html','Vars':{'ReportClass':'NewUsers'} \
+        ,'Image':'fa-envelope-o','Level':[0],'Module':'Reportes'}
+    addElementToList(Elements,Element,UserType)
+
 
     Modules,Names = resumeModules(Elements,UserType)
     return Modules,Names

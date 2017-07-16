@@ -5,7 +5,7 @@
   <div id="vue_title" class="row bg-title">
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
       <h4 class="page-title">
-        <label id="prof_Name"> Alvaro Jose  </label>
+        <label id="prof_Name"> {%raw%}{{ProfName}}{%endraw%} </label>
       </h4>
       <input type="hidden" id="id" value="">
       <input type="hidden" id="record_id" value="">
@@ -15,7 +15,7 @@
         <li>
           <a href="http://localhost:5000/#" onclick="showDashboard()">Dashboard</a>
         </li>
-        <li id="prof_Name2" class="active"> Alvaro Jose  </li>
+        <li id="prof_Name2" class="active"> {%raw%}{{ProfName}}{%endraw%} </li>
       </ol>
     </div>
   </div>

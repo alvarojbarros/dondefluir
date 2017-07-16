@@ -9,5 +9,5 @@ var vue_schedule = new Vue({
     profName: '',
     current_user_id: '',
     user_type: '',
-  },
+      },
 })

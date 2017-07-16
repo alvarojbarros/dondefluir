@@ -4,8 +4,16 @@
 {% endblock %}
 
 {% block fields_view %}
-{% for record in myFunction(function='getCustomer',params={'favorite': var['favorite']}) %}
-    <li data-search-term="{{record.Name}}" class="list-group-item" >
-    <a href="#" onClick="getRecordForm('{{var['Table']}}','customerform.html',id='{{record.id}}')">{{record.Name}}</a></li>
-{% endfor %}
+
+  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item" v-if="record.Closed==0">
+  <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+      {%raw%}{{record.Name}} - {{record.UserType}}{%endraw%}
+   </a></li>
+
+{% endblock %}
+
+{% block button_script %}
+<script type=text/javascript>
+  getCustomerList('User','Name,id,UserType,Closed',{{var['favorite']}});
+</script>
 {% endblock %}

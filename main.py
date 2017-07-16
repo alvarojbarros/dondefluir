@@ -25,6 +25,12 @@ def getActivitiesTableName():
     else:
         return "Todas las actividades"
 
+def getCompanyTemplate():
+    if current_user.UserType==3:
+        return "company_icon.html"
+    else:
+        return "company.html"
+
 def getPaymentsTableName():
     if current_user.UserType==3:
         return "Mis Pagos"
@@ -40,29 +46,29 @@ def addElementToList(Elements,Element,UserType):
 def getModules(UserType):
     Elements = {}
     functions = "runSearchBoxOnKey()"
-    Element = {'Name':'Usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions} \
+    Element = {'Name':'Usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions }\
         ,'Image':'fa-users'}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Empresas','Level':[0,3],'Template':'company.html','Vars':{'Table':'Company','Functions':functions} \
+    Element = {'Name':'Empresas','Level':[0,3],'Template':getCompanyTemplate(),'Vars':{'Table':'Company','Functions':functions }\
         ,'Image':'fa-fort-awesome','Module':{0:'Empresas'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':getActivitiesTableName(),'Level':[0,1,2,3],'Template':'activity.html' \
-        ,'Vars':{'Table':'Activity','Functions':functions},'Image':'fa-sun-o' \
+        ,'Vars':{'Table':'Activity','Functions':functions,'TemplateForm':'activityform.html'},'Image':'fa-sun-o' \
         ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional.html' \
+    Element = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional_icon.html' \
         ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Profesionales','Level':[0,3],'Template':'professional.html'
+    Element = {'Name':'Profesionales','Level':[0,3],'Template':'professional_icon.html'
         ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic' \
         ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html'
-        ,'Vars':{'Table':'User','Functions':functions,'favorite':'False'},'Image':'fa-smile-o' \
-        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-smile-o' \
+        ,'TemplateForm':'customerform.html','Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Mis Clientes','Level':[0,1,2],'Template':'customer.html' \
-        ,'Vars':{'Table':'User','Functions':functions,'favorite':'True'},'Image':'fa-smile-o'}
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-smile-o'}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Servicios','Level':[0,1],'Template':'service.html' \
         ,'Vars':{'Table':'Service','Functions':functions},'Image':'fa-coffee' \
@@ -125,14 +131,14 @@ def getMyFunction(function,params):
 def getProfessional(favorite,companyId):
     session = Session()
     if not favorite:
-        records = session.query(User).filter_by(FindMe=True,Closed=0)\
+        records = session.query(User).filter_by(FindMe=True)\
             .join(Company,User.CompanyId==Company.id)
         if companyId:
             records = records.filter(User.CompanyId==companyId)
         records  = records.with_entities(User.id,User.Name,Company.Name.label("CompanyName"),User.Title,User.City)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
-        records = session.query(User).filter_by(Closed=0)\
+        records = session.query(User)\
             .join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
             .join(Company,User.CompanyId==Company.id)
@@ -150,16 +156,27 @@ def getUserNote(*args):
     return records
 
 
-def getCustomer(*args):
-    favorite = args[0]['favorite']
+def getCustomer(args):
+    favorite = args.get('favorite',None)
     session = Session()
     if not favorite:
-        records = session.query(User).filter_by(UserType=3,Closed=0)
+        records = session.query(User).filter_by(UserType=3)
     else:
         from dondefluir.db.UserFavorite import UserFavorite
-        records = session.query(User).filter_by(UserType=3,Closed=0).join(UserFavorite,User.id==UserFavorite.FavoriteId)\
+
+        records1 = session.query(User).filter_by(UserType=3)\
+            .join(UserFavorite,User.id==UserFavorite.FavoriteId)\
             .filter_by(UserId=current_user.id,Checked=True)\
-            .with_entities(User.id,User.Name)
+            .with_entities(User.id, User.Name,User.Closed,User.UserType)
+
+        records2 = session.query(User).filter_by(UserType=3)\
+            .join(UserFavorite, User.id == UserFavorite.UserId)\
+            .filter_by(FavoriteId=current_user.id, Checked=True) \
+            .with_entities(User.id, User.Name,User.Closed,User.UserType)
+
+        #records = records1.union_all(records2)
+        records = records1
+
     session.close()
     return records
 
@@ -200,7 +217,7 @@ def get_calendar_events():
 @blue_dondefluir.route('/_get_calendar_dates')
 def get_calendar_dates():
     profId = request.args.get('id')
-    AddActivities = request.args.get('AddActivities',True)
+    AddActivities = request.args.get('AddActivities',False)
     res = getCalendarDates(profId,AddActivities)
     for d in res:
         list = res[d]
@@ -215,7 +232,7 @@ def get_calendar_dates():
 
 def getCalendarDates(profId,AddActivities=False):
     session = Session()
-    user = session.query(User).filter_by(id=profId,Closed=0).first()
+    user = session.query(User).filter_by(id=profId).first()
     if not user:
         return []
 
@@ -328,11 +345,12 @@ def showProfessionalEvents(*args):
     session = Session()
     records = session.query(Activity) \
         .join(Company,Activity.CompanyId==Company.id)\
+        .join(User,Activity.ProfId==User.id)\
         .join(ActivitySchedules,Activity.id==ActivitySchedules.activity_id)\
         .filter(ActivitySchedules.TransDate>=today(),or_(Activity.Type==1,Activity.Type==2)) \
         .with_entities(Activity.Comment,Activity.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
         ,ActivitySchedules.EndTime,Activity.id,Activity.MaxPersons,Activity.Price,Activity.Description,Activity.OnlinePayment \
-        ,Company.KeyPayco,Company.OnlinePayment.label('CompanyPayment'))
+        ,Company.KeyPayco,Company.OnlinePayment.label('CompanyPayment'),User.Name.label('ProfName'))
     if eventId: records = records.filter(Activity.id==eventId)
     if profId: records = records.filter(Activity.ProfId==profId)
     if companyId: records = records.filter(Activity.CompanyId==companyId)
@@ -367,18 +385,23 @@ def showProfessionalEvents(*args):
         res[r.id].append({'Comment': r.Comment,'TransDate': TransDate, 'StartTime': r.StartTime.strftime("%H:%M") \
             , 'Description': r.Description, 'Price': r.Price, 'MaxPersons': r.MaxPersons, 'OnlinePayment': r.OnlinePayment \
             , 'EndTime': r.EndTime.strftime("%H:%M"), 'Status': st, 'Persons': cnt, 'StatusValue': stv, 'Paid': paid \
-            , 'KeyPayco': r.KeyPayco, 'CompanyPayment':r.CompanyPayment})
+            , 'KeyPayco': r.KeyPayco, 'CompanyPayment':r.CompanyPayment,'ProfName': r.ProfName})
         k += 1
     return res
 
 @blue_dondefluir.route('/_get_professional_list')
 def get_professional_list():
-    favorite = request.args.get('Favorite')=='true'
+    favorite = request.args.get('favorite')=='true'
     companyId = request.args.get('CompanyId',None)
     records = getProfessional(favorite,companyId)
-    res = fillRecordList(records,['Name','id','CompanyName','Title','City'])
-    for dic in res:
-        dic['Image'] = getImageLink('User',dic['id'],'ImageProfile')
+    fields = ['Name','id','CompanyName','Title','City']
+    res = []
+    for rec in records:
+        r = {}
+        for field in fields:
+            r[field] = getattr(rec,field)
+        r['Image'] = getImageLink('User',rec.id,'ImageProfile')
+        res.append(r)
     return jsonify(result=res)
 
 
@@ -493,7 +516,13 @@ def event_list():
     records = Activity.getEventList(limit=limit,order_by=order_by,desc=desc)
     fieldsDef = Activity.fieldsDefinition()
     res = fillRecordList(records,fields,fieldsDef)
-    return jsonify(result=res)
+    ids = []
+    events = []
+    for r in res:
+        if r['id'] not in ids:
+            ids.append(r['id'])
+            events.append(r)
+    return jsonify(result=events)
 
 @blue_dondefluir.route('/_cancel_activity')
 def cancel_activity():
@@ -532,10 +561,14 @@ def set_payment():
     from dondefluir.db.Payment import Payment
     activityId = request.args.get('activityId')
     session = Session()
+    record = session.query(Activity).filter_by(id=activityId).first()
+    companyId = record.CompanyId
+    session.close()
+    session = Session()
     session.expire_on_commit = False
     record = Payment()
     record.UserId = current_user.id
-    record.CompanyId = current_user.CompanyId
+    record.CompanyId = companyId
     record.ActivityId = activityId
     record.ResponseCode = request.args.get('x_cod_response')
     record.Response = request.args.get('x_response')
@@ -573,3 +606,33 @@ def get_payment():
         if company:
             KeyPayco = company.KeyPayco
         return jsonify(result={'res':False,'KeyPayco': KeyPayco})
+
+
+@blue_dondefluir.route('/_customer_list')
+def customer_list():
+    vars = {}
+    for key in request.args:
+        vars[key] = request.args.get(key)
+        if vars[key] in ('true','True'):
+            vars[key] = True
+        elif vars[key] in ('false', 'False'):
+            vars[key] = False
+    records = getCustomer(vars)
+    fieldsDef = User.fieldsDefinition()
+    fields = request.args.get('Fields').split(',')
+    res = fillRecordList(records,fields,fieldsDef)
+    return jsonify(result={'records': res,'filters': [], 'filtersNames': []})
+
+@blue_dondefluir.route('/_get_service_price')
+def get_service_price():
+    ServiceId = request.args.get('ServiceId')
+    session = Session()
+    record = session.query(Service).filter_by(id=ServiceId).first()
+    price = None
+    if record and record.Price:
+        price = record.Price
+    session.close()
+    if price:
+        return jsonify(result=str(price))
+    else:
+        return jsonify(result=None)

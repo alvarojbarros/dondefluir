@@ -5,6 +5,7 @@ from tools.dbconnect import engine,MediumText,Session
 from tools.Record import Record,DetailRecord
 from sqlalchemy.ext.declarative import declarative_base
 from tools.Tools import *
+from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
 from dondefluir.db.Service import Service
@@ -57,14 +58,16 @@ class Activity(Base,Record):
         res = Record.fieldsDefinition()
         res['id'] = {'Type': 'integer','Hidde': True}
         res['CustId'] = {'Type': 'integer', 'Label': 'Cliente', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name']\
-            #,'Method':'getCustomer','Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
-            ,'Filters': {'UserType':[3]},'Params':"{'favorite':False}"},'ShowIf':['Type',["0"],-1]}
+            ,'Method':'getCustomer','Params':"{'favorite':True}" \
+            ,'Filters': {'UserType':[3]},'Params':"{'favorite':True}"},'ShowIf':['Type',["0"],-1]}
         res['ProfId'] = {'Type': 'integer', 'Label': 'Profesional', 'Input': 'combo','LinkTo':{'Table':'User','Show':['Name'] \
             ,'Filters': {'UserType':[0,1,2]}}}
         res['CompanyId'] = {'Type': 'text', 'Label': 'Empresa', 'Input': 'combo','LinkTo':{'Table':'Company','Show':['Name']}}
-        res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']}}
+        res['ServiceId'] = {'Type': 'text', 'Label': 'Servicio', 'Input': 'combo','LinkTo':{'Table':'Service','Show':['Name']} \
+            ,'AfterChange':'setServicePrice()'}
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'text'}
-        res['Type'] = {'Type': 'integer', 'Label': 'Tipo de actividad', 'Input': 'combo','Values': {0: 'Cita',1: 'Curso',2:'Evento'}}
+        res['Type'] = {'Type': 'integer', 'Label': 'Tipo de actividad', 'Input': 'combo' \
+            ,'Values': {0: 'Cita',1: 'Curso',2:'Evento'},'OnChange':'updateLinkTo()'}
         if current_user.UserType==3:
             res['Type']['Hidde'] = True
         res['Users'] = {'Type':[],'Class':'ActivityUsers', 'fieldsDefinition': ActivityUsers.fieldsDefinition(),'Level':[0,1,2],'htmlView':ActivityUsers.htmlView()}
@@ -80,7 +83,7 @@ class Activity(Base,Record):
     @classmethod
     def htmlView(cls):
         Tabs = {}
-        Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[2,["CustId","ServiceId","Status"]],[4,["Comment","Type"]] \
+        Tabs[0] = {"Name":"Información", "Fields": [[0,["CompanyId","ProfId"]],[4,["Type","Comment"]],[2,["CustId","ServiceId","Status"]] \
             ,[5,["Price","OnlinePayment"]]]}
         Tabs[1] = {"Name":"Horarios","Fields": [[0,["Schedules"]]]}
         Tabs[2] = {"Name":"Curso/Evento",'Level':[0,1,2],"Fields": [[0,["MaxPersons","Image"]],[1,["Description"]]],'ShowIf':['Type',["1","2"],-1]}
@@ -98,19 +101,22 @@ class Activity(Base,Record):
             .join(Company,cls.CompanyId==Company.id)\
             .join(UserProf,cls.ProfId==UserProf.id)\
             .outerjoin(Service,cls.ServiceId==Service.id)\
-            .with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-            ,ActivitySchedules.EndTime,cls.id,cls.Status,Company.Name.label('CompanyId')\
-            ,Service.Name.label('ServiceId'))
+            .with_entities(cls.Comment,UserProf.id.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+            ,ActivitySchedules.EndTime,cls.id,cls.Status,Company.id.label('CompanyId')\
+            ,Service.id.label('ServiceId'))
         if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
         elif order_by: records = records.order_by(ActivitySchedules.TransDate)
+        else: records = records.order_by(ActivitySchedules.TransDate)
         if limit: records = records.limit(limit)
         session.close()
         return records
 
     @classmethod
-    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None):
-        UserProf = aliased(User)
-        UserCust = aliased(User)
+    def getRecordList(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None,Alias=False):
+        if Alias:
+            UserProf = aliased(User)
+            UserCust = aliased(User)
+
         session = Session()
         records = session.query(cls)
         if current_user.UserType==3:
@@ -121,10 +127,19 @@ class Activity(Base,Record):
             records = records.filter_by(ProfId=current_user.id)
         records = records.join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
             .filter(ActivitySchedules.TransDate>=today())
+        if Alias:
+            records = records.join(UserProf,cls.ProfId==UserProf.id)\
+                .outerjoin(UserCust,cls.CustId==UserCust.id)\
+                .outerjoin(Service,cls.ServiceId==Service.id)
         if current_user.UserType==0:
             records = records.filter(or_(ProfId==None,cls.ProfId==ProfId))
-        records = records.with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
-            ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.CustId,cls.CompanyId,cls.ServiceId,cls.Type)
+        if not Alias:
+            records = records.with_entities(cls.Comment,cls.ProfId,ActivitySchedules.TransDate,ActivitySchedules.StartTime \
+                ,ActivitySchedules.EndTime,cls.id,cls.Status,cls.CustId,cls.CompanyId,cls.ServiceId,cls.Type)
+        else:
+            records = records.with_entities(cls.Comment, UserProf.id.label('ProfId'), ActivitySchedules.TransDate \
+                ,ActivitySchedules.StartTime , ActivitySchedules.EndTime, cls.id, cls.Status, UserCust.id.label('CustId')\
+                , cls.CompanyId, Service.id.label('ServiceId'), cls.Type)
         if not custId and current_user.UserType in (1,2):
             records = records.filter(Activity.CompanyId==current_user.CompanyId)
         if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
@@ -135,28 +150,7 @@ class Activity(Base,Record):
 
     @classmethod
     def getRecordListCalendar(cls,TableClass,custId=None,limit=None,order_by=None,desc=None,ProfId=None):
-
-        UserProf = aliased(User)
-        UserCust = aliased(User)
-        session = Session()
-        records = session.query(cls)
-        if current_user.UserType==3:
-            records = records.filter_by(CustId=current_user.id)
-        if custId and current_user.UserType in (1,2):
-            records = records.filter_by(CompanyId=current_user.CompanyId,CustId=custId)
-        records = records.join(ActivitySchedules,cls.id==ActivitySchedules.activity_id)\
-            .filter(ActivitySchedules.TransDate>=today())
-        if current_user.UserType==0:
-            records = records.filter(or_(ProfId==None,cls.ProfId==ProfId))
-        records = records.with_entities(cls.Comment,UserProf.Name.label('ProfId'),ActivitySchedules.TransDate \
-            ,ActivitySchedules.StartTime,ActivitySchedules.EndTime,cls.id,cls.Status,UserCust.Name.label('CustId') \
-            ,Company.Name.label('CompanyId'),Service.Name.label('ServiceId'),cls.Type)
-        if not custId and current_user.UserType in (1,2):
-            records = records.filter(Activity.CompanyId==current_user.CompanyId)
-        if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
-        elif order_by: records = records.order_by(ActivitySchedules.TransDate)
-        if limit: records = records.limit(limit)
-        session.close()
+        records = cls.getRecordList(TableClass,custId,limit,order_by,desc,ProfId,Alias=True)
         return records
 
 

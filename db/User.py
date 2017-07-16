@@ -68,7 +68,7 @@ class User(Base,Record,UserMixin):
         res['FindMe'] = {'Type': 'integer', 'Label': 'Aparecer en Buscador', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['FixedSchedule'] = {'Type': 'integer', 'Label': 'Horarios Fijos', 'Input': 'checkbox','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['MinTime'] = {'Type': 'integer', 'Label': 'Tiempo Mínimo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
-        res['MaxTime'] = {'Type': 'integer', 'Label': 'Timpo Máximo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
+        res['MaxTime'] = {'Type': 'integer', 'Label': 'Tiempo Máximo', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['ShowDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Hasta (Cantidad de días)', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['ShowFromDays'] = {'Type': 'integer', 'Label': 'Disponibilidad Desde (Cantidad de días)', 'Input': 'integer','Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Phone'] = {'Type': 'text', 'Label': 'Teléfono', 'Input': 'text'}
@@ -135,13 +135,22 @@ class User(Base,Record,UserMixin):
         session.close()
         return id
 
+    def defaults(self):
+        self.syncVersion = 0
+        self.UserType = 3
+        self.Closed = 0
+
     @classmethod
     def addNewUser(cls,email,password,name):
-        from sqlalchemy.orm import sessionmaker
         session = Session()
         new_user = User(Password=password)
         new_user.syncVersion = 0
         new_user.UserType = 3
+        new_user.Closed = 0
+        new_user.NtfActivityConfirm = 1
+        new_user.NtfActivityCancel = 1
+        new_user.NtfActivityChange = 1
+        new_user.NtfActivityNew = 1
         new_user.Name = name
         new_user.Email = email
         session.add(new_user)
@@ -184,12 +193,12 @@ class User(Base,Record,UserMixin):
     def getRecordList(cls,TableClass,limit=None,order_by=None,desc=None):
         if current_user.UserType==1:
             session = Session()
-            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1,cls.Closed!=1)
+            records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId,cls.UserType>=1)
             session.close()
         elif current_user.UserType==2:
             session = Session()
             records = session.query(cls).filter(cls.CompanyId==current_user.CompanyId, \
-                or_(cls.UserType==3,cls.id==current_user.id),cls.Closed!=1)
+                or_(cls.UserType==3,cls.id==current_user.id))
             session.close()
         else:
             records = Record.getRecordList(TableClass)

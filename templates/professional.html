@@ -13,7 +13,7 @@
 {% block button_new %}
 {% endblock %}
 {% block fields_view %}
-  <li v-for="record in values"  :data-search-term="record.Name" class="list-group-item" v-if="record._Skip==false">
+  <li v-for="record in values"  :data-search-term="record.Name" class="list-group-item" >
   <a href="#"  :onClick="'showProfessional(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">{%raw%}{{record.CompanyName}} - {{record.Name}}{%endraw%}</a></li>
 {% endblock %}
 

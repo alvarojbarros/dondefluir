@@ -3,7 +3,8 @@
 
   <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
   <a href="#" :onClick="'showEvent(\'' + record.id + '\')'">
-      {%raw%}{{record.Comment}} - {{record.CompanyId}} - {{record.ProfId}} - {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}}{%endraw%}
+      {%raw%}{{record.Comment}} - {{record.CompanyId}} - {{record.ProfId}} - Inicia el
+      {{record.TransDate}} de {{record.StartTime}} a {{record.EndTime}}{%endraw%}
    </a></li>
 
 {% endblock %}

@@ -3,11 +3,16 @@
 <h2>Servicios por Profesional</h2>
 {% endblock %}
 {% block fields_view %}
-{% for record in myFunction(function='getUserService') %}
-    <li data-search-term="{{record.UserName}} {{record.ServiceName}}" class="list-group-item" v-if="record._Skip==false">
-    <a href="#" onClick="getRecordForm('{{var['Table']}}','recordform.html',id='{{record.id}}')">{{record.UserName}} - {{record.ServiceName}}</a></li>
-{% endfor %}
+    <li v-for="record in values" class="list-group-item" v-if="record._Skip==false">
+        <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+            {%raw%}{{record.UserId}} - {{record.ServiceId}} {%endraw%}
+        </a>
+    </li>
 {% endblock %}
 
 {% block button_script %}
+<script type=text/javascript>
+  refreshList();
+  getRecordList('UserService','UserId,ServiceId,CompanyId,id');
+</script>
 {% endblock %}

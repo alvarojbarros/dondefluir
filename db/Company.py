@@ -23,6 +23,7 @@ class Company(Base,Record):
     ImageProfile = Column(String(100))
     OnlinePayment = Column(Integer)
     KeyPayco = Column(String(50))
+    Closed = Column(Integer)
 
     @classmethod
     def fieldsDefinition(cls):
@@ -39,14 +40,18 @@ class Company(Base,Record):
         res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
         res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox'}
         res['KeyPayco'] = {'Type': 'text', 'Label': 'Clave ePayco', 'Input': 'text'}
+        res['Closed'] = {'Type': 'integer', 'Label': 'Cerrado', 'Input': 'checkbox','Level': [0]}
         return res
 
     @classmethod
     def htmlView(cls):
         Tabs = {}
         Tabs[0] = {"Name":"", "Fields": [[0,["Active"]],[1,["Name"]],[2,["Address","City"]],[3,["Phone"]],[4,["Email"]],[5,["WebSite"]],[6,["Comment"]] \
-            ,[7,["ImageProfile"]],[8,["KeyPayco","OnlinePayment"]]]}
+            ,[7,["ImageProfile"]],[8,["KeyPayco","OnlinePayment"]],[9,["Closed"]]]}
         return Tabs
+
+    def defaults(self):
+        self.Closed = 0
 
     def check(self):
         if not self.Name: return Error("Debe Completar el Nombre")
@@ -65,7 +70,7 @@ class Company(Base,Record):
     def canUserEdit(cls,record):
         if current_user.UserType==3:
             return False
-        return False
+        return True
 
     @classmethod
     def getUserFieldsReadOnly(cls,record,fieldname):

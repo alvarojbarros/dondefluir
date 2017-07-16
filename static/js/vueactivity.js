@@ -12,8 +12,8 @@ var vue_activity = new Vue({
 			return $(
 				'<script src="https://s3-us-west-2.amazonaws.com/epayco/v1.0/checkoutEpayco.js" ' +
 				'    class="epayco-button" ' +
-				'    data-epayco-key=' + KeyPayco +
-				'    data-epayco-amount=' + params.Price +
+				'    data-epayco-key="' + KeyPayco + '"' +
+				'    data-epayco-amount="' + params.Price + '"' +
 				'    data-epayco-name="Donde Fluir ' + params.Comment + '"' +
 				'    data-epayco-description="' + params.Description + '"' +
 				'    data-epayco-currency="cop" ' +

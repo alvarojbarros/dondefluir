@@ -8,6 +8,8 @@ from dondefluir.db.Company import Company
 from dondefluir.db.User import User
 from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
+from tools.dbconnect import Session
+from tools.Tools import *
 
 Base = declarative_base()
 

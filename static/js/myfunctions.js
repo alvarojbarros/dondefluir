@@ -15,7 +15,7 @@ function showCompany(id,Name,current_user_id){
 
 
 function getProfessionalList(favorite,current_user_id){
-	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'Favorite': favorite },function(data) {
+	$.getJSON($SCRIPT_ROOT + '/_get_professional_list', {'favorite': favorite },function(data) {
 		Vue.set(vue_recordlist,'values', data.result);
 		Vue.set(vue_recordlist,'user_id', current_user_id);
 		Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
@@ -41,12 +41,12 @@ function setCompany(id,current_user_id){
 }
 
 
-function setProffesional(id,current_user_id){
+function setProffesional(id,current_user_id,add_activities){
 	getRecordBy('User',{id:id,NotFilterFields:true},function(data){
 		Vue.set(vue_title,'Title', data.record.Name);
 		Vue.set(vue_record,'values', data.record);
 
-		$.getJSON($SCRIPT_ROOT + '/_get_calendar_dates', {'id':id},function(data1) {
+		$.getJSON($SCRIPT_ROOT + '/_get_calendar_dates', {'id':id,'AddActivities': add_activities},function(data1) {
 			Vue.set(vue_schedule,'values',data1.result)
 			Vue.set(vue_schedule,'profId',id)
 			Vue.set(vue_schedule,'profName',data.record.Name)
@@ -132,7 +132,7 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_buttons,'canEdit', data.canEdit);
 			Vue.set(vue_buttons,'canDelete', data.canDelete);
-			setCustomVue('Activity',data.record)
+			setCustomVue('activityform.html',data.record)
 			vue_title.Title = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
@@ -252,6 +252,9 @@ function showEvent(id){
 	getTemplate('container-fluid',vars,function (){
 		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'eventId':id},function(data) {
 			Vue.set(vue_event,'events', data.result);
+			for (index in data.result){
+    			Vue.set(vue_event,'ProfName', data.result[index][0].ProfName);
+			}
 		});
 	});
 }
@@ -283,13 +286,10 @@ function cancelActivity() {
 	}
 };
 
-function setCustomVue(Table,record){
-	if (Table=='Activity'){
+function setCustomVue(TemplateName,record){
+	if (TemplateName=='activityform.html'){
 		Vue.set(vue_buttons,'id', record.id);
 		Vue.set(vue_buttons,'Status', record.Status);
-		if (!record.Comment){
-			record.Comment = 'Pago ePayco';
-		}
 		Vue.set(vue_activity,'record',record)
 		if (record.OnlinePayment==1){
 			$.getJSON($SCRIPT_ROOT + '/_get_payment', {'activityId': record.id, 'userId': record.CustId,'companyId': record.CompanyId}
@@ -301,4 +301,36 @@ function setCustomVue(Table,record){
 			});
 		}
 	}
+}
+
+function getCustomerList(table,fields,favorite,limit,order_by,desc){
+
+	var vars = {'Table': table,'Fields': fields, 'favorite': favorite}
+	if (limit) {vars['Limit'] = limit;}
+	if (order_by) {vars['OrderBy'] = order_by;}
+	if (desc) {vars['Desc'] = desc;}
+	Vue.set(vue_recordlist,'table', table);
+	Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
+	Vue.set(vue_recordlist,'user_id', vue_user_menu.current_user_id);
+	$.getJSON($SCRIPT_ROOT + '/_customer_list', vars ,function(data) {
+		Vue.set(vue_recordlist,'values', data.result.records);
+		Vue.set(vue_recordlist,'filters', data.result.filters);
+		Vue.set(vue_recordlist,'filtersNames', data.result.filtersNames);
+	});
+}
+
+function setServicePrice(){
+	service_id = vue_record.values.record.ServiceId;
+	console.log(service_id)
+	if (!service_id){
+	    vue_record.values.record.Price = null;
+	    return;
+	}
+	$.getJSON($SCRIPT_ROOT + '/_get_service_price', {'ServiceId': service_id},function(data) {
+		if (data.result){
+			vue_record.values.record.Price = data.result;
+		}else{
+			vue_record.values.record.Price
+		}
+	});
 }

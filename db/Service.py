@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Time
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from tools.dbconnect import engine,Session
 from flask_login import current_user
 from dondefluir.db.Company import Company
 from tools.Record import Record
 from sqlalchemy.ext.declarative import declarative_base
+from tools.Tools import *
 
 Base = declarative_base()
 
@@ -15,6 +16,7 @@ class Service(Base,Record):
     Name = Column(String(100))
     CompanyId = Column(Integer, ForeignKey(Company.id), nullable=False)
     OnlinePayment = Column(Integer)
+    Price = Column(Float)
 
     @classmethod
     def fieldsDefinition(cls):
@@ -23,6 +25,7 @@ class Service(Base,Record):
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}
         res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0],'LinkTo':{'Table':'Company','Show':['Name']}}
         res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox'}
+        res['Price'] = {'Type': 'flaot', 'Label': 'Precio', 'Input': 'number'}
         return res
 
     def check(self):

@@ -29,7 +29,7 @@ class NewUsers():
         session = Session()
         records = session.query(func.concat(func.year(User.CreatedDate),'-',func.month(User.CreatedDate)), func.count(User.CreatedDate).label('CNT'))\
             .filter(User.CreatedDate.between(FromDate,ToDate))\
-            .group_by(func.year(User.CreatedDate),func.month(User.CreatedDate))\
+            .group_by(func.concat(func.year(User.CreatedDate),'-',func.month(User.CreatedDate)))\
             .order_by(func.concat(func.year(User.CreatedDate),'-',func.month(User.CreatedDate)).desc())\
             .all()
         session.close()

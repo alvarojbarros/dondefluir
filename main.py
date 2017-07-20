@@ -211,11 +211,14 @@ def getBreakCalendarDates(act,dates):
                 if (act.StartTime<=schedule[j]['StartTime'] and act.EndTime<schedule[j]['EndTime'] and act.EndTime>schedule[j]['StartTime']):
                     schedule[j]['StartTime'] = act.EndTime
                     return dates
+                if (act.StartTime == schedule[j]['StartTime'] and act.EndTime == schedule[j]['EndTime']):
+                    del schedule[j]
+                    return dates
     return dates
 
 @blue_dondefluir.route('/_get_calendar_events')
 def get_calendar_events():
-    profId = request.args.get('prodId',None)
+    profId = request.args.get('profId',None)
     companyId = request.args.get('companyId',None)
     eventId = request.args.get('eventId',None)
     res = showProfessionalEvents({'profId':profId,'eventId':eventId,'companyId': companyId})
@@ -365,7 +368,6 @@ def showProfessionalEvents(*args):
     res = {}
     k = 0
     for r in records:
-
         cnt = session.query(Activity).filter_by(id=r.id)\
             .join(ActivityUsers,Activity.id==ActivityUsers.activity_id)\
             .count()
@@ -521,7 +523,13 @@ def event_list():
     order_by = request.args.get('OrderBy',None)
     desc = request.args.get('Desc',None)
     limit = request.args.get('Limit',None)
-    records = Activity.getEventList(limit=limit,order_by=order_by,desc=desc)
+    UserId = None
+    CompanyId = None
+    if current_user.UserType==1:
+        CompanyId = current_user.CompanyId
+    elif current_user.UserType==2:
+        UserId = current_user.id
+    records = Activity.getEventList(UserId,CompanyId,limit=limit,order_by=order_by,desc=desc)
     fieldsDef = Activity.fieldsDefinition()
     res = fillRecordList(records,fields,fieldsDef)
     ids = []

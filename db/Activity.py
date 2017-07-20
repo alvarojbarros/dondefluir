@@ -91,7 +91,7 @@ class Activity(Base,Record):
         return Tabs
 
     @classmethod
-    def getEventList(cls,limit=None,order_by=None,desc=None):
+    def getEventList(cls,UserId=None,CompanyId=None,limit=None,order_by=None,desc=None):
         UserProf = aliased(User)
         session = Session()
         records = session.query(cls) \
@@ -104,6 +104,10 @@ class Activity(Base,Record):
             .with_entities(cls.Comment,UserProf.id.label('ProfId'),ActivitySchedules.TransDate,ActivitySchedules.StartTime \
             ,ActivitySchedules.EndTime,cls.id,cls.Status,Company.id.label('CompanyId')\
             ,Service.id.label('ServiceId'))
+        if UserId:
+           records = records.filter(cls.ProfId==UserId)
+        if CompanyId:
+           records = records.filter(cls.CompanyId==CompanyId)
         if order_by and desc: records = records.order_by(ActivitySchedules.TransDate.desc())
         elif order_by: records = records.order_by(ActivitySchedules.TransDate)
         else: records = records.order_by(ActivitySchedules.TransDate)

@@ -37,7 +37,7 @@ class Company(Base,Record):
         res['Comment'] = {'Type': 'text', 'Label': 'Comentario', 'Input':'textarea','rows':'4'}
         res['Address'] = {'Type': 'text', 'Label': 'Dirección', 'Input': 'text'}
         res['City'] = {'Type': 'text', 'Label': 'Ciudad', 'Input': 'text'}
-        res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
+        res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil. Tamaño sugerido: 300px x 300px. Peso máximo: 150kb', 'Input': 'fileinput'}
         res['OnlinePayment'] = {'Type': 'integer', 'Label': 'Habilitar Pagos en línea', 'Input': 'checkbox'}
         res['KeyPayco'] = {'Type': 'text', 'Label': 'Clave ePayco', 'Input': 'text'}
         res['Closed'] = {'Type': 'integer', 'Label': 'Cerrado', 'Input': 'checkbox','Level': [0]}

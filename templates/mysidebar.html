@@ -4,30 +4,8 @@
      <ul class="nav" id="side-menu">
         <li class="sidebar-search hidden-sm hidden-md hidden-lg">
         </li>
-        <!-- User profile-->
-        <li class="user-pro">
-           <a href="#" class="waves-effect">
-            <img src="{{image_url}}" alt="user-img"  class="img-circle">
-              <span class="hide-menu">{{current_user.Name}}<span class="fa arrow">
-              </span>
-            </span>
-           </a>
-           <ul class="nav nav-second-level">
-              <li>
-                <a href="javascript:void(0)" onClick="getRecordForm('User','recordform.html',id='{{current_user.id}}',runFunction='OpenCloseMenu()')">
-                  <i class="ti-user"></i> Perfil
-                </a>
-              </li>
-              {% if myFunction(function='isUserAdmin',params={}) %}
-              <li><a href="javascript:void(0)" onClick="getRecordForm('Company','recordform.html',id='{{current_user.CompanyId}}',runFunction='OpenCloseMenu()')"><i class="ti-user"></i>Empresa</a></li>
-              {% endif %}
-              <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'changepwd.html','runFunction':'OpenCloseMenu()'})"><i class="ti-user"></i>Modificar Password</a></li>
-              <li><a href="{{ url_for('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
-           </ul>
-        </li>
-        <!-- User profile-->
         <li>
-           <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu"><b>Dashboard</b></span></a>
+           <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu"><b>Inicio</b></span></a>
         </li>
         {% for index in getModulesDir() %}
         {% set module = getModulesDir()[index] %}

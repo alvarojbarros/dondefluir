@@ -117,3 +117,9 @@ def sendMailNewCustActivity(user,activity):
     subject = ' Hay nuevos clientes en el %s: %s - %s con %s' % (['la Actividad','el Curso','el Evento'][activity.Type] \
         ,var['TransDate'],var['ActivityTitle'],var['ProfId'])
     return sendMail(user.Email,subject,msj)
+
+def sendPasswordRecoverMail(email,newpwd,username):
+    f = io.open('%s/notificacionesCambioPassword.html' % folder, 'r', encoding="utf-8")
+    var = {'Email': email, 'UserName': username, 'Password': newpwd}
+    msj = getTemplateHTML(f, var)
+    return sendMail(email,'Donde Fluir: Recuperar Password',msj)

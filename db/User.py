@@ -82,7 +82,8 @@ class User(Base,Record,UserMixin):
             'fieldsDefinition': UserSchedule.fieldsDefinition(),'Level':[0,1,2],'ShowIf':['UserType',["0","1","2"],-1]}
         res['Favorite'] = {'Type': 'integer', 'Label': 'Agregar a Favoritos', 'Input': 'button','Level':[0,1,2],'Persistent':False, \
             'Method':'getFavorite()','onClick': 'setFavorite(this,"1")','Class':'btn btn-primary btn-rounded waves-effect waves-light m-t-20' }
-        res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput'}
+        res['ImageProfile'] = {'Type': 'text', 'Label': 'Imagen de Perfil', 'Input': 'fileinput' ,\
+                               'SubLabel':'Tamaño sugerido: 300px x 300px. Peso máximo: 150kb'}
         res['NtfActivityNew'] = {'Type': 'integer', 'Label': 'Nueva Actividad', 'Input': 'checkbox'}
         res['NtfActivityCancel'] = {'Type': 'integer', 'Label': 'Actividad Cancelada', 'Input': 'checkbox'}
         res['NtfActivityChange'] = {'Type': 'integer', 'Label': 'Actividad Modificada', 'Input': 'checkbox'}

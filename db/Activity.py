@@ -296,11 +296,11 @@ class Activity(Base,Record):
     def setNotificationActivityUpdate(self,UserId):
         res = True
         if self.OldFields['Status']==self.Status:
-            res = self.setNotification("Actvididad Modificada",UserId,self.ACTIVITY_UPDATE)
+            res = self.setNotification("Actividad Modificada",UserId,self.ACTIVITY_UPDATE)
         elif self.Status==1:
-            res = self.setNotification("Actvididad Confirmada",UserId,self.ACTIVITY_CONFIRM)
+            res = self.setNotification("Actividad Confirmada",UserId,self.ACTIVITY_CONFIRM)
         elif self.Status==2:
-            res = self.setNotification("Actvididad Cancelada",UserId,self.ACTIVITY_CANCEL)
+            res = self.setNotification("Actividad Cancelada",UserId,self.ACTIVITY_CANCEL)
         return res
 
 
@@ -336,7 +336,7 @@ class Activity(Base,Record):
                 res = self.setNotificationActivityUpdate(self.ProfId)
                 if not res: return res
             else:
-                res = self.setNotification("Actvididad Modificada. Nuevos Clientes",self.ProfId,self.ACTIVITY_NEW_CUST)
+                res = self.setNotification("Actividad Modificada. Nuevos Clientes",self.ProfId,self.ACTIVITY_NEW_CUST)
                 if not res: return res
         if self.CustId and current_user.id!=self.CustId:
             res = self.setNotificationActivityUpdate(self.CustId)
@@ -366,10 +366,10 @@ class Activity(Base,Record):
         return True
 
     def afterCommitInsert(self):
-        if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actvididad",self.ProfId,self.ACTIVITY_NEW)
-        if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actvididad",self.CustId,self.ACTIVITY_NEW)
+        if self.ProfId and current_user.id!=self.ProfId: self.setNotification("Nueva Actividad",self.ProfId,self.ACTIVITY_NEW)
+        if self.CustId and current_user.id!=self.CustId: self.setNotification("Nueva Actividad",self.CustId,self.ACTIVITY_NEW)
         for row in self.Users:
-            if row.CustId: self.setNotification("Nueva Actvididad",row.CustId,self.ACTIVITY_NEW)
+            if row.CustId: self.setNotification("Nueva Actividad",row.CustId,self.ACTIVITY_NEW)
 
         if self.ProfId: self.setMailActivity(self.ProfId,self.ACTIVITY_NEW)
         if self.CustId: self.setMailActivity(self.CustId,self.ACTIVITY_NEW)

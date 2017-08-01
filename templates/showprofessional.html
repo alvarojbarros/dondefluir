@@ -4,15 +4,24 @@
 
 <div class="row bg-title" id="vue_title">
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
-        <h4 class="page-title"><label id="prof_Name"> {%raw%}{{Title}}{%endraw%} </label></h4>
+        <h4 class="page-title"><label> {%raw%}{{Title}}{%endraw%} </label></h4>
         <input type="hidden" id="id" value="">
         <input type="hidden" id="record_id" value="">
     </div>
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-        <ol class="breadcrumb">
+            <ol class="breadcrumb" v-if="tableName!='Profesionales'">
             <li><a href="#" onClick="showDashboard()" >Inicio</a></li>
-            <li class="active" id="prof_Name2"> {%raw%}{{Title}}{%endraw%} </li>
+            <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">Empresas</a></li>
+            <li><a href="#" :onclick="'showCompany(\''+companyId+'\',\''+companyName+'\',\''+ companyId +'\')'">
+                {%raw%}{{companyName}}{%endraw%}</a></li>
+            <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
+        <ol class="breadcrumb" v-if="tableName=='Profesionales'">
+            <li><a href="#" onClick="showDashboard()" >Inicio</a></li>
+            <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">{%raw%}{{tableName}}{%endraw%}</a></li>
+            <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
+        </ol>
+
     </div>
 </div>
 <!-- /.row -->
@@ -26,7 +35,7 @@
                 <!-- .row -->
                 <div class="row text-center m-t-10">
                     <div class="col-md-12 b-r"><strong>Nombre</strong>
-                        <p id="prof_Name3"> {%raw%}{{values.Name}}{%endraw%} </p>
+                        <p> {%raw%}{{values.Name}}{%endraw%} </p>
                     </div>
                     <div class="col-md-12"><strong>Especialidad</strong>
                         <p id="user_title"> {%raw%}{{values.Title}}{%endraw%} </p>
@@ -137,7 +146,7 @@
                   </div>
                 </div> <!-- cursos -->
                 <div class="tab-pane" id="agenda">
-                    <a href="#" :onClick="'getTemplate(\'container-fluid\',{\'Template\':\'calendar.html\',\'UserId\':\''+ profId +'\',\'UserName\':\''+ profName +'\'})'">
+                    <a href="#" :onClick="'getTemplate({\'Template\':\'calendar.html\',\'UserId\':\''+ profId +'\',\'UserName\':\''+ profName +'\'})'">
                       <span><i class="fa fa-book"></i></span> <span class="hidden-xs">Ver Agenda</span>
                     </a>
                 </div>

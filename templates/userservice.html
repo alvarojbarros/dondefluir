@@ -2,17 +2,11 @@
 {% block title %}
 <h2>Servicios por Profesional</h2>
 {% endblock %}
-{% block fields_view %}
-    <li v-for="record in values" class="list-group-item" v-if="record._Skip==false">
-        <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
-            {%raw%}{{record.UserId}} - {{record.ServiceId}} {%endraw%}
-        </a>
-    </li>
-{% endblock %}
 
 {% block button_script %}
 <script type=text/javascript>
   refreshList();
-  getRecordList('UserService','UserId,ServiceId,CompanyId,id');
+  columns = "{0:('Usuario','.UserId'),1:('Servicio','.ServiceId')}"
+  getRecordList('UserService','UserId,ServiceId,CompanyId,id',null,null,false,columns);
 </script>
 {% endblock %}

@@ -61,7 +61,7 @@ class User(Base,Record,UserMixin):
         res['Active'] = {'Type': 'integer', 'Label': 'Activo', 'Input': 'checkbox','Level':[0]}
         res['UserType'] = {'Type': 'integer', 'Label': 'Tipo de Usuario', 'Input': 'combo', \
             'Values': {0: 'Super',1: 'Administrador',2: 'Profesional',3: 'Cliente'},\
-            'ValuesLevel':{0:[0,1,2,3],1:[1,2,3],2:[3],3:[]}}
+            'ValuesLevel':{0:[0,1,2,3],1:[1,2,3],2:[3],3:[]},'ShowIf':['UserType',["0","1","2"],-1]}
         res['CompanyId'] = {'Type': 'integer', 'Label': 'Empresa', 'Input': 'combo','Level':[0]\
             ,'LinkTo':{'Table':'Company','Show':['Name']},'ShowIf':['UserType',["0","1","2"],-1]}
         res['Name'] = {'Type': 'text', 'Label': 'Nombre', 'Input': 'text'}

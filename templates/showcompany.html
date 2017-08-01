@@ -4,14 +4,15 @@
 
 <div class="row bg-title" id="vue_title">
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
-        <h4 class="page-title"><label id="prof_Name"> {%raw%}{{Title}}{%endraw%} </label></h4>
+        <h4 class="page-title"><label> {%raw%}{{Title}}{%endraw%} </label></h4>
         <input type="hidden" id="id" value="">
         <input type="hidden" id="record_id" value="">
     </div>
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
         <ol class="breadcrumb">
             <li><a href="#" onClick="showDashboard()" >Inicio</a></li>
-            <li class="active" id="prof_Name2"> {%raw%}{{Title}}{%endraw%} </li>
+            <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">{%raw%}{{tableName}}{%endraw%}</a></li>
+            <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
     </div>
 </div>
@@ -32,8 +33,6 @@
                         <p id="record_comment"> {%raw%}{{values.Comment}}{%endraw%} </p>
                     </div>
                 </div>
-                <!-- /.row -->
-                <hr>
                 <!-- /.row -->
                 <hr>
                 <!-- .row -->

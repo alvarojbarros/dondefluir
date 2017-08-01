@@ -179,7 +179,7 @@ class Activity(Base,Record):
 
     @classmethod
     def recordListFilters(cls):
-        return ['Type','ServiceId','Status']
+        return ['Type','ServiceId','Status','ProfId']
 
     def defaults(self):
         if current_user.UserType in (0,1,2):

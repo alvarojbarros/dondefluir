@@ -4,27 +4,31 @@
 {% endblock %}
 
 {% block title2 %}
-  <li class="active"><a href="#" onClick="getTemplate('container-fluid',{'Template':'company.html','Name':'Empresas','Table':'Company'})">
+  <li class="active"><a href="#" onClick="getTemplate({'Template':'company.html','Name':'Empresas','Table':'Company'})">
     Lista</a></li>
-  <li><a href="#" onClick="getTemplate('container-fluid',{'Template':'company_icon.html','Name':'Empresas'})">
+  <li><a href="#" onClick="getTemplate({'Template':'company_icon.html','Name':'Empresas'})">
     Íconos grandes</a></li>
 {% endblock %}
 
 
 {% block fields_view %}
-  <li v-for="record in values" :data-search-term="record.Name" class="list-group-item" v-if="record.Closed==0">
-    <a href="#" v-if="user_type==3" :onClick="'showCompany(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">
-    {%raw%}{{record.Name}}{%endraw%}
-    </a>
-    <a v-if="user_type!=3" href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
-    {%raw%}{{record.Name}}{%endraw%}
-    </a>
-  </li>
+<tr v-for="record in values" v-if="record._Skip==false && record._Skip2==false && record.Closed==0" >
+    <td v-for="row in record.Columns">
+        <a href="#" v-if="user_type==3" :onClick="'showCompany(\''+record.id+'\',\''+record.Name+'\',\''+user_id+'\')'">
+            {%raw%}{{row}}{%endraw%}
+        </a>
+        <a href="#" v-if="user_type!=3" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+            {%raw%}{{row}}{%endraw%}
+        </a>
+    </td>
+</tr>
+
 {% endblock %}
 
 {% block button_script %}
 <script type=text/javascript>
   refreshList();
-  getRecordList('{{var['Table']}}','Name,id,Closed');
+  columns = "{0:('Nombre','.Name')}"
+  getRecordList('{{var['Table']}}','Name,id,Closed',null,null,false,columns);
 </script>
 {% endblock %}

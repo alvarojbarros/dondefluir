@@ -2,17 +2,15 @@
 <div class="navbar-default sidebar" role="navigation">
   <div class="sidebar-nav navbar-collapse slimscrollsidebar">
      <ul class="nav" id="side-menu">
-        <li class="sidebar-search hidden-sm hidden-md hidden-lg">
-        </li>
-        <li>
+        <li class="user-pro">
            <a href="#" onClick="showDashboard()" class="waves-effect active"><i class="ti-dashboard p-r-10"></i> <span class="hide-menu"><b>Inicio</b></span></a>
         </li>
-        {% for index in getModulesDir() %}
+        {% for index in getModulesDirIndex() %}
         {% set module = getModulesDir()[index] %}
         <li class="user-pro" >
 
           <a href="#"  v-if="{{module|length}}==1"
-            :onClick="'getTemplateModule(\'container-fluid\',\'{{index}}\','+ 0 + ')'"
+            :onClick="'getTemplateModule(\'{{index}}\','+ 0 + ')'"
             class="waves-effect">
             <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
             <span class="hide-menu"> <b ref="module-{{index}}"></b>
@@ -28,10 +26,16 @@
           </a>
           <ul class="nav nav-second-level" v-if="{{module|length}}>1">
             <li v-for="(table,index) in values['{{index}}']">
-              <a href="javascript:void(0)"  :onClick="'getTemplateModule(\'container-fluid\',\'{{index}}\','+ index + ')'">
+              <a v-if="!table.Form" href="javascript:void(0)"  :onClick="'getTemplateModule({{index}},'+ index + ')'">
                 <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
                 {%raw%}{{table.Name}}{%endraw%}
               </a>
+              <a href="javascript:void(0)" v-if="table.Form"
+                 :onClick="'getRecordForm(\''+table.Vars.Table+'\',\''+table.Template+'\',\''+table.Vars.id+'\',runFunction=\'OpenCloseMenu()\')'">
+                  <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
+                  {%raw%}{{table.Name}}{%endraw%}
+              </a>
+
             </li>
           </ul>
         </li>

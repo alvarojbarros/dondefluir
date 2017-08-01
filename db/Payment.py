@@ -67,7 +67,7 @@ class Payment(Base,Record):
         if current_user.UserType==1:
             records = records.filter_by(CompanyId=current_user.CompanyId)
         elif current_user.UserType==3:
-            records = records.filter_by(UserUd=current_user.id)
+            records = records.filter_by(UserId=current_user.id)
         if order_by and desc: records = records.order_by(TableClass.c[order_by].desc())
         elif order_by: records = records.order_by(TableClass.c[order_by])
         if limit: records = records.limit(limit)

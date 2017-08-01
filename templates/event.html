@@ -1,24 +1,23 @@
 <script src="{{ url_for('blue_dondefluir.static', filename='js/vueevent.js') }}"></script>
 
-<div id="event_record">
 
   <div id="vue_title" class="row bg-title">
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 ">
       <h4 class="page-title">
-        <label id="prof_Name"> {%raw%}{{ProfName}}{%endraw%} </label>
+        <label> {%raw%}{{Title}}{%endraw%} </label>
       </h4>
       <input type="hidden" id="id" value="">
       <input type="hidden" id="record_id" value="">
     </div>
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
       <ol class="breadcrumb">
-        <li>
-          <a href="http://localhost:5000/#" onclick="showDashboard()">Inicio</a>
-        </li>
-        <li id="prof_Name2" class="active"> {%raw%}{{ProfName}}{%endraw%} </li>
+          <li><a href="#" onclick="showDashboard()">Inicio</a></li>
+          <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">{%raw%}{{tableName}}{%endraw%}</a></li>
+          <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
       </ol>
     </div>
   </div>
+<div id="event_record">
   <div class="row">
     <div class="col-md-9 col-xs-12">
       <div class="white-box">
@@ -77,3 +76,5 @@
     </div>
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/vuetitle.js') }}"></script>

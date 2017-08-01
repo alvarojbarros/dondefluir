@@ -1,20 +1,30 @@
 {% extends "recordtable.html" %}
 {% block fields_view %}
 
-  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item">
-  <b v-if="record.Status.substring(0, 1)=='N'">
-    <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
-    {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></b>
-  <p v-if="record.Status.substring(0, 1)=='L'">
-    <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'" >
-    {%raw%}{{record.TransDate}} - {{record.Comment}}{%endraw%}</a></p>
-  </li>
+<tr v-for="record in values" v-if="record._Skip==false && record._Skip2==false" >
+    <td v-for="row in record.Columns">
+        <b v-if="record.Status.substring(0, 1)=='N'">
+            <a href="#"
+               :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\',\'setNotificationRead('+record.id+')\')'" >
+                {%raw%}{{row}}{%endraw%}
+            </a>
+        </b>
+        <p v-if="record.Status.substring(0, 1)=='L'">
+            <a href="#"
+               :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'" >
+                {%raw%}{{row}}{%endraw%}
+            </a>
+        </p>
+    </td>
+</tr>
 
 {% endblock %}
 
 
 {% block button_script %}
 <script type=text/javascript>
-  getRecordList('Notification','Status,Comment,TransDate,id');
+  columns = "{0:('Fecha','.TransDate')" +
+    ",1:('Descripcion','.Comment')}"
+  getRecordList('Notification','Status,Comment,TransDate,id',null,null,false,columns);
 </script>
 {% endblock %}

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, request,jsonify
-from flask_login import login_required, current_user
-from tools.dbconnect import Session
-from sqlalchemy.orm import sessionmaker
+#from flask_login import login_required, current_user
+#from tools.dbconnect import Session
+#from sqlalchemy.orm import sessionmaker
 from flask import Blueprint
-from tools.Tools import *
+#from tools.Tools import *
 from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company
@@ -16,6 +16,7 @@ from dondefluir.db.Payment import Payment
 from sqlalchemy import or_
 import getsettings
 settings = getsettings.getSettings()
+from settings import *
 
 blue_dondefluir = Blueprint('blue_dondefluir', __name__,template_folder='templates',static_url_path='/dondefluir/static',static_folder='static')
 
@@ -41,96 +42,106 @@ def getPaymentsTableName():
 
 def addElementToList(Elements,Element,UserType):
     if ('Level' not in Element) or (UserType in Element['Level']):
-        Elements[len(Elements)] = Element
+        if not Element['Module'] in Elements:
+            Elements[Element['Module']] = {}
+        Elements[Element['Module']][Element['Index']] = Element
+
+def getModulesNames(UserType,keys):
+    modules = {}
+    modules[COMPANY] = {0:'Empresas',1:'Empresa',2:'Empresa'}.get(UserType,None)
+    modules[ACTIVITY] = {0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)
+    modules[AGENDA] = {0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)
+    modules[FAVORITES] = 'Mis profesionales'
+    modules[CLIENT] = 'Mis clientes'
+    modules[NOTIFICATIONS] = 'Notificaciones'
+    modules[REPORTS] = 'Reportes'
+    modules[CUST_NOTIFICATIONS] = 'Notificaciones'
+    modules[CUST_FAVORITE] = 'Favoritos'
+    modules[CUST_AGENDA] = 'Mi Agenda'
+    modules[CUST_PROFESSIONAL] = 'Profesionales'
+    modules[CUST_PAYMENTS] = 'Mis Pagos'
+    modules[CUST_COMPANIES] = 'Empresas'
+    modules[CUST_EVENTS] = 'Cursos y Eventos'
+    mkeys = list(modules.keys())
+    for i in mkeys:
+        if i not in keys:
+            del modules[i]
+    return modules
 
 def getModules(UserType):
     Elements = {}
     functions = "runSearchBoxOnKey()"
-    Element = {'Name':'Usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions }\
-        ,'Image':'fa-users'}
-    addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Empresas','Level':[0,3],'Template':getCompanyTemplate(),'Vars':{'Table':'Company','Functions':functions }\
-        ,'Image':'fa-fort-awesome','Module':{0:'Empresas'}.get(UserType,None)}
-    addElementToList(Elements,Element,UserType)
-    Element = {'Name':getActivitiesTableName(),'Level':[0,1,2,3],'Template':'activity.html' \
-        ,'Vars':{'Table':'Activity','Functions':functions,'TemplateForm':'activityform.html'},'Image':'fa-sun-o' \
-        ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
-    addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Mis Profesionales','Level':[0,3],'Template':'professional_icon.html' \
-        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'}
+    #-----Empresas----
+
+    Element = {'Name': 'Mi Empresa','Template':'recordform.html','Vars':{'Table':'Company','id':current_user.CompanyId} \
+        ,'Image':'ti-user' ,'Level':[0,1],'Module':COMPANY ,'Form': True,'Index': IDX_COMPANY}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Profesionales','Level':[0,3],'Template':'professional_icon.html'
         ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-magic' \
-        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
-    addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html'
-        ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-smile-o' \
-        ,'TemplateForm':'customerform.html','Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
-    addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Mis Clientes','Level':[0,1,2],'Template':'customer.html' \
-        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-smile-o'}
+        ,'Module':{0:COMPANY,3:CUST_PROFESSIONAL}.get(UserType,None),'Index': IDX_PROFESSIONAL}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Servicios','Level':[0,1],'Template':'service.html' \
         ,'Vars':{'Table':'Service','Functions':functions},'Image':'fa-coffee' \
-        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+        ,'Module':COMPANY,'Index': IDX_SERVICE}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Servicios por Profesional','Level':[0,1],'Template':'userservice.html' \
         ,'Vars':{'Table':'UserService','Functions':functions},'Image':'fa-suitcase' \
-        ,'Module':{0:'Empresas',1:'Empresa'}.get(UserType,None)}
+        ,'Module':COMPANY,'Index': IDX_PROF_SERVICE}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name': getPaymentsTableName(),'Template':'payment.html','Vars':{'Table':'Payment'},'Image':'fa-envelope-o' \
+        ,'Level':[0,1,3],'Module':{0:COMPANY,1:COMPANY,3:CUST_PAYMENTS}.get(UserType,None),'Index': IDX_PAYMENT }
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Buscar Clientes','Level':[0,1,2],'Template':'customer.html'
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'false'},'Image':'fa-smile-o' \
+        ,'TemplateForm':'customerform.html','Module':COMPANY, 'Index': IDX_CUSTOMER}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Empresas','Level':[0,3],'Template':getCompanyTemplate(),'Vars':{'Table':'Company','Functions':functions }\
+        ,'Image':'fa-fort-awesome','Module':{0:COMPANY,3:CUST_COMPANIES}.get(UserType,None),'Index': IDX_COMPANIES}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Administrar usuarios','Level':[0,1,2],'Template':'users.html','Vars':{'Table':'User','Functions':functions }\
+        ,'Image':'fa-users','Module':COMPANY,'Index': IDX_USERS }
+    addElementToList(Elements,Element,UserType)
+
+
+    Element = {'Name':getActivitiesTableName(),'Level':[0,1,2,3],'Template':'activity.html' \
+        ,'Vars':{'Table':'Activity','Functions':functions,'TemplateForm':'activityform.html'},'Image':'fa-sun-o' \
+        ,'Module': {3:CUST_AGENDA}.get(UserType,ACTIVITY),'Index': IDX_ACTIVITY}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Favoritos','Level':[0,3],'Template':'professional_icon.html' \
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-heart'\
+        ,'Module':{3:CUST_FAVORITE}.get(UserType,FAVORITES),'Index': IDX_PROFESSIONAL}
+    addElementToList(Elements,Element,UserType)
+    Element = {'Name':'Mis Clientes','Level':[0,1,2],'Template':'customer.html' \
+        ,'Vars':{'Table':'User','Functions':functions,'favorite':'true'},'Image':'fa-smile-o' \
+        ,'Module':CLIENT, 'Index': IDX_CLIENT}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Vista de calendario','Level':[0,1,2],'Template':'calendar.html' \
         ,'Vars':{'Functions':functions,'UserId':current_user.id,'UserName':current_user.Name},'Image':'ti-calendar p-r-10' \
-        ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
+        ,'Module':AGENDA,'Index': IDX_CALENDAR}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity'},'Image':'fa-star' \
-        ,'Module':{0:'Actividades',1:'Actividades',2:'Actividades'}.get(UserType,None)}
+    Element = {'Name':'Cursos y Eventos','Template':'events.html','Vars':{'Table':'Activity','Functions':functions} \
+        ,'Image':'fa-star' ,'Module':{3:CUST_EVENTS}.get(UserType,ACTIVITY),'Index': IDX_EVENTS}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification'},'Image':'fa-envelope-o'}
+    Element = {'Name':'Notificaciones','Template':'notification.html','Vars':{'Table':'Notification','Functions':functions} \
+        ,'Image':'fa-envelope-o','Module':{3:CUST_NOTIFICATIONS}.get(UserType,NOTIFICATIONS),'Index': IDX_NOTIFICATIONS}
     addElementToList(Elements,Element,UserType)
     Element = {'Name':'Vista de lista','Level':[0,1,2],'Template':'myschedule.html' \
         ,'Vars':{'Template': 'myschedule.html','profId': current_user.id},'Image':'fa-magic' \
-        ,'Module':{0:'Agenda',1:'Agenda',2:'Agenda'}.get(UserType,None)}
+        ,'Module':AGENDA,'Index': IDX_LIST}
     addElementToList(Elements,Element,UserType)
-    Element = {'Name': getPaymentsTableName(),'Template':'payment.html','Vars':{'Table':'Payment'},'Image':'fa-envelope-o' \
-        ,'Level':[0,1,3]}
-    addElementToList(Elements,Element,UserType)
+
 
     # reportes
     Element = {'Name': 'Nuevos usuarios por mes','Template':'report.html','Vars':{'ReportClass':'NewUsers'} \
-        ,'Image':'fa-envelope-o','Level':[0],'Module':'Reportes'}
+        ,'Image':'fa-envelope-o','Level':[0],'Module':REPORTS,'Index': 0}
     addElementToList(Elements,Element,UserType)
     Element = {'Name': 'Nuevos usuarios por mes','Template':'report.html','Vars':{'ReportClass':'NewUsers'} \
-        ,'Image':'fa-envelope-o','Level':[0],'Module':'Reportes'}
+        ,'Image':'fa-envelope-o','Level':[0],'Module':REPORTS,'Index': 1}
     addElementToList(Elements,Element,UserType)
 
 
-    Modules,Names = resumeModules(Elements,UserType)
-    return Modules,Names
-
-def resumeModules(Elements,UserType):
-    Modules = {}
-    for key in Elements:
-        Element = Elements[key]
-        Element['Vars']['Template'] = Element['Template']
-        Element['Vars']['Name'] = Element['Name']
-        if 'Module' in Element:
-            ModuleName = Element['Module']
-            if ModuleName:
-                if ModuleName not in Modules:
-                    Modules[ModuleName] = {}
-                Modules[ModuleName][len(Modules[ModuleName])] = Element
-            else:
-                Modules[Element.get('Name',None)] = {0: Element}
-        else:
-            Modules[Element.get('Name',None)] = {0: Element}
-    res = {}
-    names = {}
-    c = 0
-    for ModuleName in Modules:
-        res[c] = Modules[ModuleName]
-        names[c] = ModuleName
-        c += 1
-    return res,names
+    Names = getModulesNames(UserType,Elements.keys())
+    return Elements,Names
 
 def getMyFunction(function,params):
     res = eval('%s(%s)' % (function,str(params)))
@@ -523,6 +534,7 @@ def event_list():
     order_by = request.args.get('OrderBy',None)
     desc = request.args.get('Desc',None)
     limit = request.args.get('Limit',None)
+    columns = eval(request.args.get('Columns',{}))
     UserId = None
     CompanyId = None
     if current_user.UserType==1:
@@ -532,6 +544,7 @@ def event_list():
     records = Activity.getEventList(UserId,CompanyId,limit=limit,order_by=order_by,desc=desc)
     fieldsDef = Activity.fieldsDefinition()
     res = fillRecordList(records,fields,fieldsDef)
+    setColumns(res, columns, [], [])
     ids = []
     events = []
     for r in res:
@@ -636,7 +649,9 @@ def customer_list():
     records = getCustomer(vars)
     fieldsDef = User.fieldsDefinition()
     fields = request.args.get('Fields').split(',')
+    columns = eval(request.args.get('Columns','{}'))
     res = fillRecordList(records,fields,fieldsDef)
+    setColumns(res,columns,[],[])
     return jsonify(result={'records': res,'filters': [], 'filtersNames': []})
 
 @blue_dondefluir.route('/_get_service_price')

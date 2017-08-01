@@ -6,7 +6,7 @@
     </div-->
 
   {% block container %}
-   <div class="row bg-title">
+   <div class="row bg-title" id="vue_title">
       <!-- .page title -->
       <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
          <h4 class="page-title">¡Bienvenid@!</h4>
@@ -23,11 +23,140 @@
    </div>
    <!-- .row -->
    <div class="row" >
-      <div class="col-md-12" id="dashboard">
-         <div class="white-box">
-            <h3 class="box-title">{%raw%}{{currentdate}}{%endraw%}</h3>
-         </div>
-      </div>
+       <div id="dashboard">
+            <div class="col-md-12">
+                <div class="white-box">
+                    <h3 class="box-title">{%raw%}{{currentdate}}{%endraw%}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==3">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-magic bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_COMPANIES')}},0)"><h3>EMPRESAS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_COMPANIES')}},0)"><strong>Encuentra las empresas</strong></a> que fluyen en esta plataforma.
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_FAVORITE')}},0)"><strong>Agregalas a favoritos</strong></a> para que puedas acceder a su listado de profesionales, sus agendas, cursos y eventos.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==3">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-magic bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_PROFESSIONAL')}},0)"><h3>PROFESIONALES Y CITAS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_FAVORITE')}},0)"><strong>Agrega profesionales a tus favoritos</strong></a> para verlos en Mis profesionales. Accede a su perfil para solicitar y pagar tu cita.
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_AGENDA')}},0)"><strong>Visualiza tus próximas actividades</strong></a> en Mi agenda.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==3">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-star bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_EVENTS')}},0)"><h3>CURSOS Y EVENTOS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('CUST_EVENTS')}},0)"><strong>Conoce la programación de talleres, cursos, conferencias, viajes y eventos.</strong></a> Reserva y paga tu cupo en las actividades que estas empresas ofrecen para invitarte a fluir.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==3">
+              <div class="white-box bg-info">
+                <div class="r-icon-stats text-white text-center">
+                <i class="fa fa-heart bg-megna"></i>
+                <a href="#"><h3>EMPECEMOS A FLUIR</h3></a>
+                <strong>Agrega las empresas en las que estas interesado a tus favoritos.</strong> Así podrás conocer su portafolio de profesionales, solicitar citas con ellos y reservar cupos en sus cursos y talleres.
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-md-3 col-sm-6" v-if="user_type==1">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-star bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_COMPANY')}})"><h3>MI EMPRESA</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_COMPANY')}})"><strong>Completa o actualiza el perfil de tu empresa.</strong></a> Configura la información de tu botón de pago con ePayco y habilitalo a través de este panel.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-magic bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_USERS')}})"><h3>USUARIOS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_USERS')}})"><strong>Registra usuarios nuevos</strong></a> tipo cliente, profesional o administrador. Accede al perfil de tus profesionales para configurar sus horarios.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="ti-user bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_SERVICE')}})"><h3>SERVICIOS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_SERVICE')}})"><strong>Crea los servicios de tu empresa</strong></a> e indica su precio en pesos colombianos.
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PROF_SERVICE')}})"><strong>Relaciona tus servicios con los profesionales</strong></a> que los prestan.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-magic bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PAYMENT')}})"><h3>PAGOS RECIBIDOS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PAYMENT')}})"><strong>Haz seguimiento de tus ingresos</strong></a> a través de esta plataforma. Conoce tus pagos recibidos y amplía los detalles de cada una de las transacciones.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1 || user_type==2">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-star bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_CALENDAR')}})"><h3>MI AGENDA</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_LIST')}})"><strong>Crea, modifica y cancela citas, eventos o cursos,</strong></a> accediendo a la
+                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_LIST')}})"><strong>vista de lista</strong></a> de tu agenda o a
+                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_ACTIVITY')}})"><strong>todas tus actividades</strong></a> en Mis actividades.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="ti-user bg-megna"></i>
+                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_EVENTS')}})"><h3>CURSOS Y EVENTOS</h3></a>
+                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_EVENTS')}})"><strong>Crea actividades grupales o de varias fechas.</strong></a> Indica valor, cantidad de cupos y descripción. Agrega clientes y permiteles reservar sus cupos.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1 || user_type==2">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="ti-user bg-megna"></i>
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><h3>PERFIL PROFESIONAL</h3></a>
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><strong>Completa tu perfil</strong></a> para que los clientes conozcan tus talentos.
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><strong>Configura los horarios de tu agenda</strong></a> y gestiona tu tiempo y tu espacio.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==2">
+              <div class="white-box">
+                <div class="r-icon-stats text-center">
+                  <i class="fa fa-magic bg-megna"></i>
+                    <a href="#"><h3>CLIENTES</h3></a>
+                    <a href="#"><strong>Registra nuevos usuarios o encuentra</strong></a> a los que ya fluyen en esta plataforma. <a href="#"><strong>Agrega tus clientes frecuentes a favoritos</strong></a> para visualizarlos en Mis clientes.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6" v-if="user_type==1 || user_type==2">
+              <div class="white-box bg-info">
+                <div class="r-icon-stats text-white text-center">
+                <i class="fa fa-heart bg-megna"></i>
+                <a href="#"><h3>EMPECEMOS A FLUIR</h4></a>
+                Invita a tus clientes a registrarse y a <strong>agregar tu empresa a sus favoritos.</strong> Así podrán interactuar, gestionar citas y reservar cupos en tus cursos y talleres.
+                </div>
+              </div>
+            </div>
+
+
+       </div>
       <div class="col-xs-12 col-md-6" id="notifications">
         <div class="white-box">
           <h3 class="box-title">Notificaciones</h3>
@@ -72,5 +201,6 @@
   getCurrentUser(function(){
     getRecordList('Activity','Comment,StartTime,EndTime,TransDate,id,Status,ServiceId,CustId,CompanyId,ProfId','5','TransDate');
   });
-  getCurrentDate()
+  setVueDashboard()
+  Vue.set(vue_dashboard,'user_type',{{current_user.UserType}});
 </script>

@@ -1,15 +1,27 @@
 
 function showProfessional(id,Name,current_user_id){
+	var titleName = vue_title.Title;
+    var moduleNr = vue_title.moduleNr;
+    var index = vue_title.indexNr ;
 	vars = {Template: 'showprofessional.html',profId: id}
-	getTemplate('container-fluid',vars,function (){
+	getTemplate(vars,function (){
 		setProffesional(id,current_user_id);
+        vue_title.moduleNr = moduleNr;
+        vue_title.indexNr = index;
+		vue_title.tableName = titleName;
 	})
 }
 
 function showCompany(id,Name,current_user_id){
+	var titleName = vue_title.Title;
+    var moduleNr = vue_title.moduleNr;
+    var index = vue_title.indexNr ;
 	vars = {Template: 'showcompany.html',companyId: id}
-	getTemplate('container-fluid',vars,function (){
+	getTemplate(vars,function (){
 		setCompany(id,current_user_id);
+        vue_title.moduleNr = moduleNr;
+        vue_title.indexNr = index;
+		vue_title.tableName = titleName;
 	})
 }
 
@@ -65,6 +77,7 @@ function setProffesional(id,current_user_id,add_activities){
 		});
 		getRecordBy('Company',{id: data.record.CompanyId},function(company){
 			Vue.set(vue_title,'companyName', company.record.Name);
+			Vue.set(vue_title,'companyId', data.record.CompanyId);
 			/*if (!data.record.Email){record_email.innerHTML = company.Email;}
 			if (!data.record.Phone){record_phone.innerHTML = company.Phone;}
 			if (!data.record.Address){record_address.innerHTML = company.Address;}
@@ -110,7 +123,7 @@ function showNotes(){
 	var id = document.getElementById('id');
 	var name = document.getElementById('Name');
 	vars = {Template: 'usernote.html','custId':id.value,'custName': name.value}
-	getTemplate('container-fluid',vars)
+	getTemplate(vars)
 }
 
 function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
@@ -126,7 +139,7 @@ function setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 
 function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 	vars = {Template: 'activityform.html',Table:'Activity'}
-	getTemplate('container-fluid',vars,function(){
+	getTemplate(vars,function(){
 		getRecord({TableName:'Activity'},function (data){
 			Vue.set(vue_record,'table', 'Activity');
 			Vue.set(vue_record,'values', data);
@@ -160,7 +173,7 @@ function setCustomerToEvent(id){
 
 function newUserNote(custId){
 	vars = {Template: 'recordform.html',Table:'UserNote',RecordId:''}
-	getTemplate('container-fluid',vars,function(){
+	getTemplate(vars,function(){
 		getRecord({TableName:'UserNote'},function (data){
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_record,'table', 'UserNote');
@@ -181,7 +194,7 @@ function setNotificationRead(id){
 
 function getTemplateNotification(){
 	vars = {'Name':'Notificaciones','Table':'Notification','Template':'notification.html'}
-	getTemplate('container-fluid',vars,function(){
+	getTemplate(vars,function(){
 		vue_title.Title = vars.Name;
 	});
 }
@@ -223,21 +236,20 @@ function updateNotificationsList(){
 }
 
 function showDashboard(){
-	getTemplate('container-fluid',{'Template':'mycontainer.html'},function(){
+	getTemplate({'Template':'mycontainer.html'},function(){
 		updateNotificationsList();
 	});
 }
 
-function getCurrentDate(){
+function setVueDashboard(){
 	$.getJSON($SCRIPT_ROOT + '/_get_current_date',{}, function(data) {
-		Vue.set(vue_dashboard_date,'currentdate',data.result);
+		Vue.set(vue_dashboard,'currentdate',data.result);
 	});
-
 }
 
-function getEventList(fields){
+function getEventList(fields,columns){
 
-	var vars = {'Table': 'Activity','Fields': fields }
+	var vars = {'Table': 'Activity','Fields': fields,'Columns':columns }
 	vars['OrderBy'] = 'TransDate';
 	Vue.set(vue_recordlist,'table', 'Activity');
 	Vue.set(vue_recordlist,'user_type', vue_user_menu.current_user_type);
@@ -248,14 +260,23 @@ function getEventList(fields){
 
 
 function showEvent(id){
+
+	var titleName = vue_title.Title;
+    var moduleNr = vue_title.moduleNr;
+    var index = vue_title.indexNr ;
+
     var vars = {Template: 'event.html',Table: 'Activity', id: id}
-	getTemplate('container-fluid',vars,function (){
+	getTemplate(vars,function (){
 		$.getJSON($SCRIPT_ROOT + '/_get_calendar_events', {'eventId':id},function(data) {
 			Vue.set(vue_event,'events', data.result);
 			for (index in data.result){
     			Vue.set(vue_event,'ProfName', data.result[index][0].ProfName);
+                vue_title.Title = data.result[index][0].Comment;
 			}
 		});
+        vue_title.moduleNr = moduleNr;
+        vue_title.indexNr = index;
+		vue_title.tableName = titleName;
 	});
 }
 
@@ -303,9 +324,9 @@ function setCustomVue(TemplateName,record){
 	}
 }
 
-function getCustomerList(table,fields,favorite,limit,order_by,desc){
+function getCustomerList(table,fields,favorite,limit,order_by,desc,columns){
 
-	var vars = {'Table': table,'Fields': fields, 'favorite': favorite}
+	var vars = {'Table': table,'Fields': fields, 'favorite': favorite,'Columns': columns}
 	if (limit) {vars['Limit'] = limit;}
 	if (order_by) {vars['OrderBy'] = order_by;}
 	if (desc) {vars['Desc'] = desc;}
@@ -321,7 +342,6 @@ function getCustomerList(table,fields,favorite,limit,order_by,desc){
 
 function setServicePrice(){
 	service_id = vue_record.values.record.ServiceId;
-	console.log(service_id)
 	if (!service_id){
 	    vue_record.values.record.Price = null;
 	    return;

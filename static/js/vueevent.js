@@ -22,6 +22,7 @@ var vue_event = new Vue({
 				'    data-epayco-confirmation="https://ejemplo.com/confirmacion" > <' + '/script>')
 		}
 	},
+
 	mounted: function () {
 		for (k in this.events){
 			$(this.$refs['form' + k]).html(this.getScript(k,this.events[k][0]))

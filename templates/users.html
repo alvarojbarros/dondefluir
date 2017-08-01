@@ -1,16 +1,20 @@
 {% extends "recordtable.html" %}
 
 {% block fields_view %}
-
-  <li v-for="record in values" :data-search-term="record.Comment" class="list-group-item" >
-  <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
-      {%raw%}{{record.Name}} - {{record.CompanyId}} - {{record.UserType}}{%endraw%}
-   </a></li>
-
+<tr v-for="record in values" v-if="record._Skip==false && record._Skip2==false && record.Closed==0" >
+    <td v-for="row in record.Columns">
+        <a href="#" :onClick="'getRecordForm(\''+ table +'\',\'recordform.html\',\'' + record.id + '\')'">
+            {%raw%}{{row}}{%endraw%}
+        </a>
+    </td>
+</tr>
 {% endblock %}
 
 {% block button_script %}
 <script type=text/javascript>
-  getRecordList('User','Name,CompanyId,id,UserType');
+  columns = "{0:('Nombre','.Name')" +
+    ",1:('Empresa','.CompanyId')" +
+    ",2:('Tipo de Usuario','.UserType')}"
+  getRecordList('User','Name,CompanyId,id,UserType,Closed',null,null,false,columns);
 </script>
 {% endblock %}

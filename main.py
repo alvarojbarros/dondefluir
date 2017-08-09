@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, request,jsonify
-#from flask_login import login_required, current_user
-#from tools.dbconnect import Session
-#from sqlalchemy.orm import sessionmaker
 from flask import Blueprint
-#from tools.Tools import *
 from tools.DBTools import *
 from dondefluir.db.User import User
 from dondefluir.db.Company import Company

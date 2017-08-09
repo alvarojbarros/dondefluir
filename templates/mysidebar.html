@@ -8,36 +8,35 @@
         {% for index in getModulesDirIndex() %}
         {% set module = getModulesDir()[index] %}
         <li class="user-pro" >
+		    <a href="#"  v-if="{{module|length}}==1"
+		    :onClick="'getTemplateModule(\'{{index}}\','+ 0 + ')'"
+		    class="waves-effect">
+		    <i data-icon="F" :class="'fa ' + '{{module[module|first].Image}}' + ' fa-fw'"></i>
+		    <span class="hide-menu"> <b ref="module-{{index}}"></b>
+		    </span>
+		  </a>
+		  <a href="#" class="waves-effect" v-if="{{module|length}}>1">
+		    <i data-icon="F" :class="'fa ' + '{{module[module|first].Image}}' + ' fa-fw'"></i>
+		    <span class="hide-menu">  <b ref="module-{{index}}">{{index}}</b>
+		      <span class="fa arrow">
+		      </span>
+		    </span>
+		  </a>
+		  <ul class="nav nav-second-level" v-if="{{module|length}}>1">
+		    <li v-for="(table,index) in values['{{index}}']">
+		      <a v-if="!table.Form" href="javascript:void(0)"  :onClick="'getTemplateModule({{index}},'+ index + ')'">
+			<i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
+			{%raw%}{{table.Name}}{%endraw%}
+		      </a>
+		      <a href="javascript:void(0)" v-if="table.Form"
+			 :onClick="'getRecordForm(\''+table.Vars.Table+'\',\''+table.Template+'\',\''+table.Vars.id+'\',runFunction=\'OpenCloseMenu()\')'">
+			  <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
+			  {%raw%}{{table.Name}}{%endraw%}
+		      </a>
 
-          <a href="#"  v-if="{{module|length}}==1"
-            :onClick="'getTemplateModule(\'{{index}}\','+ 0 + ')'"
-            class="waves-effect">
-            <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
-            <span class="hide-menu"> <b ref="module-{{index}}"></b>
-            </span>
-          </a>
+		    </li>
+		  </ul>
 
-          <a href="#" class="waves-effect" v-if="{{module|length}}>1">
-            <i data-icon="F" :class="'fa ' + '{{module[0].Image}}' + ' fa-fw'"></i>
-            <span class="hide-menu">  <b ref="module-{{index}}">{{index}}</b>
-              <span class="fa arrow">
-              </span>
-            </span>
-          </a>
-          <ul class="nav nav-second-level" v-if="{{module|length}}>1">
-            <li v-for="(table,index) in values['{{index}}']">
-              <a v-if="!table.Form" href="javascript:void(0)"  :onClick="'getTemplateModule({{index}},'+ index + ')'">
-                <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
-                {%raw%}{{table.Name}}{%endraw%}
-              </a>
-              <a href="javascript:void(0)" v-if="table.Form"
-                 :onClick="'getRecordForm(\''+table.Vars.Table+'\',\''+table.Template+'\',\''+table.Vars.id+'\',runFunction=\'OpenCloseMenu()\')'">
-                  <i data-icon="F" :class="'fa ' + table.Image + ' fa-fw'"></i>
-                  {%raw%}{{table.Name}}{%endraw%}
-              </a>
-
-            </li>
-          </ul>
         </li>
         {% endfor %}
      </ul>

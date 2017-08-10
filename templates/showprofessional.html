@@ -11,14 +11,12 @@
     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
             <ol class="breadcrumb" v-if="tableName!='Profesionales'">
             <li><a href="#" onClick="showDashboard()" >Inicio</a></li>
-            <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">Empresas</a></li>
             <li><a href="#" :onclick="'showCompany(\''+companyId+'\',\''+companyName+'\',\''+ companyId +'\')'">
                 {%raw%}{{companyName}}{%endraw%}</a></li>
             <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
         <ol class="breadcrumb" v-if="tableName=='Profesionales'">
             <li><a href="#" onClick="showDashboard()" >Inicio</a></li>
-            <li><a href="#" :onClick="'getTemplateModule('+ moduleNr +','+indexNr+')'">{%raw%}{{tableName}}{%endraw%}</a></li>
             <li class="active"> {%raw%}{{Title}}{%endraw%} </li>
         </ol>
 

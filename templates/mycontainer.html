@@ -33,9 +33,9 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-magic bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_COMPANIES')}},0)"><h3>EMPRESAS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_COMPANIES')}},0)"><strong>Encuentra las empresas</strong></a> que fluyen en esta plataforma.
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_FAVORITE')}},0)"><strong>Agregalas a favoritos</strong></a> para que puedas acceder a su listado de profesionales, sus agendas, cursos y eventos.
+                    <a href="#" onclick="getCompanies()"><h3>EMPRESAS</h3></a>
+                    <a href="#" onclick="getCompanies()"><strong>Encuentra las empresas</strong></a> que fluyen en esta plataforma.
+                    <a href="#" onclick="getCompanies()"><strong>Agregalas a favoritos</strong></a> para que puedas acceder a su listado de profesionales, sus agendas, cursos y eventos.
                 </div>
               </div>
             </div>
@@ -43,9 +43,9 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-magic bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_PROFESSIONAL')}},0)"><h3>PROFESIONALES Y CITAS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_FAVORITE')}},0)"><strong>Agrega profesionales a tus favoritos</strong></a> para verlos en Mis profesionales. Accede a su perfil para solicitar y pagar tu cita.
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_AGENDA')}},0)"><strong>Visualiza tus próximas actividades</strong></a> en Mi agenda.
+                    <a href="#" onclick="getProfessionals(false)"><h3>PROFESIONALES Y CITAS</h3></a>
+                    <a href="#" onclick="getProfessionals(false)"><strong>Agrega profesionales a tus favoritos</strong></a> para verlos en Mis profesionales. Accede a su perfil para solicitar y pagar tu cita.
+                    <a href="#" onclick="getActivities({{current_user.id}})"><strong>Visualiza tus próximas actividades</strong></a> en Mi agenda.
                 </div>
               </div>
             </div>
@@ -53,8 +53,8 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-star bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_EVENTS')}},0)"><h3>CURSOS Y EVENTOS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('CUST_EVENTS')}},0)"><strong>Conoce la programación de talleres, cursos, conferencias, viajes y eventos.</strong></a> Reserva y paga tu cupo en las actividades que estas empresas ofrecen para invitarte a fluir.
+                    <a href="#" onclick="getEvents()"><h3>CURSOS Y EVENTOS</h3></a>
+                    <a href="#" onclick="getEvents()"><strong>Conoce la programación de talleres, cursos, conferencias, viajes y eventos.</strong></a> Reserva y paga tu cupo en las actividades que estas empresas ofrecen para invitarte a fluir.
                 </div>
               </div>
             </div>
@@ -73,8 +73,8 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-star bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_COMPANY')}})"><h3>MI EMPRESA</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_COMPANY')}})"><strong>Completa o actualiza el perfil de tu empresa.</strong></a> Configura la información de tu botón de pago con ePayco y habilitalo a través de este panel.
+                    <a href="#" onclick="getMyCompany({{current_user.CompanyId}})"><h3>MI EMPRESA</h3></a>
+                    <a href="#" onclick="getMyCompany({{current_user.CompanyId}})"><strong>Completa o actualiza el perfil de tu empresa.</strong></a> Configura la información de tu botón de pago con ePayco y habilitalo a través de este panel.
                 </div>
               </div>
             </div>
@@ -82,8 +82,8 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-magic bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_USERS')}})"><h3>USUARIOS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_USERS')}})"><strong>Registra usuarios nuevos</strong></a> tipo cliente, profesional o administrador. Accede al perfil de tus profesionales para configurar sus horarios.
+                    <a href="#" onclick="getUsers()"><h3>USUARIOS</h3></a>
+                    <a href="#" onclick="getUsers()"><strong>Registra usuarios nuevos</strong></a> tipo cliente, profesional o administrador. Accede al perfil de tus profesionales para configurar sus horarios.
                 </div>
               </div>
             </div>
@@ -91,9 +91,9 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="ti-user bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_SERVICE')}})"><h3>SERVICIOS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_SERVICE')}})"><strong>Crea los servicios de tu empresa</strong></a> e indica su precio en pesos colombianos.
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PROF_SERVICE')}})"><strong>Relaciona tus servicios con los profesionales</strong></a> que los prestan.
+                    <a href="#" onclick="getServices()"><h3>SERVICIOS</h3></a>
+                    <a href="#" onclick="getServices()"><strong>Crea los servicios de tu empresa</strong></a> e indica su precio en pesos colombianos.
+                    <a href="#" onclick="getProfServices()"><strong>Relaciona tus servicios con los profesionales</strong></a> que los prestan.
                 </div>
               </div>
             </div>
@@ -101,8 +101,8 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-magic bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PAYMENT')}})"><h3>PAGOS RECIBIDOS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('COMPANY')}},{{getConst('IDX_PAYMENT')}})"><strong>Haz seguimiento de tus ingresos</strong></a> a través de esta plataforma. Conoce tus pagos recibidos y amplía los detalles de cada una de las transacciones.
+                    <a href="#" onclick="getPayments()"><h3>PAGOS RECIBIDOS</h3></a>
+                    <a href="#" onclick="getPayments()"><strong>Haz seguimiento de tus ingresos</strong></a> a través de esta plataforma. Conoce tus pagos recibidos y amplía los detalles de cada una de las transacciones.
                 </div>
               </div>
             </div>
@@ -110,10 +110,10 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-star bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_CALENDAR')}})"><h3>MI AGENDA</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_LIST')}})"><strong>Crea, modifica y cancela citas, eventos o cursos,</strong></a> accediendo a la
-                    <a href="#" onclick="getTemplateModule({{getConst('AGENDA')}},{{getConst('IDX_LIST')}})"><strong>vista de lista</strong></a> de tu agenda o a
-                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_ACTIVITY')}})"><strong>todas tus actividades</strong></a> en Mis actividades.
+                    <a href="#" onclick="getCalendarView({{current_user.id}},{{current_user.name}})"><h3>MI AGENDA</h3></a>
+                    <a href="#" onclick="getActivities({{current_user.id}})"><strong>Crea, modifica y cancela citas, eventos o cursos,</strong></a> accediendo a la
+                    <a href="#" onclick="getMySchedule({{current_user.id}})"><strong>vista de lista</strong></a> de tu agenda o a
+                    <a href="#" onclick="getActivities({{current_user.id}})"><strong>todas tus actividades</strong></a> en Mis actividades.
                 </div>
               </div>
             </div>
@@ -121,8 +121,8 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="ti-user bg-megna"></i>
-                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_EVENTS')}})"><h3>CURSOS Y EVENTOS</h3></a>
-                    <a href="#" onclick="getTemplateModule({{getConst('ACTIVITY')}},{{getConst('IDX_EVENTS')}})"><strong>Crea actividades grupales o de varias fechas.</strong></a> Indica valor, cantidad de cupos y descripción. Agrega clientes y permiteles reservar sus cupos.
+                    <a href="#" onclick="getEvents()"><h3>CURSOS Y EVENTOS</h3></a>
+                    <a href="#" onclick="getEvents()"><strong>Crea actividades grupales o de varias fechas.</strong></a> Indica valor, cantidad de cupos y descripción. Agrega clientes y permiteles reservar sus cupos.
                 </div>
               </div>
             </div>
@@ -130,9 +130,9 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="ti-user bg-megna"></i>
-                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><h3>PERFIL PROFESIONAL</h3></a>
-                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><strong>Completa tu perfil</strong></a> para que los clientes conozcan tus talentos.
-                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{getConst('USER_ID')}}')"><strong>Configura los horarios de tu agenda</strong></a> y gestiona tu tiempo y tu espacio.
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{current_user.id}}')"><h3>PERFIL PROFESIONAL</h3></a>
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{current_user.id}}')"><strong>Completa tu perfil</strong></a> para que los clientes conozcan tus talentos.
+                    <a href="#" onclick="getRecordForm('User','recordform.html',id='{{current_user.id}}')"><strong>Configura los horarios de tu agenda</strong></a> y gestiona tu tiempo y tu espacio.
                 </div>
               </div>
             </div>
@@ -140,8 +140,9 @@
               <div class="white-box">
                 <div class="r-icon-stats text-center">
                   <i class="fa fa-magic bg-megna"></i>
-                    <a href="#"><h3>CLIENTES</h3></a>
-                    <a href="#"><strong>Registra nuevos usuarios o encuentra</strong></a> a los que ya fluyen en esta plataforma. <a href="#"><strong>Agrega tus clientes frecuentes a favoritos</strong></a> para visualizarlos en Mis clientes.
+                    <a href="#" onclick="getCustomers(false)"><h3>CLIENTES</h3></a>
+                    <a href="#" onclick="getCustomers(false)"><strong>Registra nuevos usuarios o encuentra</strong></a> a los que ya fluyen en esta plataforma.
+                    <a href="#" onclick="getCustomers(false)"><strong>Agrega tus clientes frecuentes a favoritos</strong></a> para visualizarlos en Mis clientes.
                 </div>
               </div>
             </div>

@@ -91,7 +91,7 @@ function setFavorite(element,t){
   if (t=='1'){favId = vue_record.values.record.id}
   $.getJSON($SCRIPT_ROOT + '/_set_favorite',{favId: favId}, function(data) {
       if (data.result['res']==true){
-		  favorite = document.getElementById('favorite');
+		  favorite = document.getElementById('Favorite');
 		  if (favorite){
 		 	  if (data.result['Status']==true) {
 		 	  	  if (t=="1"){
@@ -145,7 +145,7 @@ function createActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId){
 			Vue.set(vue_record,'values', data);
 			Vue.set(vue_buttons,'canEdit', data.canEdit);
 			Vue.set(vue_buttons,'canDelete', data.canDelete);
-			setCustomVue('activityform.html',data.record)
+			setCustomVue('activityform.html',data.record,'Activity')
 			vue_title.Title = 'Nuevo Actividad'
 			setActivity(TransDate,StartTime,EndTime,ProfId,CompanyId,CustId);
 		})
@@ -187,7 +187,7 @@ function newUserNote(custId){
 
 function setNotificationRead(id){
     $.getJSON($SCRIPT_ROOT + '/_set_notification_read',{id: id}, function(data) {
-    	getNotifications();
+    	getNotificationsList();
     });
 }
 
@@ -199,7 +199,7 @@ function getTemplateNotification(){
 	});
 }
 
-function getNotifications(){
+function getNotificationsList(){
 	div = document.getElementById('notifications-menu');
 	if (div){
 		$.getJSON($SCRIPT_ROOT + '/_get_notifications',{}, function(data) {
@@ -226,7 +226,7 @@ function getNotifications(){
 }
 
 function getMyFunctionReady(){
-	getNotifications();
+	getNotificationsList();
 }
 
 function updateNotificationsList(){
@@ -307,7 +307,7 @@ function cancelActivity() {
 	}
 };
 
-function setCustomVue(TemplateName,record){
+function setCustomVue(TemplateName,record,Table){
 	if (TemplateName=='activityform.html'){
 		Vue.set(vue_buttons,'id', record.id);
 		Vue.set(vue_buttons,'Status', record.Status);
@@ -321,6 +321,10 @@ function setCustomVue(TemplateName,record){
 				}
 			});
 		}
+	}
+	if (record.Favorite && record.Favorite==1){
+		Vue.set(vue_record,'favorite', 'Eliminar de Favoritos');
+		Vue.set(vue_record,'classname', 'btn btn-danger btn-rounded waves-effect waves-light m-t-20');
 	}
 }
 
@@ -353,4 +357,81 @@ function setServicePrice(){
 			vue_record.values.record.Price
 		}
 	});
+}
+
+function getTemplateM(vars){
+	vars['Functions'] = 'runSearchBoxOnKey()'
+	OpenCloseMenu();
+	getTemplate(vars,function(){
+		vue_title.Title = vars['Name'];
+	});
+}
+
+function getProfessionals(fav){
+	var vars = {'Table': 'User', 'favorite': fav, 'Template': 'professional_icon.html', 'Name':'Profesionales'};
+	getTemplateM(vars)
+}
+
+function getServices(){
+	var vars = {'Table': 'Service', 'Template': 'service.html', 'Name':'Servicios'};
+	getTemplateM(vars)
+}
+
+function getProfServices(){
+	var vars = {'Table': 'UserService', 'Template': 'userservice.html', 'Name':'Servicios por Profesional'};
+	getTemplateM(vars)
+}
+
+function getPayments(){
+	var vars = {'Table': 'Payment', 'Template': 'payment.html', 'Name':'Pagos'};
+	getTemplateM(vars)
+}
+
+function getCustomers(fav){
+	var vars = {'Table': 'User', 'Template': 'customer.html', 'Name':'Clientes','favorite': fav, 'TemplateForm':'customerform.html'};
+	getTemplateM(vars)
+}
+
+function getCompanies(){
+	var vars = {'Table': 'Company', 'Template': 'company.html', 'Name':'Empresas'};
+	getTemplateM(vars)
+}
+
+function getUsers(){
+	var vars = {'Table': 'User', 'Template': 'users.html', 'Name':'Usuarios'};
+	getTemplateM(vars)
+}
+
+function getCalendarView(user_id,user_name){
+	var vars = {'Template': 'calendar.html', 'Name':'Calendario','UserId': user_id,'UserName': user_name};
+	getTemplateM(vars)
+}
+
+function getMySchedule(user_id){
+	var vars = {'Template': 'myschedule.html', 'Name':'Vista de Lista','profId': user_id };
+	getTemplateM(vars)
+}
+
+function getActivities(user_id){
+	var vars = {'Table':'Activity', 'Template': 'activity.html', 'Name':'Todas las actividades','TemplateForm':'activityform.html'};
+	getTemplateM(vars)
+}
+
+function getEvents(){
+	var vars = {'Table':'Activity', 'Template': 'events.html', 'Name':'Cursos y Eventos'};
+	getTemplateM(vars)
+}
+
+function getNotifications(){
+	var vars = {'Table':'Notification', 'Template': 'notification.html', 'Name':'Notificaciones'};
+	getTemplateM(vars)
+}
+
+function getNewUsersReport(){
+	var vars = {'ReportClass':'NewUsers', 'Template': 'report.html', 'Name':'Nuevos usuarios por mes'};
+	getTemplateM(vars)
+}
+
+function getMyCompany(company_id){
+	getRecordForm('Company','recordform.html',company_id)
 }
